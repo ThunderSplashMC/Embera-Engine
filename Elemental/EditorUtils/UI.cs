@@ -220,7 +220,7 @@ namespace DevoidEngine.Elemental.EditorUtils
         public static void DrawTextureField(FieldInfo field, object component)
         {
             Texture val = (Texture)field.GetValue(component);
-            PropertyTexture((IntPtr)(val.GetTexture()));
+            PropertyTexture((IntPtr)(val == null ? 0 : val.GetTexture()));
             field.SetValue(component, val);
         }
 

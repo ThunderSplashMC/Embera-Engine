@@ -61,7 +61,12 @@ namespace DevoidEngine.Elemental.EditorUtils
 
         public static void DrawGrid()
         {
+            GridShader.Use();
+            GuizmoShader.SetMatrix4("W_MODEL_MATRIX", Matrix4.CreateRotationX(MathHelper.DegreesToRadians(90)) * Matrix4.CreateScale(1000));
+            GridShader.SetMatrix4("W_PROJECTION_MATRIX", GuizmoView.GetProjectionMatrix());
+            GridShader.SetMatrix4("W_VIEW_MATRIX", GuizmoView.GetViewMatrix());
 
+            GuizmoVAO.Render();
         }
 
         public static void DrawGuizmo(Texture icon, Vector3 position)

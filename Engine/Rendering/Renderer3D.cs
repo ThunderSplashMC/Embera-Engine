@@ -185,6 +185,11 @@ namespace DevoidEngine.Engine.Rendering
             GL.Viewport(0, 0, RendererData.ViewportWidth, RendererData.ViewportHeight);
         }
 
+        static void Reset_Blending()
+        {
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+        }
+
         public static void Resize(int width, int height)
         {
             RendererData.ViewportWidth = width;
@@ -292,6 +297,8 @@ namespace DevoidEngine.Engine.Rendering
             Quad.Draw();
 
             RenderGraph.CompositePass.UnBind();
+
+            Reset_Blending();
         }
 
         static bool CheckCameraSet()

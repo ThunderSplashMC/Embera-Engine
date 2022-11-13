@@ -198,6 +198,8 @@ namespace DevoidEngine.Elemental.Panels
         {
             Guizmo3D.Begin(editorCamera);
 
+            //Guizmo3D.DrawGrid();
+
             GameObject[] gameObjects = Editor.EditorScene.GetSceneRegistry().GetAllGameObjects();
             for (int i = 0; i < gameObjects.Length; i++)
             {
