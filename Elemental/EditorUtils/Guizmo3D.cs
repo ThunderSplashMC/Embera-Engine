@@ -19,14 +19,13 @@ namespace DevoidEngine.Elemental.EditorUtils
     {
         static VertexArray GuizmoVAO;
         static Shader GuizmoShader;
+        static Shader GridShader;
 
         static FrameBuffer GuizmoBuffer;
 
         static Camera GuizmoView;
 
         static List<GuizmoIcon> GuizmoIcons = new List<GuizmoIcon>();
-
-        static Matrix4 OProjection;
 
         public static void Init(int width, int height, FrameBuffer CompositeBuffer)
         {
@@ -39,6 +38,7 @@ namespace DevoidEngine.Elemental.EditorUtils
             GuizmoVAO = new VertexArray(vertexBuffer);
 
             GuizmoShader = new Shader("Elemental/Assets/Shaders/guizmo");
+            GridShader = new Shader("Elemental/Assets/Shaders/grid");
             
         }
 
@@ -57,6 +57,11 @@ namespace DevoidEngine.Elemental.EditorUtils
             GuizmoBuffer.Bind();
             GL.Disable(EnableCap.CullFace);
             GL.Disable(EnableCap.DepthTest);
+        }
+
+        public static void DrawGrid()
+        {
+
         }
 
         public static void DrawGuizmo(Texture icon, Vector3 position)

@@ -16,8 +16,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Engine\EngineContent\models\floortex\**" />
+    <Compile Remove="Engine\EngineContent\models\textures\**" />
     <Compile Remove="Engine\Imgui\deps\**" />
+    <EmbeddedResource Remove="Engine\EngineContent\models\floortex\**" />
+    <EmbeddedResource Remove="Engine\EngineContent\models\textures\**" />
     <EmbeddedResource Remove="Engine\Imgui\deps\**" />
+    <None Remove="Engine\EngineContent\models\floortex\**" />
+    <None Remove="Engine\EngineContent\models\textures\**" />
     <None Remove="Engine\Imgui\deps\**" />
   </ItemGroup>
 
@@ -95,15 +101,6 @@
     <None Remove="Engine\EngineContent\models\emission_demo.fbx" />
     <None Remove="Engine\EngineContent\models\floor.dae" />
     <None Remove="Engine\EngineContent\models\floor.fbx" />
-    <None Remove="Engine\EngineContent\models\floortex\Tiles071_2K-JPG.usda" />
-    <None Remove="Engine\EngineContent\models\floortex\Tiles071_2K-JPG.usdc" />
-    <None Remove="Engine\EngineContent\models\floortex\Tiles071_2K_AmbientOcclusion.jpg" />
-    <None Remove="Engine\EngineContent\models\floortex\Tiles071_2K_Color.jpg" />
-    <None Remove="Engine\EngineContent\models\floortex\Tiles071_2K_Displacement.jpg" />
-    <None Remove="Engine\EngineContent\models\floortex\Tiles071_2K_NormalDX.jpg" />
-    <None Remove="Engine\EngineContent\models\floortex\Tiles071_2K_NormalGL.jpg" />
-    <None Remove="Engine\EngineContent\models\floortex\Tiles071_2K_Roughness.jpg" />
-    <None Remove="Engine\EngineContent\models\floortex\Tiles071_PREVIEW.jpg" />
     <None Remove="Engine\EngineContent\models\Full.fbx" />
     <None Remove="Engine\EngineContent\models\Gear.fbx" />
     <None Remove="Engine\EngineContent\models\GrassBlock.fbx" />
@@ -122,40 +119,6 @@
     <None Remove="Engine\EngineContent\models\sphere.fbx" />
     <None Remove="Engine\EngineContent\models\steve.fbx" />
     <None Remove="Engine\EngineContent\models\SwordRed.fbx" />
-    <None Remove="Engine\EngineContent\models\textures\coast_sand_rocks_02_diff_1k.jpg" />
-    <None Remove="Engine\EngineContent\models\textures\coast_sand_rocks_02_disp_1k.png" />
-    <None Remove="Engine\EngineContent\models\textures\coast_sand_rocks_02_nor_gl_1k.exr" />
-    <None Remove="Engine\EngineContent\models\textures\coast_sand_rocks_02_nor_gl_1k.png" />
-    <None Remove="Engine\EngineContent\models\textures\coast_sand_rocks_02_rough_1k.exr" />
-    <None Remove="Engine\EngineContent\models\textures\coast_sand_rocks_02_rough_1k.png" />
-    <None Remove="Engine\EngineContent\models\textures\DefaultMaterial_Base_color.png" />
-    <None Remove="Engine\EngineContent\models\textures\DefaultMaterial_Metallic.png" />
-    <None Remove="Engine\EngineContent\models\textures\DefaultMaterial_Mixed_AO.png" />
-    <None Remove="Engine\EngineContent\models\textures\DefaultMaterial_Normal_DirectX.png" />
-    <None Remove="Engine\EngineContent\models\textures\DefaultMaterial_Normal_OpenGL.png" />
-    <None Remove="Engine\EngineContent\models\textures\DefaultMaterial_Roughness.png" />
-    <None Remove="Engine\EngineContent\models\textures\grass.jpg" />
-    <None Remove="Engine\EngineContent\models\textures\internal_ground_ao_texture.jpeg" />
-    <None Remove="Engine\EngineContent\models\textures\luci.png" />
-    <None Remove="Engine\EngineContent\models\textures\New Project.png" />
-    <None Remove="Engine\EngineContent\models\textures\omoli.png" />
-    <None Remove="Engine\EngineContent\models\textures\omor.png" />
-    <None Remove="Engine\EngineContent\models\textures\scarL_AO.png" />
-    <None Remove="Engine\EngineContent\models\textures\scarL_BaseColor.png" />
-    <None Remove="Engine\EngineContent\models\textures\scarL_Metalness.png" />
-    <None Remove="Engine\EngineContent\models\textures\scarL_Normal.png" />
-    <None Remove="Engine\EngineContent\models\textures\scarL_Opacity.png" />
-    <None Remove="Engine\EngineContent\models\textures\scarL_Roughness.png" />
-    <None Remove="Engine\EngineContent\models\textures\steve.png" />
-    <None Remove="Engine\EngineContent\models\textures\Texture.png" />
-    <None Remove="Engine\EngineContent\models\textures\Tiles105_2K_Color.jpg" />
-    <None Remove="Engine\EngineContent\models\textures\Tiles105_2K_NormalGL.jpg" />
-    <None Remove="Engine\EngineContent\models\textures\Tiles105_2K_Roughness.jpg" />
-    <None Remove="Engine\EngineContent\models\textures\torreta_lp_01_-_Default_Diffuse.png" />
-    <None Remove="Engine\EngineContent\models\textures\torreta_lp_01_-_Default_Emissive.png" />
-    <None Remove="Engine\EngineContent\models\textures\torreta_lp_01_-_Default_Glossiness.png" />
-    <None Remove="Engine\EngineContent\models\textures\torreta_lp_01_-_Default_Normal.png" />
-    <None Remove="Engine\EngineContent\models\textures\torreta_lp_01_-_Default_Specular.png" />
     <None Remove="Engine\EngineContent\models\Theater.fbx" />
     <None Remove="Engine\EngineContent\models\Thone.fbx" />
     <None Remove="Engine\EngineContent\models\untitled.fbx" />
@@ -267,198 +230,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Engine\EngineContent\icons\icon64-stroke.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\axis_demo.fbx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\cc.fbx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\demo-engine.fbx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\demo-text.fbx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\demo.fbx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\demo_stage.fbx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\emicube.fbx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\floor.fbx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\floortex\Tiles071_2K-JPG.usda">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\floortex\Tiles071_2K-JPG.usdc">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\floortex\Tiles071_2K_AmbientOcclusion.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\floortex\Tiles071_2K_Color.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\floortex\Tiles071_2K_Displacement.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\floortex\Tiles071_2K_NormalDX.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\floortex\Tiles071_2K_NormalGL.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\floortex\Tiles071_2K_Roughness.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\floortex\Tiles071_PREVIEW.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\GrassBlock.fbx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\GrassPath.fbx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\m6g.fbx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\model.fbx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\modeloconbase1.fbx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\monkeh.fbx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\mul.fbx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\new.fbx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\scarL.fbx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\Sci-fi Box.fbx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\sphere.fbx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\steve.fbx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\SwordRed.fbx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\coast_sand_rocks_02_diff_1k.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\coast_sand_rocks_02_disp_1k.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\coast_sand_rocks_02_nor_gl_1k.exr">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\coast_sand_rocks_02_nor_gl_1k.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\coast_sand_rocks_02_rough_1k.exr">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\coast_sand_rocks_02_rough_1k.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\DefaultMaterial_Base_color.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\DefaultMaterial_Metallic.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\DefaultMaterial_Mixed_AO.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\DefaultMaterial_Normal_DirectX.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\DefaultMaterial_Normal_OpenGL.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\DefaultMaterial_Roughness.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\grass.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\internal_ground_ao_texture.jpeg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\luci.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\New Project.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\omor.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\scarL_AO.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\scarL_BaseColor.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\scarL_Metalness.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\scarL_Normal.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\scarL_Opacity.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\scarL_Roughness.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\steve.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\Texture.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\Tiles105_2K_Color.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\Tiles105_2K_NormalGL.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\Tiles105_2K_Roughness.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\torreta_lp_01_-_Default_Diffuse.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\torreta_lp_01_-_Default_Emissive.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\torreta_lp_01_-_Default_Glossiness.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\torreta_lp_01_-_Default_Normal.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\textures\torreta_lp_01_-_Default_Specular.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\EngineContent\models\untitled.fbx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Engine\EngineContent\shaders\2d.frag">
@@ -621,18 +392,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Engine\EngineContent\models\phoenrender.fbx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Engine\EngineContent\models\textures\omoli.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AssimpNet" Version="4.1.0" />
     <PackageReference Include="BulletSharp" Version="0.11.1" />
     <PackageReference Include="DiscordRichPresence" Version="1.0.175" />
@@ -653,6 +412,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Engine\EngineContent\models\" />
     <Folder Include="Engine\Imgui\misc\" />
   </ItemGroup>
 
