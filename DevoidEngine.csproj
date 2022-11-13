@@ -590,6 +590,7 @@
 
   <ItemGroup>
     <Folder Include="Engine\Imgui\misc\" />
+    <Folder Include="Previews\" />
   </ItemGroup>
 
   <ItemGroup>
