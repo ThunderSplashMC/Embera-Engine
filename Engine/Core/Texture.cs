@@ -74,6 +74,21 @@ namespace DevoidEngine.Engine.Core
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (float)filterType);
         }
 
+        public void ChangeWrapMode(WrapModeType wrapMode, WrapSide side)
+        {
+            GL.BindTexture(TextureTarget.Texture2D, TextureHandle);
+            if (wrapMode == WrapModeType.Repeat)
+            {
+                if (side == WrapSide.S)
+                {
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (float)wrapMode);
+                } else
+                {
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (float)wrapMode);
+                }
+            }
+        }
+
         public void BindTexture()
         {
             GL.BindTexture(TextureTarget.Texture2D, TextureHandle);
@@ -149,5 +164,24 @@ namespace DevoidEngine.Engine.Core
     {
         Linear = 9729,
         Nearest = 9728
+    }
+
+    public enum WrapSide
+    {
+        T,
+        S
+    }
+
+    public enum WrapModeType
+    {
+        Clamp = 10496,
+        Repeat = 10497,
+        ClampToBorder = 33069,
+        ClampToBorderArb = 33069,
+        ClampToBorderNv = 33069,
+        ClampToBorderSgis = 33069,
+        ClampToEdge = 33071,
+        ClampToEdgeSgis = 33071,
+        MirroredRepeat = 33648
     }
 }

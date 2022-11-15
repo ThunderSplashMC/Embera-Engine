@@ -180,6 +180,7 @@ namespace DevoidEngine.Elemental.Panels
                                 {
                                     UI.BeginPropertyGrid("##" + i);
                                     UI.DrawComponentField(component.GetType().GetFields(), (object)component);
+                                    DrawMaterialFields();
                                     UI.EndPropertyGrid();
                                 };
                             }
@@ -195,6 +196,8 @@ namespace DevoidEngine.Elemental.Panels
                     }
                     ImGui.PopID();
                 }
+
+                DrawMaterialFields();
             }
 
             if (ImGui.BeginPopupContextWindow())
@@ -224,6 +227,73 @@ namespace DevoidEngine.Elemental.Panels
                 objects.Add((Component)Activator.CreateInstance(type));
             }
             return objects;
+        }
+
+        void DrawMaterialFields()
+        {
+            MeshHolder meshHolder = CurrentSelectedGameObject.GetComponent<MeshHolder>();
+            if (meshHolder == null) { return; }
+
+            for (int i = 0; i < meshHolder.Meshes.Count; i++)
+            {
+                if (ImGui.CollapsingHeader("Material " + i))
+                {
+                    ImGui.TreePush();
+                    UI.BeginPropertyGrid("MAT_MSH" + i);
+
+                    Vector3 albedo = meshHolder.Meshes[i].Material.GetVec3("material.albedo");
+                    float metallic = meshHolder.Meshes[i].Material.GetFloat("material.metallic");
+                    float roughness = meshHolder.Meshes[i].Material.GetFloat("material.roughness");
+                    Vector3 emission = meshHolder.Meshes[i].Material.GetVec3("material.emission");
+                    TextureAttribute[] TexAttributes = meshHolder.Meshes[i].Material.GetAllTexAttributes();
+
+                    UI.BeginProperty("Albedo");
+                    if (GetTextureAttribute(TexAttributes, "material.ALBEDO_TEX"))
+                    {
+                        UI.PropertyVector3(ref albedo);
+                    }
+                    UI.EndProperty();
+
+                    UI.BeginProperty("Metallic");
+                    UI.PropertyFloat(ref metallic, 0, 1, 0.02f);
+                    UI.EndProperty();
+
+                    UI.BeginProperty("Roughness");
+                    if (GetTextureAttribute(TexAttributes, "material.ROUGHNESS_TEX"))
+                    {
+                        UI.PropertyFloat(ref roughness, 0, 1, 0.02f);
+                    }
+                    UI.EndProperty();
+
+                    UI.BeginProperty("Emission");
+                    if (GetTextureAttribute(TexAttributes, "material.EMISSION_TEX"))
+                    {
+                       UI.PropertyVector3(ref emission);
+                    }
+                    UI.EndProperty();
+
+                    meshHolder.Meshes[i].Material.Set("material.albedo", albedo);
+                    meshHolder.Meshes[i].Material.Set("material.metallic", metallic);
+                    meshHolder.Meshes[i].Material.Set("material.roughness", roughness);
+                    meshHolder.Meshes[i].Material.Set("material.emission", emission);
+
+                    UI.EndPropertyGrid();
+                    ImGui.TreePop();
+                }
+            }
+        }
+
+        bool GetTextureAttribute(TextureAttribute[] textureAttributes, string name)
+        {
+            for (int x = 0; x < textureAttributes.Length; x++)
+            {
+                if (textureAttributes[x].AttrName == name)
+                {
+                    UI.PropertyTexture((IntPtr)(textureAttributes[x].Tex.GetTexture()));
+                    return false;
+                }
+            }
+            return true;
         }
 
     }

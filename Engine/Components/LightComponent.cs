@@ -17,8 +17,6 @@ namespace DevoidEngine.Engine.Components
         public float OuterCutSoftness;
         public float OuterCutOff;
 
-        public Core.Texture joe = new Core.Texture("Elemental/Assets/Joe.png");
-
         private int LightID;
 
         public LightComponent()
@@ -56,7 +54,10 @@ namespace DevoidEngine.Engine.Components
                 //direction = gameObject.transform.position + (gameObject.transform.rotation * GetFrontVector());
                 //direction.Normalize();
 
-                direction = (new Vector4(direction, 1) * Matrix4.LookAt(gameObject.transform.position, GetFrontVector(), GetUpVector())).Xyz;
+
+                Vector3.Transform(direction, Quaternion.FromEulerAngles(new Vector3(MathHelper.DegreesToRadians(gameObject.transform.rotation.X), MathHelper.DegreesToRadians(gameObject.transform.rotation.Y), MathHelper.DegreesToRadians(gameObject.transform.rotation.Z))));
+
+                direction = Vector3.Transform(-Vector3.UnitY, Quaternion.FromEulerAngles(gameObject.transform.rotation));
                 direction.Normalize();
 
                 prevRot = gameObject.transform.rotation;

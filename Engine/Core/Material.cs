@@ -115,6 +115,7 @@ namespace DevoidEngine.Engine.Core
                 shader.SetMatrix4(key, uniformMat4[key]);
             }
 
+
             for (int i = 0; i < textureAttributes.Count; i++)
             {
                 if (textureAttributes[i].AttrName == "W_SKYBOX")

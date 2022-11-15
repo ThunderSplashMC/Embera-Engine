@@ -25,6 +25,8 @@ namespace DevoidEngine.Engine.Rendering
 
         public Skybox skybox;
 
+        public int DrawCalls;
+
         public PolygonMode PolygonMode;
         public int OutputTexture; // 0 = Standalone Sandboxed Game / 1 = Editor Output
 
@@ -155,6 +157,8 @@ namespace DevoidEngine.Engine.Rendering
 
         static void Render_Start()
         {
+            RendererData.DrawCalls = 0;
+
             GL.ClearColor(0, 0, 0, 1);
 
             GL.PolygonMode(MaterialFace.FrontAndBack, RenderGraph.RenderMode == RenderMode.Normal ? PolygonMode.Fill : PolygonMode.Line);
@@ -178,6 +182,7 @@ namespace DevoidEngine.Engine.Rendering
 
             Reset_Viewport();
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            Console.WriteLine(RendererData.DrawCalls);
         }
 
         static void Reset_Viewport()
@@ -345,6 +350,7 @@ namespace DevoidEngine.Engine.Rendering
                 mesh.Material.UpdateUniforms();
 
                 mesh.Draw();
+                RendererData.DrawCalls += 1;
             }
 
             

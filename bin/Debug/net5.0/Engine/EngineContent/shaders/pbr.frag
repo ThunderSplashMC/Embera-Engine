@@ -121,7 +121,7 @@ vec3 IBL(Material material, vec3 eye, vec3 normal, vec3 specular)
     vec3 R = reflect(-eye, normalize(Normal));
 
 	vec4 cs = texture(W_SKYBOX, R);
-	vec3 result = pow(cs.xyz, vec3(GAMMA)) * RadianceIBLIntegration(NdotV, GetGloss(), vec3(material.metallic));
+	vec3 result = pow(cs.xyz, vec3(GAMMA)) * RadianceIBLIntegration(NdotV, GetRoughness(), vec3(material.metallic));
 
 	vec3 diffuseDominantDirection = normal;
 	float diffuseLowMip = 9.6;
@@ -166,8 +166,8 @@ vec3 CalcSpotLight(SpotLight light, vec3 N, vec3 F0, vec3 V) {
     float attenuation = smoothstep(light.outerCutOff, light.cutOff, theta);
 
     // cook-torrance brdf
-    float NDF = DistributionGGX(N, H, GetGloss());
-    float G = GeometrySmith(N, V, L, GetGloss());
+    float NDF = DistributionGGX(N, H, GetRoughness());
+    float G = GeometrySmith(N, V, L, GetRoughness());
     vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
 
     vec3 kS = F;

@@ -17,7 +17,7 @@ namespace DevoidEngine.Engine.Utilities
             Assimp.Scene scene;
             try
             {
-                scene = ImporterObject.ImportFile(path, PostProcessSteps.Triangulate | PostProcessSteps.GenerateNormals | PostProcessSteps.FlipWindingOrder | PostProcessSteps.CalculateTangentSpace);
+                scene = ImporterObject.ImportFile(path, PostProcessSteps.Triangulate | PostProcessSteps.GenerateNormals | PostProcessSteps.FlipWindingOrder | PostProcessSteps.CalculateTangentSpace | PostProcessSteps.FlipUVs | PostProcessSteps.GenerateUVCoords);
             }
             catch (Exception E)
             {
@@ -113,13 +113,22 @@ namespace DevoidEngine.Engine.Utilities
 
             if (meshMat.HasTextureDiffuse && File.Exists(Path.GetFullPath(Path.Join(path, meshMat.TextureDiffuse.FilePath))))
             {
-                material.SetTexture("material.ALBEDO_TEX", new Core.Texture(Path.GetFullPath(Path.Join(path, meshMat.TextureDiffuse.FilePath))));
+                Core.Texture AlbedoTex = new Core.Texture(Path.GetFullPath(Path.Join(path, meshMat.TextureDiffuse.FilePath)));
+
+                SetWrapping(meshMat.TextureDiffuse.WrapModeU, meshMat.TextureDiffuse.WrapModeV, AlbedoTex);
+
+                material.SetTexture("material.ALBEDO_TEX", AlbedoTex);
+                
                 material.Set("USE_TEX_0", 1);
             }
 
             if (meshMat.GetMaterialTexture(TextureType.Shininess, 0, out RoughnessMap) && File.Exists(Path.GetFullPath(Path.Join(path, RoughnessMap.FilePath))))
             {
-                material.SetTexture("material.ROUGHNESS_TEX", new Core.Texture(Path.GetFullPath(Path.Join(path, RoughnessMap.FilePath))), 1);
+                Core.Texture RoughnessTex = new Core.Texture(Path.GetFullPath(Path.Join(path, RoughnessMap.FilePath)));
+
+                SetWrapping(RoughnessMap.WrapModeU, RoughnessMap.WrapModeV, RoughnessTex);
+
+                material.SetTexture("material.ROUGHNESS_TEX", RoughnessTex, 1);
                 material.Set("USE_TEX_1", 1);
             }
 
@@ -132,12 +141,27 @@ namespace DevoidEngine.Engine.Utilities
             if (meshMat.HasTextureNormal && File.Exists(Path.GetFullPath(Path.Join(path, meshMat.TextureNormal.FilePath))))
             {
                 Core.Texture normalTexture = new Core.Texture(Path.GetFullPath(Path.Join(path, meshMat.TextureNormal.FilePath)));
+
+                SetWrapping(meshMat.TextureNormal.WrapModeU, meshMat.TextureNormal.WrapModeV, normalTexture);
+
                 material.SetTexture("material.NORMAL_TEX", normalTexture, 3);
                 material.Set("USE_TEX_3", 1);
             }
 
             mesh1.SetMaterial(material);
             return mesh1;
+        }
+
+        static void SetWrapping(TextureWrapMode modeU, TextureWrapMode modeV, Core.Texture texture)
+        {
+            if (modeU == TextureWrapMode.Wrap)
+            {
+                texture.ChangeWrapMode(Core.WrapModeType.Repeat, Core.WrapSide.S);
+            }
+            if (modeV == TextureWrapMode.Wrap)
+            {
+                texture.ChangeWrapMode(Core.WrapModeType.Repeat, Core.WrapSide.T);
+            }
         }
 
         public static Matrix4 ToOpenTKMatrix(Matrix4x4 matrix)

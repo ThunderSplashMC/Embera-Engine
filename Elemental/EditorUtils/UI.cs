@@ -109,11 +109,11 @@ namespace DevoidEngine.Elemental.EditorUtils
             value = new Color4(color4.X, color4.Y, color4.Z, color4.W);
         }
 
-        public static void PropertyFloat(ref float value)
+        public static void PropertyFloat(ref float value, float min = float.MinValue, float max = float.MaxValue, float speed = 0.2f)
         {
             NextField();
             ImGui.SetNextItemWidth(-1);
-            ImGui.DragFloat("##" + propertyCount + propertyLabel, ref value);
+            ImGui.DragFloat("##" + propertyCount + propertyLabel, ref value, speed, min, max);
         }
 
         public static void PropertyEnum(ref int currentItem, string[] items, int item_count)

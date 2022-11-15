@@ -19,9 +19,9 @@ out vec3 WorldPos;
 
 void main()
 {
-    Normal = (aNormal * mat3(transpose(inverse(W_MODEL_MATRIX))));
-    Tangent = (aTangent * mat3(transpose(inverse(W_MODEL_MATRIX))));
-    BiTangent = (aBiTangent * mat3(transpose(inverse(W_MODEL_MATRIX))));
+    Normal = normalize((aNormal * mat3(transpose(inverse(W_MODEL_MATRIX)))));
+    Tangent = normalize((aTangent * mat3(transpose(inverse(W_MODEL_MATRIX)))));
+    BiTangent = normalize((aBiTangent * mat3(transpose(inverse(W_MODEL_MATRIX)))));
 
     WorldPos = vec3(vec4(aPosition, 1.0) * W_MODEL_MATRIX);
     texCoords = aTexCoord;
