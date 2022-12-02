@@ -11,7 +11,7 @@ namespace DevoidEngine.Engine.Rendering
 
         int GBufferFBO, RenderBufferHandle;
 
-        int gPosition, gNormal, gSpecular;
+        int gPosition, gNormal, gSpecular, gEditor;
 
         Shader GBufferShader;
 
@@ -41,7 +41,14 @@ namespace DevoidEngine.Engine.Rendering
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (float)TextureMagFilter.Nearest);
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment2, TextureTarget.Texture2D, gSpecular, 0);
 
-            GL.DrawBuffers(3, new DrawBuffersEnum[] { DrawBuffersEnum.ColorAttachment0,DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2});
+            gEditor = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, gEditor);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.R32i, width, height, 0, PixelFormat.RedInteger, PixelType.UnsignedInt, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (float)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (float)TextureMagFilter.Nearest);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment2, TextureTarget.Texture2D, gEditor, 0);
+
+            GL.DrawBuffers(4, new DrawBuffersEnum[] { DrawBuffersEnum.ColorAttachment0,DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3});
 
             RenderBufferHandle = GL.GenRenderbuffer();
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, RenderBufferHandle);
@@ -70,9 +77,9 @@ namespace DevoidEngine.Engine.Rendering
         public void UnBind()
         {
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-        }
+        } 
 
-        public void SetupGBufferShader(Matrix4 projection, Matrix4 view, Matrix4 model)
+        public void SetupGBufferShader(Matrix4 projection, Matrix4 view, Matrix4 model, int EntityID)
         {
 
             GBufferShader.Use();
@@ -80,6 +87,8 @@ namespace DevoidEngine.Engine.Rendering
             GBufferShader.SetMatrix4("W_PROJECTION_MATRIX", projection);
             GBufferShader.SetMatrix4("W_VIEW_MATRIX", view);
             GBufferShader.SetMatrix4("W_MODEL_MATRIX", model);
+
+            GBufferShader.SetInt("EntityIntID", EntityID);
         }
 
         public int GetColorAttachment(int index)
@@ -89,6 +98,7 @@ namespace DevoidEngine.Engine.Rendering
                 case 0: return gPosition;
                 case 1: return gNormal;
                 case 2: return gSpecular;
+                case 3: return gEditor;
                 default: return 0;
             }
         }

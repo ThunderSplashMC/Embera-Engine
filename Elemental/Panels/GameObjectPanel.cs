@@ -59,26 +59,38 @@ namespace DevoidEngine.Elemental.Panels
             }
         }
 
+        bool tableBegun;
+
+        public void BeginDrawObject()
+        {
+            tableBegun = ImGui.BeginTable("##SCENE_HIERARCHY_LIST", 1);
+            ImGui.TableNextColumn();
+        }
+
         public void DrawObjectButton(GameObject gameObject, int id)
         {
-            if (gameObject == CurrentSelectedGameObject)
+            if (!tableBegun) { return; }
+            if (id > 0)
             {
-                ImGui.PushStyleColor(ImGuiCol.Button, new System.Numerics.Vector4(0.4f, 0.4f, 0.4f, 1));
-                ImGui.PushID("##object" + id);
-                if (DevoidGUI.Button(FontAwesome.ForkAwesome.Cube + " " + gameObject.name, new Vector2(ImGui.GetWindowWidth(), 25f)))
-                {
-                    CurrentSelectedGameObject = gameObject;
-                }
-                ImGui.PopID();
-                ImGui.PopStyleColor();
-            } else
+                ImGui.TableNextRow();
+            }
+            ImGui.TableSetColumnIndex(0);
+            bool selected = gameObject == CurrentSelectedGameObject;
+            if (selected) { ImGui.PushStyleColor(ImGuiCol.Button, new System.Numerics.Vector4(0.4f, 0.4f, 0.4f, 1)); }
+            ImGui.PushID("##object" + id);
+            if (DevoidGUI.Button(FontAwesome.ForkAwesome.DotCircleO + " " + gameObject.name, new Vector2(ImGui.GetWindowWidth(), 20f)))
             {
-                ImGui.PushID("##object" + id);
-                if (DevoidGUI.Button(FontAwesome.ForkAwesome.Cube + " " + gameObject.name, new Vector2(ImGui.GetWindowWidth(), 25f)))
-                {
-                    CurrentSelectedGameObject = gameObject;
-                }
-                ImGui.PopID();
+                CurrentSelectedGameObject = gameObject;
+            }
+            ImGui.PopID();
+            if (selected) { ImGui.PopStyleColor(); }
+        }
+
+        public void EndDrawObject()
+        {
+            if (tableBegun)
+            {
+                ImGui.EndTable();
             }
         }
 
@@ -98,9 +110,13 @@ namespace DevoidEngine.Elemental.Panels
             SceneRegistry sceneRegistry = Editor.EditorScene.GetSceneRegistry();
             GameObject[] gameObjects = sceneRegistry.GetAllGameObjects();
 
-            for (int i = 0; i < gameObjects.Length; i++)
             {
-                DrawObjectButton(gameObjects[i], i);
+                BeginDrawObject();
+                for (int i = 0; i < gameObjects.Length; i++)
+                {
+                    DrawObjectButton(gameObjects[i], i);
+                }
+                EndDrawObject();
             }
 
             if (ImGui.BeginPopupContextWindow())

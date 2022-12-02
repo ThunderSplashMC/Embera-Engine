@@ -74,6 +74,7 @@ namespace DevoidEngine.Engine.Core
         }
         public void OnRender()
         {
+            sceneRegistry.RenderCallAllGameObjects();
             Renderer3D.BeginScene(ref sceneRegistry.GetLights());
         }
 

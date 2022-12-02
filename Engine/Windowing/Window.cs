@@ -35,12 +35,11 @@ namespace DevoidEngine.Engine.Windowing
                 NumberOfSamples = windowSpec.samples,
                 Size = new Vector2i(windowSpec.width, windowSpec.height),
                 Title = windowSpec.title,
-                StartVisible = false
+                StartVisible = false,
             })
         {
             WindowSpec = windowSpec;
             this.VSync = windowSpec.Vsync ? VSyncMode.Adaptive : VSyncMode.Off;
-
 
         }
 
@@ -58,7 +57,6 @@ namespace DevoidEngine.Engine.Windowing
                 iconImg.LoadImageAlpha(WindowSpec.iconPath);
                 Icon = new WindowIcon(new OpenTK.Windowing.Common.Input.Image(iconImg.Width, iconImg.Height, iconImg.Pixels));
             }
-
 
             this.IsVisible = true;
             base.OnLoad();

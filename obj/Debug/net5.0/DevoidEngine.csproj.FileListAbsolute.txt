@@ -482,3 +482,7 @@ D:\Programming\Devoid\DevoidEngine\bin\Debug\net5.0\Engine\EngineContent\models\
 D:\Programming\Devoid\DevoidEngine\bin\Debug\net5.0\Engine\EngineContent\models\Vase_diffuse.png
 D:\Programming\Devoid\DevoidEngine\bin\Debug\net5.0\Engine\EngineContent\models\Vase_normal.png
 D:\Programming\Devoid\DevoidEngine\bin\Debug\net5.0\Engine\EngineContent\models\Vase_roughness.png
+D:\Programming\Devoid\DevoidEngine\bin\Debug\net5.0\Elemental\Assets\CameraComponentTexture.png
+D:\Programming\Devoid\DevoidEngine\bin\Debug\net5.0\Engine\EngineContent\models\sphere.fbx
+D:\Programming\Devoid\DevoidEngine\bin\Debug\net5.0\Engine\EngineContent\models\emicube.fbx
+D:\Programming\Devoid\DevoidEngine\bin\Debug\net5.0\Engine\EngineContent\models\modern_arm_chair_01_1k.fbx

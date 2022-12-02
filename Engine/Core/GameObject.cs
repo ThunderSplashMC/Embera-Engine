@@ -17,6 +17,8 @@ namespace DevoidEngine.Engine.Core
         public List<GameObject> children;
         public List<Component> components;
 
+        public int ID;
+
         public GameObject()
         {
             children = new List<GameObject>();

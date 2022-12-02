@@ -9,6 +9,9 @@ using DevoidEngine.Engine.Core;
 using DevoidEngine.Elemental.EditorUtils;
 using DevoidEngine.Engine.Components;
 
+// REMOVE!!!
+using OpenTK.Graphics.OpenGL;
+
 namespace DevoidEngine.Elemental.Panels
 {
     class ViewportPanel : Panel
@@ -20,6 +23,7 @@ namespace DevoidEngine.Elemental.Panels
 
         private Texture SampleTex;
         private Texture LightComponentTex;
+        private Texture CameraComponentTex;
 
 
         public override void OnInit()
@@ -34,7 +38,9 @@ namespace DevoidEngine.Elemental.Panels
             SampleTex = new Texture("Elemental/Assets/folder-icn.png");
             SampleTex.ChangeFilterType(MagMinFilterTypes.Nearest);
             LightComponentTex = new Texture("Elemental/Assets/LightComponentTexture.png");
-            LightComponentTex.ChangeFilterType(MagMinFilterTypes.Nearest);
+            LightComponentTex.ChangeFilterType(MagMinFilterTypes.Linear);
+            CameraComponentTex = new Texture("Elemental/Assets/CameraComponentTexture.png");
+            CameraComponentTex.ChangeFilterType(MagMinFilterTypes.Linear);
 
             //{
             //    GameObject Omoli = Editor.EditorScene.NewGameObject("Omoli");
@@ -59,7 +65,10 @@ namespace DevoidEngine.Elemental.Panels
         public override void OnGUIRender()
         {
 
-            int GuizmoBufferTexture = DrawGuizmos();
+            if (Editor.EditorScene.GetSceneState() != Scene.SceneState.Play)
+            {
+                DrawGuizmos();
+            }
 
 
             // Play Puase Menu
@@ -67,7 +76,7 @@ namespace DevoidEngine.Elemental.Panels
             //ImGui.PushStyleColor(ImGuiCol.WindowBg, new System.Numerics.Vector4(0, 0, 0, 1));
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, System.Numerics.Vector2.Zero);
             ImGui.Begin($"{FontAwesome.ForkAwesome.FirstOrder} Game View", ImGuiWindowFlags.NoBackground);
-            DevoidGUI.Image((IntPtr)GuizmoBufferTexture/*ViewportTexture*/, new Vector2(ImGui.GetContentRegionMax().X, ImGui.GetContentRegionMax().Y - 32));
+            DevoidGUI.Image((IntPtr)ViewportTexture, new Vector2(ImGui.GetContentRegionMax().X, ImGui.GetContentRegionMax().Y - 32));
             HandleDragDrop();
 
 
@@ -95,6 +104,11 @@ namespace DevoidEngine.Elemental.Panels
 
             }
 
+            if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
+            {
+
+            }
+
             ImGui.End();
 
             ImGui.PopStyleVar();
@@ -108,6 +122,7 @@ namespace DevoidEngine.Elemental.Panels
                 ImGui.Text("Draw Time: " + (Renderer3D.PerformanceData.DRAW_BUFFER_END - Renderer3D.PerformanceData.DRAW_BUFFER_START) + " ms");
                 ImGui.Text("PostProcess Time: " + (Renderer3D.PerformanceData.POSTPROCESS_END - Renderer3D.PerformanceData.POSTPROCESS_START) + " ms");
                 ImGui.Text("Mesh Count: " + Mesh.TotalMeshCount);
+                ImGui.Text("DrawCalls: " + Renderer3D.GetRendererData().DrawCalls);
                 ImGui.TreePop();
             }
 
@@ -194,7 +209,7 @@ namespace DevoidEngine.Elemental.Panels
             ImGui.PopStyleColor(1);
         }
 
-        int DrawGuizmos()
+        void DrawGuizmos()
         {
             Guizmo3D.Begin(editorCamera);
 
@@ -203,13 +218,21 @@ namespace DevoidEngine.Elemental.Panels
             GameObject[] gameObjects = Editor.EditorScene.GetSceneRegistry().GetAllGameObjects();
             for (int i = 0; i < gameObjects.Length; i++)
             {
-                if (gameObjects[i].GetComponent<LightComponent>() != null)
+                Component[] components = gameObjects[i].GetAllComponents();
+                for (int x = 0; x < components.Length; x++)
                 {
-                    Guizmo3D.DrawGuizmo(LightComponentTex, gameObjects[i].transform.position);
+                    if (components[x].GetType() == typeof(LightComponent))
+                    {
+                        Guizmo3D.DrawGuizmo(LightComponentTex, gameObjects[i].transform.position);
+                    }
+                    if (components[x].GetType() == typeof(CameraComponent))
+                    {
+                        Guizmo3D.DrawGuizmo(CameraComponentTex, gameObjects[i].transform.position);
+                    }
                 }
             }
 
-            return Guizmo3D.End();
+            Guizmo3D.End();
         }
 
         void HandleDragDrop()

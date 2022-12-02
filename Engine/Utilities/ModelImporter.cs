@@ -9,7 +9,8 @@ namespace DevoidEngine.Engine.Utilities
 {
     class ModelImporter
     {
-        
+
+        static Dictionary<string, Core.Texture> Textures = new Dictionary<string, Core.Texture>();
 
         public static Mesh[] LoadModel(string path)
         {
@@ -42,7 +43,7 @@ namespace DevoidEngine.Engine.Utilities
                     ProcessNode(node.Children[i], scene);
                 }
             }
-            
+
             ProcessNode(scene.RootNode, scene);
             ImporterObject.Dispose();
 
@@ -50,6 +51,8 @@ namespace DevoidEngine.Engine.Utilities
             {
                 ModelTotalMeshes[i].SetPath(path);
             }
+
+            Console.WriteLine(ModelTotalMeshes.Count);
 
             return ModelTotalMeshes.ToArray();
         }
@@ -98,7 +101,7 @@ namespace DevoidEngine.Engine.Utilities
             Assimp.Material meshMat = scene.Materials[mesh.MaterialIndex];
 
             Vector3 Albedo = new Vector3(meshMat.ColorDiffuse.R, meshMat.ColorDiffuse.G, meshMat.ColorDiffuse.B);
-            
+
             Engine.Core.Material material = new Engine.Core.Material(new Core.Shader("Engine/EngineContent/shaders/pbr"));
             material.Set("material.albedo", Albedo);
             material.Set("material.metallic", meshMat.Shininess * 0.01f);
@@ -111,36 +114,56 @@ namespace DevoidEngine.Engine.Utilities
             TextureSlot EmissiveMap;
             TextureSlot tex;
 
-            if (meshMat.HasTextureDiffuse && File.Exists(Path.GetFullPath(Path.Join(path, meshMat.TextureDiffuse.FilePath))))
-            {
-                Core.Texture AlbedoTex = new Core.Texture(Path.GetFullPath(Path.Join(path, meshMat.TextureDiffuse.FilePath)));
+            Console.WriteLine("-------------");
+            Console.WriteLine(path);
+            Console.WriteLine("----------");
 
-                SetWrapping(meshMat.TextureDiffuse.WrapModeU, meshMat.TextureDiffuse.WrapModeV, AlbedoTex);
+            if (meshMat.HasTextureDiffuse && File.Exists(CorrectFilePath(meshMat.TextureDiffuse.FilePath, path)))
+            {
+                Core.Texture AlbedoTex = CheckTextureExists(CorrectFilePath(meshMat.TextureDiffuse.FilePath, path));
+                Console.WriteLine("Loaded Albedo");
+                if (AlbedoTex == null)
+                {
+                    AlbedoTex = new Core.Texture(CorrectFilePath(meshMat.TextureDiffuse.FilePath, path));
+                    AddToTextureDict(CorrectFilePath(meshMat.TextureDiffuse.FilePath, path), AlbedoTex);
+                    SetWrapping(meshMat.TextureDiffuse.WrapModeU, meshMat.TextureDiffuse.WrapModeV, AlbedoTex);
+                }
+
 
                 material.SetTexture("material.ALBEDO_TEX", AlbedoTex);
-                
                 material.Set("USE_TEX_0", 1);
             }
 
-            if (meshMat.GetMaterialTexture(TextureType.Shininess, 0, out RoughnessMap) && File.Exists(Path.GetFullPath(Path.Join(path, RoughnessMap.FilePath))))
+            if (meshMat.GetMaterialTexture(TextureType.Shininess, 0, out RoughnessMap) && File.Exists(CorrectFilePath(RoughnessMap.FilePath, path)))
             {
-                Core.Texture RoughnessTex = new Core.Texture(Path.GetFullPath(Path.Join(path, RoughnessMap.FilePath)));
-
-                SetWrapping(RoughnessMap.WrapModeU, RoughnessMap.WrapModeV, RoughnessTex);
+                Core.Texture RoughnessTex = CheckTextureExists(CorrectFilePath(RoughnessMap.FilePath, path));
+                if (RoughnessTex == null)
+                {
+                    RoughnessTex = new Core.Texture(CorrectFilePath(RoughnessMap.FilePath, path));
+                    AddToTextureDict(CorrectFilePath(RoughnessMap.FilePath, path), RoughnessTex);
+                    SetWrapping(RoughnessMap.WrapModeU, RoughnessMap.WrapModeV, RoughnessTex);
+                }
 
                 material.SetTexture("material.ROUGHNESS_TEX", RoughnessTex, 1);
                 material.Set("USE_TEX_1", 1);
             }
 
-            if (meshMat.GetMaterialTexture(TextureType.Emissive, 0, out EmissiveMap) && File.Exists(Path.GetFullPath(Path.Join(path, EmissiveMap.FilePath))))
+            if (meshMat.GetMaterialTexture(TextureType.Emissive, 0, out EmissiveMap) && File.Exists(CorrectFilePath(EmissiveMap.FilePath, path)))
             {
-                material.SetTexture("material.EMISSION_TEX", new Core.Texture(Path.GetFullPath(Path.Join(path, EmissiveMap.FilePath))), 2);
+                Core.Texture EmissionTex = CheckTextureExists(CorrectFilePath(EmissiveMap.FilePath, path));
+                if (EmissionTex == null)
+                {
+                    EmissionTex = new Core.Texture(Path.GetFullPath(Path.Join(path, EmissiveMap.FilePath)));
+                    AddToTextureDict(Path.GetFullPath(Path.Join(path, EmissiveMap.FilePath)), EmissionTex);
+                    SetWrapping(EmissiveMap.WrapModeU, EmissiveMap.WrapModeV, EmissionTex);
+                }
+                material.SetTexture("material.EMISSION_TEX", EmissionTex, 2);
                 material.Set("USE_TEX_2", 1);
             }
 
-            if (meshMat.HasTextureNormal && File.Exists(Path.GetFullPath(Path.Join(path, meshMat.TextureNormal.FilePath))))
+            if (meshMat.HasTextureNormal && File.Exists(CorrectFilePath(meshMat.TextureNormal.FilePath, path)))
             {
-                Core.Texture normalTexture = new Core.Texture(Path.GetFullPath(Path.Join(path, meshMat.TextureNormal.FilePath)));
+                Core.Texture normalTexture = new Core.Texture(CorrectFilePath(meshMat.TextureNormal.FilePath, path));
 
                 SetWrapping(meshMat.TextureNormal.WrapModeU, meshMat.TextureNormal.WrapModeV, normalTexture);
 
@@ -150,6 +173,21 @@ namespace DevoidEngine.Engine.Utilities
 
             mesh1.SetMaterial(material);
             return mesh1;
+        }
+
+        static Core.Texture CheckTextureExists(string path)
+        {
+            Core.Texture value;
+            if (Textures.ContainsKey(path))
+            {
+                return Textures[path];
+            }
+            return null;
+        }
+
+        static void AddToTextureDict(string path, Core.Texture texture)
+        {
+            Textures.Add(path, texture);
         }
 
         static void SetWrapping(TextureWrapMode modeU, TextureWrapMode modeV, Core.Texture texture)
@@ -167,6 +205,49 @@ namespace DevoidEngine.Engine.Utilities
         public static Matrix4 ToOpenTKMatrix(Matrix4x4 matrix)
         {
             return new Matrix4(matrix.A1, matrix.A2, matrix.A3, matrix.A4, matrix.B1, matrix.B2, matrix.B3, matrix.B4, matrix.C1, matrix.C2, matrix.C3, matrix.C4, matrix.D1, matrix.D2, matrix.D3, matrix.D4);
+        }
+
+        static string CorrectFilePath(string path, string basePath = null)
+        {
+            Console.WriteLine(path);
+            Console.WriteLine(GetAbsolutePath(basePath, path));
+            if (IsFullPath(path))
+            {
+                return path;
+            }
+            return GetAbsolutePath(basePath, path);
+        }
+
+        public static bool IsFullPath(string path)
+        {
+            return !String.IsNullOrWhiteSpace(path)
+                && path.IndexOfAny(System.IO.Path.GetInvalidPathChars()) == -1
+                && Path.IsPathRooted(path)
+                && !Path.GetPathRoot(path).Equals(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal);
+        }
+
+        public static String GetAbsolutePath(String basePath, String path)
+        {
+            if (path == null)
+                return null;
+            if (basePath == null)
+                basePath = Path.GetFullPath("."); // quick way of getting current working directory
+            else
+                basePath = GetAbsolutePath(null, basePath); // to be REALLY sure ;)
+            String finalPath;
+            // specific for windows paths starting on \ - they need the drive added to them.
+            // I constructed this piece like this for possible Mono support.
+            if (!Path.IsPathRooted(path) || "\\".Equals(Path.GetPathRoot(path)))
+            {
+                if (path.StartsWith(Path.DirectorySeparatorChar.ToString()))
+                    finalPath = Path.Combine(Path.GetPathRoot(basePath), path.TrimStart(Path.DirectorySeparatorChar));
+                else
+                    finalPath = Path.Combine(basePath, path);
+            }
+            else
+                finalPath = path;
+            // resolves any internal "..\" to get the true full path.
+            return Path.GetFullPath(finalPath);
         }
 
     }

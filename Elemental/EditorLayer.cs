@@ -24,7 +24,6 @@ namespace DevoidEngine.Elemental
         {
             EditorScene = new Scene();
 
-
             SandBoxSetup();
 
             // DragDrop Functionality
@@ -53,11 +52,25 @@ namespace DevoidEngine.Elemental
 
         public void SandBoxSetup()
         {
-            //GameObject obj = EditorScene.NewGameObject("OBJ");
-            //obj.AddComponent<MeshHolder>().AddMeshes(ModelImporter.LoadModel("Engine/EngineContent/models/demo.fbx"));
-            //obj.AddComponent<MeshRenderer>();
+            //PostEffectSettings.BloomSettings bloomSettings =  Renderer3D.GetBloomSettings();
+            //bloomSettings.enabled = true;
+            //Mesh[] meshes = ModelImporter.LoadModel("Engine/EngineContent/models/sphere.fbx");
+            //Renderer3D.SetBloomSettings(bloomSettings);
 
-            //obj.transform.rotation = new Vector3(-90, 0, 0);
+            //for (int i = 0; i < 25; i++)
+            //{
+            //    GameObject Sobject = EditorScene.NewGameObject("SINOBJ" + i);
+            //    Sobject.transform.position = new Vector3(i * 4f, (float)Math.Sin(i) * 4.5f, 0);
+            //    Sobject.transform.rotation.X = 90f;
+            //    MeshHolder mh = Sobject.AddComponent<MeshHolder>();
+
+
+
+            //    mh.AddMeshes(meshes);
+
+            //    MeshRenderer meshRenderer = Sobject.AddComponent<MeshRenderer>();
+
+            //}
         }
 
         public override void OnDetach()

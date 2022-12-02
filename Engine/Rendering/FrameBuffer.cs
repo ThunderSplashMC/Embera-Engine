@@ -16,7 +16,8 @@ namespace DevoidEngine.Engine.Rendering
         RGBA32F,
         R11G11B10,
         RG16F,
-        R32I
+        R32I,
+
     }
 
     public struct ColorAttachment

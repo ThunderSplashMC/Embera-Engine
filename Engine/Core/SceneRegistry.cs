@@ -15,6 +15,7 @@ namespace DevoidEngine.Engine.Core
 
         public void AddGameObject(GameObject gameObject)
         {
+            gameObject.ID = GameObjects.Count + new Random().Next(10000);
             GameObjects.Add(gameObject);
         }
 
@@ -124,6 +125,22 @@ namespace DevoidEngine.Engine.Core
             for (int i = 0; i < EditorRunnableComponents.Count; i++)
             {
                 EditorRunnableComponents[i].OnUpdate(deltaTime);
+            }
+        }
+
+        public void RenderCallAllComponentsEditor()
+        {
+            for (int i = 0; i < EditorRunnableComponents.Count; i++)
+            {
+                EditorRunnableComponents[i].OnRender();
+            }
+        }
+
+        public void RenderCallAllGameObjects()
+        {
+            for (int i = 0; i < GameObjects.Count; i++)
+            {
+                GameObjects[i].OnRender();
             }
         }
 

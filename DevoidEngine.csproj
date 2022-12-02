@@ -17,13 +17,13 @@
 
   <ItemGroup>
     <Compile Remove="Engine\EngineContent\models\floortex\**" />
-    <Compile Remove="Engine\EngineContent\models\textures\**" />
+    <Compile Remove="Engine\EngineContent\models\source\**" />
     <Compile Remove="Engine\Imgui\deps\**" />
     <EmbeddedResource Remove="Engine\EngineContent\models\floortex\**" />
-    <EmbeddedResource Remove="Engine\EngineContent\models\textures\**" />
+    <EmbeddedResource Remove="Engine\EngineContent\models\source\**" />
     <EmbeddedResource Remove="Engine\Imgui\deps\**" />
     <None Remove="Engine\EngineContent\models\floortex\**" />
-    <None Remove="Engine\EngineContent\models\textures\**" />
+    <None Remove="Engine\EngineContent\models\source\**" />
     <None Remove="Engine\Imgui\deps\**" />
   </ItemGroup>
 
@@ -40,6 +40,7 @@
   <ItemGroup>
     <None Remove="DevoidLauncher\Assets\ProjectNotFound.png" />
     <None Remove="Elemental\Assets\amogus.png" />
+    <None Remove="Elemental\Assets\CameraComponentTexture.png" />
     <None Remove="Elemental\Assets\fbx-file-icn.png" />
     <None Remove="Elemental\Assets\file-icn.png" />
     <None Remove="Elemental\Assets\folder-icn.png" />
@@ -125,6 +126,7 @@
     <None Remove="Engine\EngineContent\models\Metallic_metallic.png" />
     <None Remove="Engine\EngineContent\models\model.fbx" />
     <None Remove="Engine\EngineContent\models\modeloconbase1.fbx" />
+    <None Remove="Engine\EngineContent\models\modern_arm_chair_01_1k.fbx" />
     <None Remove="Engine\EngineContent\models\monkeh.fbx" />
     <None Remove="Engine\EngineContent\models\mul.fbx" />
     <None Remove="Engine\EngineContent\models\new.fbx" />
@@ -185,6 +187,31 @@
     <None Remove="Engine\EngineContent\models\Sponza_Thorn_roughness.png" />
     <None Remove="Engine\EngineContent\models\steve.fbx" />
     <None Remove="Engine\EngineContent\models\SwordRed.fbx" />
+    <None Remove="Engine\EngineContent\models\textures\Bottom_albedo.png" />
+    <None Remove="Engine\EngineContent\models\textures\Bottom_ao.png" />
+    <None Remove="Engine\EngineContent\models\textures\Bottom_metallic.png" />
+    <None Remove="Engine\EngineContent\models\textures\Bottom_normal.png" />
+    <None Remove="Engine\EngineContent\models\textures\Bottom_roughness.png" />
+    <None Remove="Engine\EngineContent\models\textures\DoorAO.png" />
+    <None Remove="Engine\EngineContent\models\textures\DoorDIFFUSE.png" />
+    <None Remove="Engine\EngineContent\models\textures\DoorGLOSS.png" />
+    <None Remove="Engine\EngineContent\models\textures\DoorMetallic.png" />
+    <None Remove="Engine\EngineContent\models\textures\DoorNORMAL.png" />
+    <None Remove="Engine\EngineContent\models\textures\DoorSPEC.png" />
+    <None Remove="Engine\EngineContent\models\textures\Frame_albedo.png" />
+    <None Remove="Engine\EngineContent\models\textures\Frame_ao.png" />
+    <None Remove="Engine\EngineContent\models\textures\Frame_metallic.png" />
+    <None Remove="Engine\EngineContent\models\textures\Frame_normal.png" />
+    <None Remove="Engine\EngineContent\models\textures\Frame_roughness.png" />
+    <None Remove="Engine\EngineContent\models\textures\Frame_specular.png" />
+    <None Remove="Engine\EngineContent\models\textures\modern_arm_chair_01_legs_diff_1k.png" />
+    <None Remove="Engine\EngineContent\models\textures\modern_arm_chair_01_legs_metal_1k.png" />
+    <None Remove="Engine\EngineContent\models\textures\modern_arm_chair_01_legs_nor_gl_1k.png" />
+    <None Remove="Engine\EngineContent\models\textures\modern_arm_chair_01_legs_rough_1k.png" />
+    <None Remove="Engine\EngineContent\models\textures\modern_arm_chair_01_pillow_diff_1k.png" />
+    <None Remove="Engine\EngineContent\models\textures\modern_arm_chair_01_pillow_metal_1k.png" />
+    <None Remove="Engine\EngineContent\models\textures\modern_arm_chair_01_pillow_nor_gl_1k.png" />
+    <None Remove="Engine\EngineContent\models\textures\modern_arm_chair_01_pillow_rough_1k.png" />
     <None Remove="Engine\EngineContent\models\Theater.fbx" />
     <None Remove="Engine\EngineContent\models\Thone.fbx" />
     <None Remove="Engine\EngineContent\models\untitled.fbx" />
@@ -230,6 +257,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Elemental\Assets\CameraComponentTexture.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Elemental\Assets\LightComponentTexture.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -354,6 +384,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Engine\EngineContent\models\Metallic_metallic.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\models\modern_arm_chair_01_1k.fbx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\models\sphere.fbx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Engine\EngineContent\models\Sponza.fbx">
@@ -509,6 +545,14 @@
     <Content Include="Engine\EngineContent\models\Sponza_Thorn_roughness.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Engine\EngineContent\models\textures\modern_arm_chair_01_legs_diff_1k.png" />
+    <Content Include="Engine\EngineContent\models\textures\modern_arm_chair_01_legs_metal_1k.png" />
+    <Content Include="Engine\EngineContent\models\textures\modern_arm_chair_01_legs_nor_gl_1k.png" />
+    <Content Include="Engine\EngineContent\models\textures\modern_arm_chair_01_legs_rough_1k.png" />
+    <Content Include="Engine\EngineContent\models\textures\modern_arm_chair_01_pillow_diff_1k.png" />
+    <Content Include="Engine\EngineContent\models\textures\modern_arm_chair_01_pillow_metal_1k.png" />
+    <Content Include="Engine\EngineContent\models\textures\modern_arm_chair_01_pillow_nor_gl_1k.png" />
+    <Content Include="Engine\EngineContent\models\textures\modern_arm_chair_01_pillow_rough_1k.png" />
     <Content Include="Engine\EngineContent\models\VaseHanging_diffuse.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -703,6 +747,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Engine\Imgui\shaders\GUI.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Engine\EngineContent\models\emicube.fbx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

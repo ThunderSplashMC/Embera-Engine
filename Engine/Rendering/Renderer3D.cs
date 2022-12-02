@@ -79,6 +79,10 @@ namespace DevoidEngine.Engine.Rendering
             public Vector3 rotation;
             public Vector3 scale;
             public float distanceFromCamera;
+
+            // Editor
+
+            public int EntityID;
         }
 
         static List<DrawItem> DrawList = new List<DrawItem>();
@@ -89,7 +93,7 @@ namespace DevoidEngine.Engine.Rendering
         static Shader hdr_Shader;
         static Mesh Quad;
 
-        public static void Submit(Mesh mesh, Vector3 pos, Vector3 rot, Vector3 scale)
+        public static void Submit(Mesh mesh, Vector3 pos, Vector3 rot, Vector3 scale, int ID = 0)
         {
             DrawItem DrawItem = new DrawItem();
 
@@ -98,6 +102,7 @@ namespace DevoidEngine.Engine.Rendering
             DrawItem.rotation = rot;
             DrawItem.scale = scale;
             DrawItem.distanceFromCamera = Vector3.Distance(RenderGraph.Camera.position, pos);
+            DrawItem.EntityID = ID;
 
             DrawList.Add(DrawItem);
         }
@@ -182,7 +187,6 @@ namespace DevoidEngine.Engine.Rendering
 
             Reset_Viewport();
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            Console.WriteLine(RendererData.DrawCalls);
         }
 
         static void Reset_Viewport()
@@ -220,11 +224,13 @@ namespace DevoidEngine.Engine.Rendering
             DoPostProcess();
             CompositePass();
 
+            // Finish Rendering
+            Render_End();
+
             // Clearing the draw list for next frame
             ClearDrawList();
 
-            // Finish Rendering
-            Render_End();
+            PERF_END("DRAW_BUFFER_END");
 
             // Check for errors
             CheckError();
@@ -250,8 +256,8 @@ namespace DevoidEngine.Engine.Rendering
 
             // Render Meshes into GBuffer
 
-            if (postEffectSettings.gBufferSettings.enabled)
-                DrawItemsGBuffer(DrawList);
+            //if (postEffectSettings.gBufferSettings.enabled)
+            //DrawItemsGBuffer(DrawList);
 
         }
 
@@ -327,6 +333,7 @@ namespace DevoidEngine.Engine.Rendering
             for (int i = 0; i < drawList.Count; i++)
             {
                 Mesh mesh = drawList[i].Mesh;
+
                 Matrix4 MODELMATRIX = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(drawList[i].rotation.X));
                 MODELMATRIX *= Matrix4.CreateRotationY(MathHelper.DegreesToRadians(drawList[i].rotation.Y));
                 MODELMATRIX *= Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(drawList[i].rotation.Z));
@@ -347,6 +354,10 @@ namespace DevoidEngine.Engine.Rendering
                 ResetLighting(mesh);
                 SetLighting(mesh);
 
+                if (mesh.Material.GetShader().ShaderProperties.requiresTime)
+                {
+                    mesh.Material.GetShader().SetFloat("E_TIME", RenderGraph.time);
+                }
                 mesh.Material.UpdateUniforms();
 
                 mesh.Draw();
@@ -372,7 +383,8 @@ namespace DevoidEngine.Engine.Rendering
                 MODELMATRIX *= Matrix4.CreateScale(drawList[i].scale);
                 MODELMATRIX *= Matrix4.CreateTranslation(drawList[i].position);
 
-                RendererData.GBuffer.SetupGBufferShader(RenderGraph.Camera.GetProjectionMatrix(), RenderGraph.Camera.GetViewMatrix(), MODELMATRIX);
+                Console.WriteLine(drawList[i].EntityID);
+                RendererData.GBuffer.SetupGBufferShader(RenderGraph.Camera.GetProjectionMatrix(), RenderGraph.Camera.GetViewMatrix(), MODELMATRIX, drawList[i].EntityID);
                 mesh.Draw();
             }
             UnBindFramebuffer();
@@ -457,7 +469,7 @@ namespace DevoidEngine.Engine.Rendering
             FrameBufferSpecification FBS = new FrameBufferSpecification()
             {
                 width = RendererData.ViewportWidth,
-                height = RendererData.ViewportWidth,
+                height = RendererData.ViewportHeight,
                 ColorAttachments = new ColorAttachment[]
                 {
                     new ColorAttachment() { textureFormat = FrameBufferTextureFormat.RGBA16F }

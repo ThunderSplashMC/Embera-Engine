@@ -12,16 +12,25 @@ using DevoidEngine.Engine.Utilities;
 
 namespace DevoidEngine.Engine.Core
 {
+    struct ShaderProperties
+    {
+        public bool requiresTime;
+    }
+
     class Shader : IDisposable
     {
 
         public static List<Shader> Shaders = new List<Shader>();
+
+        public Dictionary<string, int> UniformPositions = new Dictionary<string, int>();
 
         int Handle;
 
         string vPath, fPath;
 
         private bool disposedValue = false;
+
+        public ShaderProperties ShaderProperties = new ShaderProperties();
 
         public Shader(string vertexPath, string fragmentPath)
         {
@@ -51,31 +60,7 @@ namespace DevoidEngine.Engine.Core
             FragmentShader = GL.CreateShader(ShaderType.FragmentShader);
             GL.ShaderSource(FragmentShader, FragmentShaderSource);
 
-            // Compiling the shaders
-            GL.CompileShader(VertexShader);
-            GL.CompileShader(FragmentShader);
-
-            // Getting Shader logs and printing
-            string infoVertLog = GL.GetShaderInfoLog(VertexShader);
-            string infoFragLog = GL.GetShaderInfoLog(FragmentShader);
-            if (infoVertLog != System.String.Empty) System.Console.WriteLine(infoVertLog);
-            if (infoFragLog != System.String.Empty) System.Console.WriteLine(infoFragLog);
-
-            // Creating Shader Program
-            Handle = GL.CreateProgram();
-
-            // Attaching Frag and Vert shader to program
-            GL.AttachShader(Handle, VertexShader);
-            GL.AttachShader(Handle, FragmentShader);
-
-            GL.LinkProgram(Handle);
-
-            // Discarding Useless Resources
-            GL.DetachShader(Handle, VertexShader);
-            GL.DetachShader(Handle, FragmentShader);
-            GL.DeleteShader(VertexShader);
-            GL.DeleteShader(FragmentShader);
-            Shaders.Add(this);
+            CompileSource(VertexShader, FragmentShader);
         }
 
         public Shader(string Path)
@@ -106,31 +91,7 @@ namespace DevoidEngine.Engine.Core
             FragmentShader = GL.CreateShader(ShaderType.FragmentShader);
             GL.ShaderSource(FragmentShader, FragmentShaderSource);
 
-            // Compiling the shaders
-            GL.CompileShader(VertexShader);
-            GL.CompileShader(FragmentShader);
-
-            // Getting Shader logs and printing
-            string infoVertLog = GL.GetShaderInfoLog(VertexShader);
-            string infoFragLog = GL.GetShaderInfoLog(FragmentShader);
-            if (infoVertLog != System.String.Empty) System.Console.WriteLine(infoVertLog);
-            if (infoFragLog != System.String.Empty) System.Console.WriteLine(infoFragLog);
-
-            // Creating Shader Program
-            Handle = GL.CreateProgram();
-
-            // Attaching Frag and Vert shader to program
-            GL.AttachShader(Handle, VertexShader);
-            GL.AttachShader(Handle, FragmentShader);
-
-            GL.LinkProgram(Handle);
-
-            // Discarding Useless Resources
-            GL.DetachShader(Handle, VertexShader);
-            GL.DetachShader(Handle, FragmentShader);
-            GL.DeleteShader(VertexShader);
-            GL.DeleteShader(FragmentShader);
-            Shaders.Add(this);
+            CompileSource(VertexShader, FragmentShader);
         }
 
         public Shader(bool fromSource, string VertexShaderSource, string FragmentShaderSource)
@@ -145,13 +106,18 @@ namespace DevoidEngine.Engine.Core
             FragmentShader = GL.CreateShader(ShaderType.FragmentShader);
             GL.ShaderSource(FragmentShader, FragmentShaderSource);
 
+            CompileSource(VertexShader, FragmentShader);
+        }
+
+        public void CompileSource(int handleV, int handleF)
+        {
             // Compiling the shaders
-            GL.CompileShader(VertexShader);
-            GL.CompileShader(FragmentShader);
+            GL.CompileShader(handleV);
+            GL.CompileShader(handleF);
 
             // Getting Shader logs and printing
-            string infoVertLog = GL.GetShaderInfoLog(VertexShader);
-            string infoFragLog = GL.GetShaderInfoLog(FragmentShader);
+            string infoVertLog = GL.GetShaderInfoLog(handleV);
+            string infoFragLog = GL.GetShaderInfoLog(handleF);
             if (infoVertLog != System.String.Empty) System.Console.WriteLine(infoVertLog);
             if (infoFragLog != System.String.Empty) System.Console.WriteLine(infoFragLog);
 
@@ -159,17 +125,19 @@ namespace DevoidEngine.Engine.Core
             Handle = GL.CreateProgram();
 
             // Attaching Frag and Vert shader to program
-            GL.AttachShader(Handle, VertexShader);
-            GL.AttachShader(Handle, FragmentShader);
+            GL.AttachShader(Handle, handleV);
+            GL.AttachShader(Handle, handleF);
 
             GL.LinkProgram(Handle);
 
             // Discarding Useless Resources
-            GL.DetachShader(Handle, VertexShader);
-            GL.DetachShader(Handle, FragmentShader);
-            GL.DeleteShader(VertexShader);
-            GL.DeleteShader(FragmentShader);
+            GL.DetachShader(Handle, handleV);
+            GL.DetachShader(Handle, handleF);
+            GL.DeleteShader(handleV);
+            GL.DeleteShader(handleF);
             Shaders.Add(this);
+
+            ShaderProperties.requiresTime = UniformExists("E_TIME");
         }
 
         public bool ExistsInAssetDB(string path)
@@ -264,30 +232,7 @@ namespace DevoidEngine.Engine.Core
             FragmentShader = GL.CreateShader(ShaderType.FragmentShader);
             GL.ShaderSource(FragmentShader, FragmentShaderSource);
 
-            // Compiling the shaders
-            GL.CompileShader(VertexShader);
-            GL.CompileShader(FragmentShader);
-
-            // Getting Shader logs and printing
-            string infoVertLog = GL.GetShaderInfoLog(VertexShader);
-            string infoFragLog = GL.GetShaderInfoLog(FragmentShader);
-            if (infoVertLog != System.String.Empty) System.Console.WriteLine(infoVertLog);
-            if (infoFragLog != System.String.Empty) System.Console.WriteLine(infoFragLog);
-
-            // Creating Shader Program
-            Handle = GL.CreateProgram();
-
-            // Attaching Frag and Vert shader to program
-            GL.AttachShader(Handle, VertexShader);
-            GL.AttachShader(Handle, FragmentShader);
-
-            GL.LinkProgram(Handle);
-
-            // Discarding Useless Resources
-            GL.DetachShader(Handle, VertexShader);
-            GL.DetachShader(Handle, FragmentShader);
-            GL.DeleteShader(VertexShader);
-            GL.DeleteShader(FragmentShader);
+            CompileSource(VertexShader, FragmentShader);
         }
 
         public int GetAttribLocation(string AttribName)
@@ -297,6 +242,13 @@ namespace DevoidEngine.Engine.Core
 
         public int GetUniformLocation(string UniformName)
         {
+            if (UniformPositions.ContainsKey(UniformName))
+            {
+                return UniformPositions[UniformName];
+            } else
+            {
+                UniformPositions.Add(UniformName, GL.GetUniformLocation(Handle, UniformName));
+            }
             return GL.GetUniformLocation(Handle, UniformName);
         }
 

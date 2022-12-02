@@ -61,8 +61,8 @@ namespace DevoidEngine.Engine.Core
             Window.Load += OnLoad;
             Window.Unload += OnUnload;
             Window.Resize += OnResize;
-            Window.RenderFrame += OnRenderFrame;
             Window.UpdateFrame += OnUpdateFrame;
+            Window.RenderFrame += OnRenderFrame;
 
             // ==== BINDING EVENTS END ====
         }
