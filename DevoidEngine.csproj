@@ -37,7 +37,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="DevoidLauncher\Assets\ProjectNotFound.png" />
     <None Remove="Elemental\Assets\amogus.png" />
     <None Remove="Elemental\Assets\CameraComponentTexture.png" />
     <None Remove="Elemental\Assets\fbx-file-icn.png" />
@@ -140,9 +139,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="DevoidLauncher\Assets\ProjectNotFound.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Elemental\Assets\amogus.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

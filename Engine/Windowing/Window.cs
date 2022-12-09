@@ -69,16 +69,13 @@ namespace DevoidEngine.Engine.Windowing
 
         protected override void OnRenderFrame(FrameEventArgs args)
         {
-            if (this.IsExiting || closing) { return; }
             SwapBuffers();
             base.OnRenderFrame(args);
         }
 
-        bool closing = false;
-
         protected override void OnClosing(CancelEventArgs e)
         {
-            closing = true;
+
             base.OnClosing(e);
         }
 

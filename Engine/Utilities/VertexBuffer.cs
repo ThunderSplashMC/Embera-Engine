@@ -108,9 +108,12 @@ namespace DevoidEngine.Engine.Utilities
             }
 
             this.isdisposed = true;
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            GL.DeleteBuffer(VertexBufferObject);
-            GC.SuppressFinalize(this);
+            try
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                GL.DeleteBuffer(VertexBufferObject);
+                GC.SuppressFinalize(this);
+            } catch { }
         }
     }
 }

@@ -7,16 +7,8 @@ namespace DevoidEngine
     {
         static void Main(string[] args)
         {
-
-            new DevoidLauncher.Launcher().Init();
-            return;
-
-#if DEBUG
-            ElementalApp Application = new ElementalApp();
-#endif
-#if RELEASE
-            DevoidEngine.EngineSandbox.SandboxApp app = new EngineSandbox.SandboxApp();
-#endif
+            ElementalApp elementalApp = new ElementalApp();
+            elementalApp.Init();
         }
     }
 }
