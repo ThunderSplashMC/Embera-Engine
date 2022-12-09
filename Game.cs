@@ -4,6 +4,8 @@ using DevoidEngine.Engine.Core;
 
 namespace DevoidEngine
 {
+
+    // start here
     class Game : Layer
     {
         public override void OnAttach()
