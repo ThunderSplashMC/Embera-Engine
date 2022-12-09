@@ -119,7 +119,7 @@ vec3 IBL(Material material, vec3 eye, vec3 normal, vec3 specular)
 
 	vec3 diffuseDominantDirection = normal;
 	float diffuseLowMip = 9.6;
-	vec3 diffuseImageLighting = texture(W_SKYBOX, diffuseDominantDirection).rgb;
+	vec3 diffuseImageLighting = textureLod(W_SKYBOX, diffuseDominantDirection, diffuseLowMip).rgb;
 	diffuseImageLighting = pow(diffuseImageLighting, vec3(GAMMA));
 
 	return result + diffuseImageLighting * GetAlbedo();
@@ -216,7 +216,7 @@ void main() {
     vec3 I = normalize(WorldPos - C_VIEWPOS);
     vec3 R = reflect(I, normalize(Normal));
 
-    vec3 ambient = vec3(0.03) * GetAlbedo() * material.ao + IBL(material, V, N, vec3(material.metallic));
+    vec3 ambient = vec3(0.03) * GetAlbedo() * material.ao + ((1 - GetRoughness()) * IBL(material, V, N, vec3(material.metallic)));
     vec3 color = ambient + Lo + GetEmission();
     
     color = color / (color + vec3(1.0));

@@ -34,6 +34,7 @@ namespace DevoidEngine.Engine.Utilities
         public void SetSkyboxCubemap(Cubemap cubemap)
         {
             this.Cubemap = cubemap;
+            Cubemap.CubeMapTexture.GenerateMips();
         }
 
         public Cubemap GetSkyboxCubemap() 

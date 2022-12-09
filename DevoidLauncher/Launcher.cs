@@ -44,7 +44,7 @@ namespace DevoidEngine.DevoidLauncher
         }
 
         string ProjectName = "My New Game";
-        string DirLocation = "D:/Programming/Devoid/DevoidEngine/Engine/EngineContent/models";
+        string DirLocation = "D:/Programming/Devoid/ExampleAssets/";
         bool create = false;
 
         public void Loop(FrameEventArgs args)

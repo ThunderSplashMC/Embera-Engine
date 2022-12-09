@@ -57,7 +57,7 @@ namespace DevoidEngine.Engine.Core
 
             GL.BindTexture(TextureTarget.Texture2D, TextureHandle);
 
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, ImageFile.Width, ImageFile.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, ImageFile.Pixels);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, ImageFile.Width, ImageFile.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, ImageFile.Pixels);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (float)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (float)TextureMagFilter.Linear);
@@ -92,6 +92,13 @@ namespace DevoidEngine.Engine.Core
         public void BindTexture()
         {
             GL.BindTexture(TextureTarget.Texture2D, TextureHandle);
+        }
+
+        public void GenerateMips()
+        {
+            GL.BindTexture(TextureTarget.Texture2D, TextureHandle);
+            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
         public void SetActiveUnit(TextureActiveUnit unit, TextureTarget textureTarget = TextureTarget.Texture2D)

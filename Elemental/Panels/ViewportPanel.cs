@@ -45,7 +45,7 @@ namespace DevoidEngine.Elemental.Panels
             //{
             //    GameObject Omoli = Editor.EditorScene.NewGameObject("Omoli");
             //    SpriteRenderer _2DSpriteRenderer = Omoli.AddComponent<SpriteRenderer>();
-            //_2DSpriteRenderer.Texture = new Texture("Engine/EngineContent/models/textures/omoli.png");
+            //    _2DSpriteRenderer.Texture = new Texture("Engine/EngineContent/models/textures/omoli.png");
             //}
 
             //{
@@ -67,7 +67,7 @@ namespace DevoidEngine.Elemental.Panels
 
             if (Editor.EditorScene.GetSceneState() != Scene.SceneState.Play)
             {
-                DrawGuizmos();
+                //DrawGuizmos();
             }
 
 
@@ -118,6 +118,7 @@ namespace DevoidEngine.Elemental.Panels
             if (ImGui.CollapsingHeader("Engine Performance"))
             {
                 ImGui.TreePush();
+                ImGui.Text("FPS: " + 1 / deltaTime);
                 ImGui.Text("FrameTime: " + deltaTime + " s");
                 ImGui.Text("Draw Time: " + (Renderer3D.PerformanceData.DRAW_BUFFER_END - Renderer3D.PerformanceData.DRAW_BUFFER_START) + " ms");
                 ImGui.Text("PostProcess Time: " + (Renderer3D.PerformanceData.POSTPROCESS_END - Renderer3D.PerformanceData.POSTPROCESS_START) + " ms");
@@ -213,7 +214,7 @@ namespace DevoidEngine.Elemental.Panels
         {
             Guizmo3D.Begin(editorCamera);
 
-            //Guizmo3D.DrawGrid();
+            Guizmo3D.DrawGrid();
 
             GameObject[] gameObjects = Editor.EditorScene.GetSceneRegistry().GetAllGameObjects();
             for (int i = 0; i < gameObjects.Length; i++)

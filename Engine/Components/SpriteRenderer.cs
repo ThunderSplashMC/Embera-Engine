@@ -13,7 +13,7 @@ namespace DevoidEngine.Engine.Components
 
         public override void OnStart()
         {
-            Console.WriteLine("I am here");
+
         }
 
         public override void OnUpdate(float deltaTime)

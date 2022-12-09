@@ -114,14 +114,9 @@ namespace DevoidEngine.Engine.Utilities
             TextureSlot EmissiveMap;
             TextureSlot tex;
 
-            Console.WriteLine("-------------");
-            Console.WriteLine(path);
-            Console.WriteLine("----------");
-
             if (meshMat.HasTextureDiffuse && File.Exists(CorrectFilePath(meshMat.TextureDiffuse.FilePath, path)))
             {
                 Core.Texture AlbedoTex = CheckTextureExists(CorrectFilePath(meshMat.TextureDiffuse.FilePath, path));
-                Console.WriteLine("Loaded Albedo");
                 if (AlbedoTex == null)
                 {
                     AlbedoTex = new Core.Texture(CorrectFilePath(meshMat.TextureDiffuse.FilePath, path));
@@ -144,6 +139,7 @@ namespace DevoidEngine.Engine.Utilities
                     SetWrapping(RoughnessMap.WrapModeU, RoughnessMap.WrapModeV, RoughnessTex);
                 }
 
+                RoughnessTex.ChangeFilterType(Core.MagMinFilterTypes.Linear);
                 material.SetTexture("material.ROUGHNESS_TEX", RoughnessTex, 1);
                 material.Set("USE_TEX_1", 1);
             }
@@ -164,6 +160,7 @@ namespace DevoidEngine.Engine.Utilities
             if (meshMat.HasTextureNormal && File.Exists(CorrectFilePath(meshMat.TextureNormal.FilePath, path)))
             {
                 Core.Texture normalTexture = new Core.Texture(CorrectFilePath(meshMat.TextureNormal.FilePath, path));
+                normalTexture.ChangeFilterType(Core.MagMinFilterTypes.Linear);
 
                 SetWrapping(meshMat.TextureNormal.WrapModeU, meshMat.TextureNormal.WrapModeV, normalTexture);
 
