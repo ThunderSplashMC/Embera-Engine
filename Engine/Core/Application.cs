@@ -20,6 +20,8 @@ namespace DevoidEngine.Engine.Core
         public int AntiAliasingSamples;
         public int FramesPerSecond;
         public string workingDir;
+        public bool enableImGui;
+        public string iconPath;
     }
 
     class Application
@@ -28,7 +30,7 @@ namespace DevoidEngine.Engine.Core
         private Window Window;
 
         private LayerManager LayerManager = new LayerManager();
-        private ImguiLayer ImguiLayer;
+        private ImguiLayer? ImguiLayer;
 
         public void Create(ref ApplicationSpecification specification)
         {
@@ -43,14 +45,17 @@ namespace DevoidEngine.Engine.Core
             windowSpecification.FramesPerSecond = specification.FramesPerSecond;
             windowSpecification.fullscreen = specification.WindowFullscreen;
             windowSpecification.isCentered = true;
-            windowSpecification.iconPath = "Engine/EngineContent/icons/icon512-stroke.png";
+            windowSpecification.iconPath = ApplicationSpecification.iconPath;
             this.Window = new Window(ref windowSpecification);
 
             FileSystem.SetBasePath(ApplicationSpecification.workingDir);
 
             Renderer.Init(ApplicationSpecification.WindowWidth, ApplicationSpecification.WindowHeight);
-            ImguiLayer = new ImguiLayer();
-            ImguiLayer.InitIMGUI(Window);
+            if (ApplicationSpecification.enableImGui)
+            {
+                ImguiLayer = new ImguiLayer();
+                ImguiLayer.InitIMGUI(Window);
+            }
             
             // ==== BINDING EVENTS ====
 
@@ -117,16 +122,19 @@ namespace DevoidEngine.Engine.Core
             LayerManager.UpdateLayers(dt);
 
 
-# if DEBUG
-            ImguiLayer.Begin(dt);
-
-            for (int i = 0; i < LayerManager.Layers.Count; i++)
+# if DEBUG || EDITORMODE
+            if (ApplicationSpecification.enableImGui)
             {
-                Layer layer = LayerManager.Layers[i];
-                layer.GUIRender();
-            }
+                ImguiLayer.Begin(dt);
 
-            ImguiLayer.End();
+                for (int i = 0; i < LayerManager.Layers.Count; i++)
+                {
+                    Layer layer = LayerManager.Layers[i];
+                    layer.GUIRender();
+                }
+
+                ImguiLayer.End();
+            }
 # endif
         }
 

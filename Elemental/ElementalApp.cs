@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using DevoidEngine.Engine.Core;
-using DevoidEngine.EngineSandbox;
 
 namespace DevoidEngine.Elemental
 {
@@ -28,7 +27,8 @@ namespace DevoidEngine.Elemental
                 Vsync = true,
                 WindowTitle = "Elemental Editor",
                 WindowFullscreen = false,
-                workingDir = Path
+                workingDir = Path,
+                enableImGui = true
             };
 
             Application Application = new Application();
