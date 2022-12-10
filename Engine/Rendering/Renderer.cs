@@ -30,5 +30,10 @@ namespace DevoidEngine.Engine.Rendering
             Renderer2D.Resize(width, height);
             RenderGraph.CompositePass.Resize(width, height);
         }
+
+        public static void BlitToScreen()
+        {
+            Renderer3D.BlitToScreen();
+        }
     }
 }

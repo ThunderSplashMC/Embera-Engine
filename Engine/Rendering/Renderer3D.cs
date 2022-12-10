@@ -241,6 +241,11 @@ namespace DevoidEngine.Engine.Rendering
             return ref RendererData.skybox;
         }
 
+        public static void BlitToScreen()
+        {
+            GL.BlitNamedFramebuffer(RenderGraph.CompositePass.GetRendererID(), 0, 0, 0, RenderGraph.ViewportWidth, RenderGraph.ViewportHeight, 0, 0, RenderGraph.ViewportWidth, RenderGraph.ViewportHeight, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Linear);
+        }
+
         static void RenderSkybox()
         {
             RendererData.skybox.Render(RenderGraph.Camera);
