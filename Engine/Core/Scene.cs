@@ -46,7 +46,6 @@ namespace DevoidEngine.Engine.Core
                     BulletSharp.RigidBody rigidBody = rigidbodies[i].body;
 
                     BulletSharp.Math.Matrix transform = rigidBody.WorldTransform;
-                    System.Console.WriteLine(transform);
                     rigidbodies[i].gameObject.transform.position = new OpenTK.Mathematics.Vector3(transform.M41, transform.M42, transform.M43);
                 }
             }

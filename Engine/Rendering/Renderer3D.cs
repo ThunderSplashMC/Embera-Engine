@@ -243,7 +243,10 @@ namespace DevoidEngine.Engine.Rendering
 
         public static void BlitToScreen()
         {
-            GL.BlitNamedFramebuffer(RenderGraph.CompositePass.GetRendererID(), 0, 0, 0, RenderGraph.ViewportWidth, RenderGraph.ViewportHeight, 0, 0, RenderGraph.ViewportWidth, RenderGraph.ViewportHeight, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Linear);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            GL.DrawBuffer(DrawBufferMode.Back);
+            GL.BlitNamedFramebuffer(RenderGraph.CompositePass.GetRendererID(), 0, 0, 0, RenderGraph.ViewportWidth, RenderGraph.ViewportHeight, 0, 0, RenderGraph.ViewportWidth, RenderGraph.ViewportHeight, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
         }
 
         static void RenderSkybox()
@@ -387,8 +390,6 @@ namespace DevoidEngine.Engine.Rendering
 
                 MODELMATRIX *= Matrix4.CreateScale(drawList[i].scale);
                 MODELMATRIX *= Matrix4.CreateTranslation(drawList[i].position);
-
-                Console.WriteLine(drawList[i].EntityID);
                 RendererData.GBuffer.SetupGBufferShader(RenderGraph.Camera.GetProjectionMatrix(), RenderGraph.Camera.GetViewMatrix(), MODELMATRIX, drawList[i].EntityID);
                 mesh.Draw();
             }

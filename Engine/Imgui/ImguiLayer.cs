@@ -53,7 +53,6 @@ namespace DevoidEngine.Engine.Imgui
         public override void KeyDown(KeyboardKeyEventArgs keyboardevent)
         {
             imguiAPI.PressChar((char)keyboardevent.Key);
-            Console.WriteLine("h");
             base.KeyDown(keyboardevent);
         }
 

@@ -143,6 +143,7 @@ namespace DevoidEngine.Engine.Core
             RenderGraph.time += (float)args.Time;
             LayerManager.RenderLayers();
             Renderer.Render();
+            LayerManager.LateRenderLayers();
         }
 
         public void OnResize(ResizeEventArgs args)

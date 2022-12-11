@@ -22,7 +22,6 @@ namespace DevoidEngine.Engine.Utilities
             }
             catch (Exception E)
             {
-                Console.WriteLine(E);
                 Console.WriteLine("Model was not found at path: " + path);
                 return null;
             }
@@ -51,8 +50,6 @@ namespace DevoidEngine.Engine.Utilities
             {
                 ModelTotalMeshes[i].SetPath(path);
             }
-
-            Console.WriteLine(ModelTotalMeshes.Count);
 
             return ModelTotalMeshes.ToArray();
         }
@@ -206,8 +203,6 @@ namespace DevoidEngine.Engine.Utilities
 
         static string CorrectFilePath(string path, string basePath = null)
         {
-            Console.WriteLine(path);
-            Console.WriteLine(GetAbsolutePath(basePath, path));
             if (IsFullPath(path))
             {
                 return path;

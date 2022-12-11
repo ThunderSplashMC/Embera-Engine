@@ -60,6 +60,14 @@ namespace DevoidEngine.Engine.Core
             }
         }
 
+        public void LateRenderLayers()
+        {
+            for (int i = 0; i < Layers.Count; i++)
+            {
+                Layers[i].OnLateRender();
+            }
+        }
+
         public void ResizeLayers(int width, int height)
         {
             for (int i = 0; i < Layers.Count; i++)
