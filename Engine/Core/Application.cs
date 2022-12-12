@@ -68,6 +68,7 @@ namespace DevoidEngine.Engine.Core
             Window.Resize += OnResize;
             Window.UpdateFrame += OnUpdateFrame;
             Window.RenderFrame += OnRenderFrame;
+            Window.KeyDown += OnKeyDown;
 
             // ==== BINDING EVENTS END ====
         }
@@ -120,9 +121,6 @@ namespace DevoidEngine.Engine.Core
         {
             float dt = (float)args.Time;
             LayerManager.UpdateLayers(dt);
-
-
-# if DEBUG || EDITORMODE
             if (ApplicationSpecification.enableImGui)
             {
                 ImguiLayer.Begin(dt);
@@ -135,7 +133,6 @@ namespace DevoidEngine.Engine.Core
 
                 ImguiLayer.End();
             }
-# endif
         }
 
         public void OnRenderFrame(FrameEventArgs args)
@@ -150,6 +147,11 @@ namespace DevoidEngine.Engine.Core
         {
             Renderer.Resize(args.Width, args.Height);
             LayerManager.ResizeLayers(args.Width, args.Height);
+        }
+
+        public void OnKeyDown(KeyboardKeyEventArgs args)
+        {
+            LayerManager.KeyDownLayers(args);
         }
     }
 }

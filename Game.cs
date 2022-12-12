@@ -1,6 +1,7 @@
 ﻿using System;
 using DevoidEngine.Engine;
 using DevoidEngine.Engine.Core;
+using OpenTK.Windowing.Common;
 
 namespace DevoidEngine
 {
@@ -29,6 +30,11 @@ namespace DevoidEngine
         }
 
         public override void OnResize(int width, int height)
+        {
+
+        }
+
+        public override void KeyDown(KeyboardKeyEventArgs keyboardevent)
         {
 
         }
