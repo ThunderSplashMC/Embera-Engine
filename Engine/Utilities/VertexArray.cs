@@ -75,8 +75,6 @@ namespace DevoidEngine.Engine.Utilities
                 return;
             }
             this.isdisposed = true;
-
-            GL.BindVertexArray(0);
             GL.DeleteVertexArray(VertexArrayObject);
 
             GC.SuppressFinalize(this);

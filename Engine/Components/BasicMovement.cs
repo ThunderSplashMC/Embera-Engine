@@ -8,6 +8,7 @@ namespace DevoidEngine.Engine.Components
 {
     class BasicMovement : Component
     {
+        public override string Type { get; } = nameof(BasicMovement);
 
         Vector2 _lastPos;
         bool _firstMove = true;

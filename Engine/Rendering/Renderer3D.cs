@@ -35,6 +35,7 @@ namespace DevoidEngine.Engine.Rendering
         public Vignette Vignette;
         public FrameBuffer RenderPass;
         public GBuffer GBuffer;
+        public FrameBuffer AmbientOcculsionFB;
 
     }
 
@@ -53,6 +54,12 @@ namespace DevoidEngine.Engine.Rendering
             public float BloomIntensity;
             public float CameraIntensity;
         }
+
+        public struct AmbientOcculsionSettings
+        {
+            public bool enabled;
+        }
+
         public struct GBufferSettings
         {
             public bool enabled;
@@ -60,7 +67,8 @@ namespace DevoidEngine.Engine.Rendering
 
         public BloomSettings bloomSettings = new();
         public GBufferSettings gBufferSettings = new();
-        
+        public AmbientOcculsionSettings ambientOcculsionSettings = new();
+
         public PostEffectSettings()
         {
             bloomSettings.BloomIntensity = 0.19f;
@@ -91,7 +99,11 @@ namespace DevoidEngine.Engine.Rendering
         static PostEffectSettings postEffectSettings = new PostEffectSettings();
 
         static Shader hdr_Shader;
+        static Shader ambientOcculsion_Shader;
         static Mesh Quad;
+
+        static Texture ambientOcculsionNoise;
+        static List<Vector3> ssaoKernel = new List<Vector3>();
 
         public static void Submit(Mesh mesh, Vector3 pos, Vector3 rot, Vector3 scale, int ID = 0)
         {
@@ -116,7 +128,8 @@ namespace DevoidEngine.Engine.Rendering
         public static void Init(int width, int height)
         {
             postEffectSettings.bloomSettings.enabled = false;
-            postEffectSettings.gBufferSettings.enabled = false;
+            postEffectSettings.gBufferSettings.enabled = true;
+            postEffectSettings.ambientOcculsionSettings.enabled = true;
 
             RendererData.PolygonMode = PolygonMode.Fill;
 
@@ -130,6 +143,29 @@ namespace DevoidEngine.Engine.Rendering
             RendererData.SpotLights = new List<LightComponent>();
 
             hdr_Shader = new Shader("Engine/EngineContent/shaders/hdr");
+            ambientOcculsion_Shader = new Shader("Engine/EngineContent/shaders/ambient_occulsion");
+
+            Random rand = new Random();
+
+            
+            for (int i = 0; i < 64; ++i)
+            {
+                Vector3 sample = new Vector3((float)rand.NextDouble()* 2 - 1, (float)rand.NextDouble() * 2 - 1, (float)rand.NextDouble());
+                sample.Normalize();
+                sample *= (float)rand.NextDouble();
+                float scale = (float)i/ 64.0f;
+
+            // scale samples s.t. they're more aligned to center of kernel
+                scale = MathHelper.Lerp(0.1f, 1.0f, scale * scale);
+                sample *= scale;
+                ssaoKernel.Add(sample);
+            }
+
+            ambientOcculsion_Shader.Use();
+            for (int i = 0; i < 64; ++i)
+                ambientOcculsion_Shader.SetVector3("samples[" + i + "]", ssaoKernel[i]);
+
+            ambientOcculsionNoise = new Texture("Engine/EngineContent/textures/ambient_occulsion_noise.png");
 
             Quad = new Mesh();
             Quad.SetVertices(VERTEX_DEFAULTS.GetFrameBufferVertices());
@@ -164,7 +200,7 @@ namespace DevoidEngine.Engine.Rendering
         {
             RendererData.DrawCalls = 0;
 
-            GL.ClearColor(0, 0, 0, 1);
+            GL.ClearColor(RenderGraph.Camera.GetClearColor().X, RenderGraph.Camera.GetClearColor().Y, RenderGraph.Camera.GetClearColor().Z, 1);
 
             GL.PolygonMode(MaterialFace.FrontAndBack, RenderGraph.RenderMode == RenderMode.Normal ? PolygonMode.Fill : PolygonMode.Line);
             GL.FrontFace(FrontFaceDirection.Cw);
@@ -264,9 +300,35 @@ namespace DevoidEngine.Engine.Rendering
 
             // Render Meshes into GBuffer
 
-            //if (postEffectSettings.gBufferSettings.enabled)
-            //DrawItemsGBuffer(DrawList);
+            if (postEffectSettings.gBufferSettings.enabled)
+                DrawItemsGBuffer(DrawList);
 
+            if (postEffectSettings.ambientOcculsionSettings.enabled)
+                AmbientOcculsionPass();
+
+        }
+
+        static void AmbientOcculsionPass()
+        {
+            RendererData.AmbientOcculsionFB.Bind();
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            ambientOcculsion_Shader.Use();
+            ambientOcculsion_Shader.SetInt("gPosition", 0);
+            ambientOcculsion_Shader.SetInt("gNormal", 1);
+            ambientOcculsion_Shader.SetInt("texNoise", 2);
+
+            for (int i = 0; i < 64; ++i)
+                ambientOcculsion_Shader.SetVector3("samples[" + i + "]", ssaoKernel[i]);
+
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, RendererData.GBuffer.GetColorAttachment(0));
+            GL.ActiveTexture(TextureUnit.Texture1);
+            GL.BindTexture(TextureTarget.Texture2D, RendererData.GBuffer.GetColorAttachment(1));
+            ambientOcculsionNoise.SetActiveUnit(TextureActiveUnit.UNIT2);
+
+            Quad.Draw();
+
+            RendererData.AmbientOcculsionFB.UnBind();
         }
 
         static void LightingPass()
@@ -378,7 +440,7 @@ namespace DevoidEngine.Engine.Rendering
         static void DrawItemsGBuffer(List<DrawItem> drawList)
         {
             RendererData.GBuffer.Bind();
-            GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f); // keep it black so it doesn't leak into g-buffer
+            //GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f); // keep it black so it doesn't leak into g-buffer
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             for (int i = 0; i < drawList.Count; i++)
             {
@@ -489,6 +551,16 @@ namespace DevoidEngine.Engine.Rendering
             RendererData.HDRFrameBuffer = new HDRFrameBuffer();
             RendererData.BloomRenderer = new Bloom();
             RendererData.GBuffer = new GBuffer();
+            RendererData.AmbientOcculsionFB = new FrameBuffer(new FrameBufferSpecification()
+            {
+                width = RendererData.ViewportWidth,
+                height = RendererData.ViewportHeight,
+                ColorAttachments = new ColorAttachment[]
+                {
+                    new ColorAttachment() { textureFormat = FrameBufferTextureFormat.R32F }
+                },
+                addDepthBuffer = true
+            });
 
             RendererData.Vignette.Init(width, height);
             RendererData.HDRFrameBuffer.Init(width, height);

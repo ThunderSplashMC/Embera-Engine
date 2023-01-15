@@ -89,6 +89,11 @@ namespace DevoidEngine.Engine.Core
             LayerManager.RemoveLayer(layer);
         }
 
+        public string GetWorkingDirectory()
+        {
+            return ApplicationSpecification.workingDir;
+        }
+
         public void Run()
         {
             //AddLayer(ImguiLayer);
@@ -130,7 +135,7 @@ namespace DevoidEngine.Engine.Core
                     Layer layer = LayerManager.Layers[i];
                     layer.GUIRender();
                 }
-
+                ImguiLayer.GUIRender();
                 ImguiLayer.End();
             }
         }

@@ -3,6 +3,7 @@ using DevoidEngine.Engine.Utilities;
 using DevoidEngine.Engine.Rendering;
 
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace DevoidEngine.Engine.Core
 {
@@ -15,8 +16,8 @@ namespace DevoidEngine.Engine.Core
             Paused
         }
 
-
-        private SceneRegistry sceneRegistry;
+        [JsonInclude]
+        public SceneRegistry sceneRegistry;
         private SceneState sceneState = SceneState.Paused;
 
         public Physics PhysicsSystem;
@@ -152,6 +153,13 @@ namespace DevoidEngine.Engine.Core
             {
                 Rigidbody rigidbody = (Rigidbody)component;
                 sceneRegistry.AddRigidBody(rigidbody);
+                BulletSharp.RigidBody rb = PhysicsSystem.CreateRigidBody(rigidbody.mass, rigidbody.gameObject.transform.GetPosition(), rigidbody.GetCollisionShape());
+                rigidbody.body = rb;
+            }
+            if (component.GetType() == typeof(BoxCollider))
+            {
+                GameObject gameObject = component.gameObject;
+                ((BoxCollider)component).Shape = new BulletSharp.BoxShape(new BulletSharp.Math.Vector3(gameObject.transform.scale.X, gameObject.transform.scale.Y, gameObject.transform.scale.Z));
             }
             if (component.GetType() == typeof(Skylight))
             {

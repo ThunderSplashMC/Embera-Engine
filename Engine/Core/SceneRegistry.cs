@@ -7,11 +7,12 @@ namespace DevoidEngine.Engine.Core
 {
     class SceneRegistry
     {
-        private List<GameObject> GameObjects = new List<GameObject>();
-        private List<Camera> Cameras = new List<Camera>();
-        private List<LightComponent> Lights = new List<LightComponent>();
-        private List<Component> EditorRunnableComponents = new List<Component>();
-        private List<Rigidbody> RigidBodies = new List<Rigidbody>();
+
+        public List<GameObject> GameObjects = new List<GameObject>();
+        public List<Camera> Cameras = new List<Camera>();
+        public List<LightComponent> Lights = new List<LightComponent>();
+        public List<Component> EditorRunnableComponents = new List<Component>();
+        public List<Rigidbody> RigidBodies = new List<Rigidbody>();
 
         public void AddGameObject(GameObject gameObject)
         {
@@ -164,7 +165,7 @@ namespace DevoidEngine.Engine.Core
                         {
                             if (components[x].GetType() == type)
                             {
-                                EditorRunnableComponents.Add(components[x]);
+                                //EditorRunnableComponents.Add(components[x]);
                             }
                         }
                     }

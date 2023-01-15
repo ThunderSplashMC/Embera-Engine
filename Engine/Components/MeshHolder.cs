@@ -7,7 +7,8 @@ namespace DevoidEngine.Engine.Components
 {
     class MeshHolder : Component
     {
-        internal List<Mesh> Meshes { get; set; } = new List<Mesh>();
+        public override string Type { get; } = nameof(MeshHolder);
+        public List<Mesh> Meshes { get; set; } = new List<Mesh>();
 
         public Type HelloWorld;
 

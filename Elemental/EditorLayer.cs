@@ -8,6 +8,9 @@ using DevoidEngine.Engine.Utilities;
 using ImGuiNET;
 using DevoidEngine.Elemental.Panels;
 using DevoidEngine.Elemental.EditorUtils;
+using DevoidEngine.Engine.Serializing.Converters;
+
+using Newtonsoft.Json;
 
 namespace DevoidEngine.Elemental
 {
@@ -52,32 +55,22 @@ namespace DevoidEngine.Elemental
 
         public void SandBoxSetup()
         {
-            //PostEffectSettings.BloomSettings bloomSettings =  Renderer3D.GetBloomSettings();
-            //bloomSettings.enabled = true;
-            //Mesh[] meshes = ModelImporter.LoadModel("Engine/EngineContent/models/sphere.fbx");
-            //Renderer3D.SetBloomSettings(bloomSettings);
 
-            //for (int i = 0; i < 25; i++)
-            //{
-            //    GameObject Sobject = EditorScene.NewGameObject("SINOBJ" + i);
-            //    Sobject.transform.position = new Vector3(i * 4f, (float)Math.Sin(i) * 4.5f, 0);
-            //    Sobject.transform.rotation.X = 90f;
-            //    MeshHolder mh = Sobject.AddComponent<MeshHolder>();
+        }
 
-
-
-            //    mh.AddMeshes(meshes);
-
-            //    MeshRenderer meshRenderer = Sobject.AddComponent<MeshRenderer>();
-
-            //}
+        public void ChangeScenes(Scene scene)
+        {
+            EditorScene = scene;
+            scene.Init();
         }
 
         public override void OnDetach()
         {
+
         }
 
-        
+        float deltaTime;
+
         public override void GUIRender()
         {
             //MenuItems();
@@ -94,7 +87,7 @@ namespace DevoidEngine.Elemental
         {
             OnUpdatePanels(deltaTime);
             EditorScene.OnUpdate(deltaTime);
-            
+            this.deltaTime = deltaTime;
         }
 
         public override void OnResize(int width, int height)

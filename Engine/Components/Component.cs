@@ -8,7 +8,7 @@ namespace DevoidEngine.Engine.Components
 {
     abstract class Component
     {
-
+        public abstract string Type { get; }
         public Component()
         {
 

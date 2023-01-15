@@ -9,6 +9,8 @@ namespace DevoidEngine.Engine.Components
     [RunInEditMode]
     class SpriteRenderer : Component
     {
+        public override string Type { get; } = nameof(SpriteRenderer);
+
         public Texture Texture;
 
         public override void OnStart()

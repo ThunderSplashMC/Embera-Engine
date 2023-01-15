@@ -154,13 +154,11 @@ namespace DevoidEngine.Elemental.EditorUtils
 
         public static void DrawComponentField(FieldInfo[] fieldInfo, object component)
         {
-
             for (int i = 0; i < fieldInfo.Length; i++)
             {
 
                 FieldInfo field = fieldInfo[i];
-
-                if (field.IsPrivate || field.DeclaringType == typeof(Component)) { continue; }
+                if (field.IsPrivate || field.DeclaringType == typeof(Component) || field.Attributes == FieldAttributes.NotSerialized) { continue; }
 
                 BeginProperty(field.Name);
 

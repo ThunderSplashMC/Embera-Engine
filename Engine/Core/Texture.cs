@@ -4,6 +4,31 @@ using OpenTK.Graphics.OpenGL;
 
 namespace DevoidEngine.Engine.Core
 {
+    public enum TextureFormat
+    {
+        RGB,
+        RGBA8,
+        RGBA16F,
+        RGBA32F,
+        R11G11B10,
+        RG16F,
+        R32I,
+        R32F
+    }
+
+    struct TextureAttribute
+    {
+        public string AttrName;
+        public Texture Tex;
+        public int TextureIndex;
+
+        public TextureAttribute(string AttrName, Texture Tex, int TextureIndex)
+        {
+            this.AttrName = AttrName;
+            this.Tex = Tex;
+            this.TextureIndex = TextureIndex;
+        }
+    }
     class Texture
     {
 
@@ -92,6 +117,11 @@ namespace DevoidEngine.Engine.Core
         public void BindTexture()
         {
             GL.BindTexture(TextureTarget.Texture2D, TextureHandle);
+        }
+
+        public static void UnbindTexture()
+        {
+            GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
         public void GenerateMips()

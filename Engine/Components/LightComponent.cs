@@ -9,6 +9,9 @@ namespace DevoidEngine.Engine.Components
     [RunInEditMode]
     class LightComponent : Component
     {
+        public override string Type { get; } = nameof(LightComponent);
+
+        [NonSerialized]
         public int Intensity = 1;
         public LightType Lighttype = LightType.PointLight;
         public Color4 color = new Color4(1f,1f,1f,1f);

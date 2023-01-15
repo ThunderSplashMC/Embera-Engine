@@ -209,7 +209,7 @@ namespace DevoidEngine.Engine.Core
 
         public void ReCompile()
         {
-
+            //Console.WriteLine("Recompiling: ", Handle);
             int VertexShader;
             int FragmentShader;
 
@@ -232,6 +232,7 @@ namespace DevoidEngine.Engine.Core
             FragmentShader = GL.CreateShader(ShaderType.FragmentShader);
             GL.ShaderSource(FragmentShader, FragmentShaderSource);
 
+            Shaders.Remove(this);
             CompileSource(VertexShader, FragmentShader);
         }
 

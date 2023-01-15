@@ -43,7 +43,11 @@ vec3 filmic(vec3 x) {
 void main() {
 
     const float gamma = 2.2;
-    vec3 hdrColor = bloom(texture(S_RENDERED_TEXTURE, texCoords).rgb);
+    vec3 hdrTex = texture(S_RENDERED_TEXTURE, texCoords).rgb;
+
+    hdrTex = floor(hdrTex * (31) + 0.5)/31;
+
+    vec3 hdrColor = bloom(hdrTex);
     hdrColor = vignette(hdrColor);
   
     vec3 mapped = tonemapACES(hdrColor).rgb;

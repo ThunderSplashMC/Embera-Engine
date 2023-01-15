@@ -7,6 +7,7 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Mathematics;
 
 using ImGuiNET;
+using imnodesNET;
 
 namespace DevoidEngine.Engine.Imgui
 {
@@ -24,6 +25,15 @@ namespace DevoidEngine.Engine.Imgui
             ImGui.SetCurrentContext(Context);
 
             imguiAPI = new ImguiAPI(window);
+            ImNodesContextPtr nodesCtx = imnodes.CreateContext();
+            imnodes.SetCurrentContext(new ImNodesContextPtr(Context));
+            imnodes.SetImGuiContext(Context);
+        }
+
+        public override void GUIRender()
+        {
+
+            base.GUIRender();
         }
 
         public override void OnUpdate(float deltaTime)
@@ -34,7 +44,6 @@ namespace DevoidEngine.Engine.Imgui
 
         public void Begin(float deltaTime)
         {
-           
             imguiAPI.Update(deltaTime);
             imguiAPI.SetUpDockspace();
         }

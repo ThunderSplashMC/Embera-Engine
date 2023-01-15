@@ -8,9 +8,10 @@ using DevoidEngine.Engine.Utilities;
 using DevoidEngine.Engine.Core;
 using DevoidEngine.Elemental.EditorUtils;
 using DevoidEngine.Engine.Components;
-
-// REMOVE!!!
-using OpenTK.Graphics.OpenGL;
+using imnodesNET;
+using System.IO;
+using System.Text;
+using DevoidEngine.Engine.Serializing;
 
 namespace DevoidEngine.Elemental.Panels
 {
@@ -134,9 +135,21 @@ namespace DevoidEngine.Elemental.Panels
             DevoidGUI.DrawTextField("GameObjects", Editor.EditorScene.GetSceneRegistry().GetGameObjectCount().ToString());
             if (DevoidGUI.DrawButtonField("ReCompile All Shaders", "ReCompile"))
             {
+
+                Console.WriteLine(Shader.Shaders.Count);
                 for (int i = 0; i < Shader.Shaders.Count; i++)
                 {
                     Shader.Shaders[i].ReCompile();
+                }
+            }
+
+            if (DevoidGUI.DrawButtonField("Save Scene As File", "Save"))
+            {
+                using (FileStream fs = File.Create(Editor.Application.GetWorkingDirectory() + "/1.devoidscene"))
+                {
+                    string dataasstring = Serializer.SerializeScene(Editor.EditorScene); //your data
+                    byte[] info = new UTF8Encoding(true).GetBytes(dataasstring);
+                    fs.Write(info, 0, info.Length);
                 }
             }
 
@@ -160,10 +173,6 @@ namespace DevoidEngine.Elemental.Panels
                 }
                 ImGui.TreePop();
             }
-
-            ImGui.End();
-
-            ImGui.Begin("EditorNode");
 
             ImGui.End();
 
@@ -261,6 +270,9 @@ namespace DevoidEngine.Elemental.Panels
                 case ".gltf":
                     HandleDropMeshFile(item.path);
                     break;
+                case ".devoidscene":
+                    HandleDropSceneFile(item.path);
+                    break;
             }
         }
 
@@ -272,6 +284,17 @@ namespace DevoidEngine.Elemental.Panels
             MeshHolder MeshHolder = DropObject.AddComponent<MeshHolder>();
             MeshHolder.AddMeshes(meshes);
             DropObject.AddComponent<MeshRenderer>();
+        }
+
+        void HandleDropSceneFile(string path)
+        {
+            string sceneData;
+            using (StreamReader reader = new StreamReader(path, Encoding.UTF8))
+            {
+                sceneData = reader.ReadToEnd();
+            }
+            Scene scene = Serializer.DeserializeScene(sceneData);
+            Editor.ChangeScenes(scene);
         }
 
         float deltaTime;

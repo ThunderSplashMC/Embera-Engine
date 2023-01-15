@@ -17,7 +17,7 @@ namespace DevoidEngine.Engine.Rendering
         R11G11B10,
         RG16F,
         R32I,
-
+        R32F,
     }
 
     public struct ColorAttachment
@@ -48,9 +48,9 @@ namespace DevoidEngine.Engine.Rendering
             Create();
         }
 
-        public void AttachColorTexture(int texture, PixelInternalFormat internalFormat, PixelFormat pixelFormat, int width, int height, int index)
+        public void AttachColorTexture(int texture, PixelInternalFormat internalFormat, PixelFormat pixelFormat, int width, int height, int index, PixelType pixelType = PixelType.UnsignedByte)
         {
-            GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, width, height, 0, pixelFormat, PixelType.UnsignedByte, IntPtr.Zero);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, width, height, 0, pixelFormat, pixelType, IntPtr.Zero);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (float)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (float)TextureMagFilter.Linear);
 
@@ -122,6 +122,9 @@ namespace DevoidEngine.Engine.Rendering
                             break;
                         case (FrameBufferTextureFormat.R32I):
                             AttachColorTexture(colorTexture, PixelInternalFormat.R32i, PixelFormat.RedInteger, frameBufferSpecification.width, frameBufferSpecification.height, i);
+                            break;
+                        case FrameBufferTextureFormat.R32F:
+                            AttachColorTexture(colorTexture, PixelInternalFormat.R32f, PixelFormat.Red, frameBufferSpecification.width, frameBufferSpecification.height, i, PixelType.Float);
                             break;
                         default:
                             Console.WriteLine("FrameBuffer: Invalid Texture Format");

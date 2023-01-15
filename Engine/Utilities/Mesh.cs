@@ -11,14 +11,14 @@ namespace DevoidEngine.Engine.Utilities
 
         public static int TotalMeshCount = 0;
 
-        VertexBuffer VBO;
-        IndexBuffer IBO;
-        VertexArray VAO;
+        public VertexBuffer VBO;
+        public IndexBuffer IBO;
+        public VertexArray VAO;
 
         public Material Material;
         public int MeshID;
         public int VertexCount;
-        private string path;
+        public string path;
         public string name;
         public bool Renderable = true;
         

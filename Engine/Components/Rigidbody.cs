@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using DevoidEngine.Engine.Core;
+using OpenTK.Mathematics;
 
 namespace DevoidEngine.Engine.Components
 {
     [RunInEditMode]
     class Rigidbody : Component
     {
+        public override string Type { get; } = nameof(Rigidbody);
+
         public int RigidbodyID;
 
         public float mass = 0f;
-        public float gravity = 10f;
+        public Vector3 gravity = new Vector3(0, 9.8f, 0);
 
         public Physics PhysicsSystem;
         public BulletSharp.RigidBody body;
@@ -22,7 +25,8 @@ namespace DevoidEngine.Engine.Components
             base.OnStart();
         }
 
-        private float prevMass, prevGrav;
+        private float prevMass;
+        private Vector3 prevGrav;
 
         public override void OnUpdate(float deltaTime)
         {
@@ -46,6 +50,7 @@ namespace DevoidEngine.Engine.Components
 
         public void ChangeMass()
         {
+            Console.WriteLine(body.CollisionShape);
             gameObject.scene.PhysicsSystem.PhysicsWorld.RemoveRigidBody(body);
             body.SetMassProps(mass, body.CollisionShape.CalculateLocalInertia(mass));
             gameObject.scene.PhysicsSystem.PhysicsWorld.AddRigidBody(body);
@@ -54,13 +59,13 @@ namespace DevoidEngine.Engine.Components
 
         public void ChangeGravity()
         {
-            //body.Gravity = new BulletSharp.Math.Vector3(0, gravity, 0);
+            body.Gravity = new BulletSharp.Math.Vector3(gravity.X, gravity.Y, gravity.Z);
         }
 
         public void SetupRigidBody()
         {
             body = PhysicsSystem.CreateRigidBody(mass, gameObject.transform.GetTransform(), GetCollisionShape());
-            body.Gravity = new BulletSharp.Math.Vector3(0, gravity,0);
+            body.Gravity = new BulletSharp.Math.Vector3(gravity.X, gravity.Y, gravity.Z);
         }
     }
 }

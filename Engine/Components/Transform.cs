@@ -5,7 +5,9 @@ namespace DevoidEngine.Engine.Components
     [RunInEditMode]
     class Transform : Component
     {
-        public Vector3 position;
+        public override string Type { get; } = nameof(Transform);
+
+        public Vector3 position = Vector3.Zero;
         public Vector3 rotation;
         public Vector3 scale = Vector3.One;
 
@@ -21,6 +23,11 @@ namespace DevoidEngine.Engine.Components
             transformMatrix *= Matrix4.CreateTranslation(position);
 
             return transformMatrix;
+        }
+
+        public Matrix4 GetPosition()
+        {
+            return Matrix4.CreateTranslation(position);
         }
 
         public void SetTransform(Matrix4 transform)

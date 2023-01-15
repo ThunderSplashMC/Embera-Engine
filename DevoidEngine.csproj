@@ -98,12 +98,15 @@
     <None Remove="Engine\EngineContent\icons\icon64-stroke.png" />
     <None Remove="Engine\EngineContent\shaders\2d.frag" />
     <None Remove="Engine\EngineContent\shaders\2d.vert" />
+    <None Remove="Engine\EngineContent\shaders\ambient_occulsion.frag" />
+    <None Remove="Engine\EngineContent\shaders\ambient_occulsion.vert" />
     <None Remove="Engine\EngineContent\shaders\bloomFinal.frag" />
     <None Remove="Engine\EngineContent\shaders\bloomFinal.vert" />
     <None Remove="Engine\EngineContent\shaders\brightfilter.frag" />
     <None Remove="Engine\EngineContent\shaders\brightfilter.vert" />
     <None Remove="Engine\EngineContent\shaders\downsample.frag" />
     <None Remove="Engine\EngineContent\shaders\downsample.vert" />
+    <None Remove="Engine\EngineContent\shaders\experimental\computeshader-example.glsl" />
     <None Remove="Engine\EngineContent\shaders\framebuffer.frag" />
     <None Remove="Engine\EngineContent\shaders\framebuffer.vert" />
     <None Remove="Engine\EngineContent\shaders\gbuffer.frag" />
@@ -119,10 +122,26 @@
     <None Remove="Engine\EngineContent\shaders\upsample.vert" />
     <None Remove="Engine\EngineContent\shaders\vignette.frag" />
     <None Remove="Engine\EngineContent\shaders\vignette.vert" />
+    <None Remove="Engine\EngineContent\textures\ambient_occulsion_noise.png" />
     <None Remove="Engine\Imgui\shaders\GUI.frag" />
     <None Remove="Engine\Imgui\shaders\GUI.vert" />
     <None Remove="Engine\Rendering\FrameBuffer.cs~RFa9f7b.TMP" />
     <None Remove="Previews\Screenshot_13.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Engine\EngineContent\shaders\ambient_occulsion.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\ambient_occulsion.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Engine\EngineContent\shaders\experimental\computeshader-example.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -237,9 +256,9 @@
     <Content Include="Engine\EngineContent\shaders\vignette.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Engine\Imgui\imnodes\ImNodes - Copy.cs" />
-    <Content Include="Engine\Imgui\imnodes\ImNodes.cs" />
-    <Content Include="Engine\Imgui\imnodes\ImNodesDefinitions.cs" />
+    <Content Include="Engine\EngineContent\textures\ambient_occulsion_noise.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Previews\Screenshot_13.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -400,6 +419,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="ImNodes.NET">
+      <HintPath>Engine\Imgui\imnodes\ImNodes.NET.dll</HintPath>
+    </Reference>
     <Reference Include="SharpFont">
       <HintPath>Engine\deps\SharpFont.dll</HintPath>
     </Reference>

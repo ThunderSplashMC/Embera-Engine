@@ -10,6 +10,8 @@ namespace DevoidEngine.Engine.Components
     [RunInEditMode]
     class MeshRenderer : Component
     {
+        public override string Type { get; } = nameof(MeshRenderer);
+
         [RunInEditMode]
 
         MeshHolder MeshHolder;

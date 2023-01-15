@@ -8,6 +8,7 @@ namespace DevoidEngine.Engine.Components
 {
     class Skylight : Component
     {
+        public override string Type { get; } = nameof(Skylight);
 
         private Cubemap Cubemap;
         private bool loaded;

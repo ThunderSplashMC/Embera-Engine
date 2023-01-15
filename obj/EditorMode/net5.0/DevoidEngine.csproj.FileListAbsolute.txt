@@ -142,3 +142,9 @@ D:\Programming\Devoid\DevoidEngine\obj\EditorMode\net5.0\DevoidEngine.dll
 D:\Programming\Devoid\DevoidEngine\obj\EditorMode\net5.0\ref\DevoidEngine.dll
 D:\Programming\Devoid\DevoidEngine\obj\EditorMode\net5.0\DevoidEngine.pdb
 D:\Programming\Devoid\DevoidEngine\obj\EditorMode\net5.0\DevoidEngine.genruntimeconfig.cache
+D:\Programming\Devoid\DevoidEngine\obj\EditorMode\net5.0\DevoidEngine.csproj.AssemblyReference.cache
+D:\Programming\Devoid\DevoidEngine\bin\EditorMode\net5.0\ImNodes.NET.dll
+D:\Programming\Devoid\DevoidEngine\bin\EditorMode\net5.0\Engine\EngineContent\shaders\experimental\computeshader-example.glsl
+D:\Programming\Devoid\DevoidEngine\bin\EditorMode\net5.0\Engine\EngineContent\shaders\ambient_occulsion.frag
+D:\Programming\Devoid\DevoidEngine\bin\EditorMode\net5.0\Engine\EngineContent\shaders\ambient_occulsion.vert
+D:\Programming\Devoid\DevoidEngine\bin\EditorMode\net5.0\Engine\EngineContent\textures\ambient_occulsion_noise.png

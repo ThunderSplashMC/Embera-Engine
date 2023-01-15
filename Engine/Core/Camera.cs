@@ -12,6 +12,8 @@ namespace DevoidEngine.Engine.Core
         private Matrix4 projection;
         private Matrix4 ViewMatrix;
 
+        private Vector3 ClearColor = Vector3.Zero;
+
         public void SetProjectionMatrix(Matrix4 projectionMatrix)
         {
             projection = projectionMatrix;
@@ -30,6 +32,16 @@ namespace DevoidEngine.Engine.Core
         public Matrix4 GetViewMatrix()
         {
             return ViewMatrix;
+        }
+
+        public void SetClearColor(Vector3 color)
+        {
+            ClearColor = color;
+        }
+
+        public Vector3 GetClearColor()
+        {
+            return ClearColor;
         }
     }
 }

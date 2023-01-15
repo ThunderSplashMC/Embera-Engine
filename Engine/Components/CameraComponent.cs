@@ -8,7 +8,10 @@ namespace DevoidEngine.Engine.Components
 {
     class CameraComponent : Component
     {
+        public override string Type { get; } = nameof(CameraComponent);
+
         public Camera Camera;
+        public Color4 ClearColor;
 
         private CameraProjectionMode previousProjection;
         private float _fovy = MathHelper.DegreesToRadians(45.0f);
@@ -61,6 +64,7 @@ namespace DevoidEngine.Engine.Components
         public override void OnUpdate(float deltaTime)
         {
             Camera.position = gameObject.transform.position;
+            Camera.SetClearColor(new Vector3(ClearColor.R, ClearColor.G, ClearColor.B));
             UpdateVectors();
             CheckProjection();
             base.OnUpdate(deltaTime);

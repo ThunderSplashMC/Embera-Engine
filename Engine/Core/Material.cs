@@ -97,6 +97,7 @@ namespace DevoidEngine.Engine.Core
 
         public void UpdateUniforms()
         {
+            Texture.UnbindTexture();
             shader.Use();
             foreach (string key in uniformInts.Keys)
             {
@@ -124,7 +125,6 @@ namespace DevoidEngine.Engine.Core
                     textureAttributes[i].Tex.SetActiveUnit(TextureActiveUnit.UNIT0 + textureAttributes.Count + textureAttributes[i].TextureIndex, OpenTK.Graphics.OpenGL.TextureTarget.TextureCubeMap);
                     continue;
                 }
-
                 shader.SetInt("USE_TEX_" + textureAttributes[i].TextureIndex, 1);
                 shader.SetInt(textureAttributes[i].AttrName, textureAttributes[i].TextureIndex);
                 textureAttributes[i].Tex.SetActiveUnit(TextureActiveUnit.UNIT0 + textureAttributes[i].TextureIndex);
@@ -159,19 +159,6 @@ namespace DevoidEngine.Engine.Core
         public TextureAttribute[] GetAllTexAttributes()
         {
             return textureAttributes.ToArray();
-        }
-    }
-
-    struct TextureAttribute {
-        public string AttrName;
-        public Texture Tex;
-        public int TextureIndex;
-
-        public TextureAttribute(string AttrName, Texture Tex, int TextureIndex)
-        {
-            this.AttrName = AttrName;
-            this.Tex = Tex;
-            this.TextureIndex = TextureIndex;
         }
     }
 }
