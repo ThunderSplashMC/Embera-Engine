@@ -1,0 +1,517 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <Platforms>AnyCPU;x64</Platforms>
+    <NoWin32Manifest>true</NoWin32Manifest>
+    <Nullable>enable</Nullable>
+    <Configurations>Debug;Release;EditorMode</Configurations>
+    <PackageIcon>icon512-stroke.png</PackageIcon>
+    <ApplicationIcon>Engine\EngineContent\icons\icon512-stroke.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <OutputPath>D:\Programming\Devoid\Outputs\</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EditorMode|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Engine\EngineContent\models\**" />
+    <Compile Remove="Engine\Imgui\deps\**" />
+    <EmbeddedResource Remove="Engine\EngineContent\models\**" />
+    <EmbeddedResource Remove="Engine\Imgui\deps\**" />
+    <None Remove="Engine\EngineContent\models\**" />
+    <None Remove="Engine\Imgui\deps\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Engine\Imgui\imnodes\ImNodes - Copy.cs" />
+    <Compile Remove="Engine\Imgui\imnodes\ImNodes.cs" />
+    <Compile Remove="Engine\Imgui\imnodes\ImNodesDefinitions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\maari\.nuget\packages\evergine.bindings.imguizmo\2022.6.24.1084\contentFiles\any\netstandard2.0\Evergine.Bindings.Imguizmo.dll.config" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Elemental\Assets\amogus.png" />
+    <None Remove="Elemental\Assets\CameraComponentTexture.png" />
+    <None Remove="Elemental\Assets\fbx-file-icn.png" />
+    <None Remove="Elemental\Assets\file-icn.png" />
+    <None Remove="Elemental\Assets\folder-icn.png" />
+    <None Remove="Elemental\Assets\font-file-icn.png" />
+    <None Remove="Elemental\Assets\Fonts\forkawesome-webfont.ttf" />
+    <None Remove="Elemental\Assets\Fonts\JetBrainsMono-Bold.ttf" />
+    <None Remove="Elemental\Assets\Fonts\JetBrainsMono-Regular.ttf" />
+    <None Remove="Elemental\Assets\Fonts\MaterialIcons-Regular.ttf" />
+    <None Remove="Elemental\Assets\Fonts\OpenFontIcons.ttf" />
+    <None Remove="Elemental\Assets\Fonts\OpenSans.ttf" />
+    <None Remove="Elemental\Assets\Fonts\Roboto-Medium.ttf" />
+    <None Remove="Elemental\Assets\Fonts\TerminalDosis-Bold.ttf" />
+    <None Remove="Elemental\Assets\Fonts\TerminalDosis-Regular.ttf" />
+    <None Remove="Elemental\Assets\imgui.ini" />
+    <None Remove="Elemental\Assets\Joe.png" />
+    <None Remove="Elemental\Assets\LightComponentIcon.png" />
+    <None Remove="Elemental\Assets\LightComponentTexture.png" />
+    <None Remove="Elemental\Assets\pause-icn.png" />
+    <None Remove="Elemental\Assets\play-icn.png" />
+    <None Remove="Elemental\Assets\Shaders\grid.frag" />
+    <None Remove="Elemental\Assets\Shaders\grid.vert" />
+    <None Remove="Elemental\Assets\Shaders\guizmo.frag" />
+    <None Remove="Elemental\Assets\Shaders\guizmo.vert" />
+    <None Remove="Elemental\Assets\texture-empty-icn.png" />
+    <None Remove="Engine\Core\Devoid.txt" />
+    <None Remove="Engine\deps\freetype6.dll" />
+    <None Remove="Engine\deps\SharpFont.dll" />
+    <None Remove="Engine\EngineContent\cubemaps\back.jpg" />
+    <None Remove="Engine\EngineContent\cubemaps\bottom.jpg" />
+    <None Remove="Engine\EngineContent\cubemaps\front.jpg" />
+    <None Remove="Engine\EngineContent\cubemaps\left.jpg" />
+    <None Remove="Engine\EngineContent\cubemaps\right.jpg" />
+    <None Remove="Engine\EngineContent\cubemaps\T.png" />
+    <None Remove="Engine\EngineContent\cubemaps\top.jpg" />
+    <None Remove="Engine\EngineContent\Fonts\AnonymousPro-Regular.ttf" />
+    <None Remove="Engine\EngineContent\Fonts\digital display tfb.ttf" />
+    <None Remove="Engine\EngineContent\Fonts\GnuUnifontFull-Pm9P.ttf" />
+    <None Remove="Engine\EngineContent\Fonts\IndieFlower-Regular.ttf" />
+    <None Remove="Engine\EngineContent\Fonts\KOMTXT_.ttf" />
+    <None Remove="Engine\EngineContent\Fonts\LexendDeca-Regular.ttf" />
+    <None Remove="Engine\EngineContent\Fonts\NixieOne.ttf" />
+    <None Remove="Engine\EngineContent\Fonts\PatrickHand-Regular.ttf" />
+    <None Remove="Engine\EngineContent\Fonts\ShadowsIntoLight-Regular.ttf" />
+    <None Remove="Engine\EngineContent\Fonts\SilkRemington-SBold.ttf" />
+    <None Remove="Engine\EngineContent\Fonts\SourceCodePro-Regular.ttf" />
+    <None Remove="Engine\EngineContent\Fonts\SourceCodePro-VariableFont_wght.ttf" />
+    <None Remove="Engine\EngineContent\Fonts\Teletactile-3zavL.ttf" />
+    <None Remove="Engine\EngineContent\Fonts\ThinPrintRegular-ALl4A.ttf" />
+    <None Remove="Engine\EngineContent\Fonts\VT323-Regular.ttf" />
+    <None Remove="Engine\EngineContent\Fonts\ZenKurenaido-Regular.ttf" />
+    <None Remove="Engine\EngineContent\icons\icon512.png" />
+    <None Remove="Engine\EngineContent\icons\icon64-stroke.png" />
+    <None Remove="Engine\EngineContent\model\cube.fbx" />
+    <None Remove="Engine\EngineContent\shaders\2d.frag" />
+    <None Remove="Engine\EngineContent\shaders\2d.vert" />
+    <None Remove="Engine\EngineContent\shaders\ambient_occulsion.frag" />
+    <None Remove="Engine\EngineContent\shaders\ambient_occulsion.vert" />
+    <None Remove="Engine\EngineContent\shaders\bloomFinal.frag" />
+    <None Remove="Engine\EngineContent\shaders\bloomFinal.vert" />
+    <None Remove="Engine\EngineContent\shaders\brightfilter.frag" />
+    <None Remove="Engine\EngineContent\shaders\brightfilter.vert" />
+    <None Remove="Engine\EngineContent\shaders\downsample.frag" />
+    <None Remove="Engine\EngineContent\shaders\downsample.vert" />
+    <None Remove="Engine\EngineContent\shaders\experimental\computeshader-example.glsl" />
+    <None Remove="Engine\EngineContent\shaders\experimental\voxel_visualize.glsl" />
+    <None Remove="Engine\EngineContent\shaders\font-shader.frag" />
+    <None Remove="Engine\EngineContent\shaders\font-shader.vert" />
+    <None Remove="Engine\EngineContent\shaders\framebuffer.frag" />
+    <None Remove="Engine\EngineContent\shaders\framebuffer.vert" />
+    <None Remove="Engine\EngineContent\shaders\gbuffer.frag" />
+    <None Remove="Engine\EngineContent\shaders\gbuffer.vert" />
+    <None Remove="Engine\EngineContent\shaders\hdr.frag" />
+    <None Remove="Engine\EngineContent\shaders\hdr.vert" />
+    <None Remove="Engine\EngineContent\shaders\pbr.frag" />
+    <None Remove="Engine\EngineContent\shaders\pbr.vert" />
+    <None Remove="Engine\EngineContent\shaders\pbr1.frag" />
+    <None Remove="Engine\EngineContent\shaders\shadow.frag" />
+    <None Remove="Engine\EngineContent\shaders\shadow.geom" />
+    <None Remove="Engine\EngineContent\shaders\shadow.vert" />
+    <None Remove="Engine\EngineContent\shaders\skybox.frag" />
+    <None Remove="Engine\EngineContent\shaders\skybox.vert" />
+    <None Remove="Engine\EngineContent\shaders\ToWorldPos.frag" />
+    <None Remove="Engine\EngineContent\shaders\ToWorldPos.vert" />
+    <None Remove="Engine\EngineContent\shaders\upsample.frag" />
+    <None Remove="Engine\EngineContent\shaders\upsample.vert" />
+    <None Remove="Engine\EngineContent\shaders\vignette.frag" />
+    <None Remove="Engine\EngineContent\shaders\vignette.vert" />
+    <None Remove="Engine\EngineContent\shaders\voxel-visualizer.frag" />
+    <None Remove="Engine\EngineContent\shaders\voxel-visualizer.vert" />
+    <None Remove="Engine\EngineContent\shaders\voxelize.frag" />
+    <None Remove="Engine\EngineContent\shaders\voxelize.geom" />
+    <None Remove="Engine\EngineContent\shaders\voxelize.glsl" />
+    <None Remove="Engine\EngineContent\shaders\voxelize.vert" />
+    <None Remove="Engine\EngineContent\shaders\voxel_visualization.frag" />
+    <None Remove="Engine\EngineContent\shaders\voxel_visualization.vert" />
+    <None Remove="Engine\EngineContent\textures\ambient_occulsion_noise.png" />
+    <None Remove="Engine\Imgui\misc\imgui.ini" />
+    <None Remove="Engine\Imgui\shaders\GUI.frag" />
+    <None Remove="Engine\Imgui\shaders\GUI.vert" />
+    <None Remove="Engine\Rendering\FrameBuffer.cs~RFa9f7b.TMP" />
+    <None Remove="Previews\Screenshot_13.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Engine\EngineContent\icons\icon512-stroke.ico" />
+    <Content Include="Engine\EngineContent\model\cube.fbx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\experimental\voxel_visualize.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\ToWorldPos.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\ToWorldPos.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\voxel_visualization.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\voxel_visualization.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Engine\EngineContent\shaders\voxel-visualizer.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\voxel-visualizer.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\voxelize.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Elemental\Assets\Fonts\OpenFontIcons.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\ambient_occulsion.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\ambient_occulsion.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Engine\EngineContent\shaders\experimental\computeshader-example.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Elemental\Assets\CameraComponentTexture.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Elemental\Assets\LightComponentTexture.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Elemental\Assets\Shaders\grid.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Elemental\Assets\Shaders\grid.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Elemental\Assets\Shaders\guizmo.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Elemental\Assets\amogus.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Elemental\Assets\fbx-file-icn.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Elemental\Assets\folder-icn.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Elemental\Assets\Fonts\forkawesome-webfont.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Elemental\Assets\Fonts\JetBrainsMono-Bold.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Elemental\Assets\Fonts\JetBrainsMono-Regular.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Elemental\Assets\Fonts\MaterialIcons-Regular.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Elemental\Assets\Fonts\OpenSans.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Elemental\Assets\Fonts\Roboto-Medium.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Elemental\Assets\Fonts\TerminalDosis-Bold.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Elemental\Assets\Fonts\TerminalDosis-Regular.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Elemental\Assets\imgui.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Elemental\Assets\Joe.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Elemental\Assets\Shaders\guizmo.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Elemental\Assets\texture-empty-icn.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Elemental\Assets\file-icn.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Elemental\Assets\font-file-icn.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Elemental\Assets\play-icn.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\deps\freetype6.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\deps\SharpFont.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\icons\icon512-stroke.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\icons\icon64-stroke.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\2d.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\2d.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\brightfilter.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\brightfilter.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\font-shader.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\font-shader.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\gbuffer.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\gbuffer.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\shadow.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\shadow.geom">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\shadow.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\vignette.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\vignette.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\voxelize.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\voxelize.geom">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\voxelize.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\textures\ambient_occulsion_noise.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\Imgui\misc\imgui.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Previews\Screenshot_13.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Engine\Core\Devoid.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Engine\EngineContent\cubemaps\back.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\cubemaps\bottom.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\cubemaps\front.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\cubemaps\left.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\cubemaps\right.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\cubemaps\T.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\cubemaps\top.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\Fonts\AnonymousPro-Regular.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\Fonts\digital display tfb.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\Fonts\GnuUnifontFull-Pm9P.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\Fonts\IndieFlower-Regular.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\Fonts\KOMTXT_.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\Fonts\LexendDeca-Regular.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\Fonts\NixieOne.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\Fonts\PatrickHand-Regular.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\Fonts\ShadowsIntoLight-Regular.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\Fonts\SilkRemington-SBold.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\Fonts\SourceCodePro-Regular.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\Fonts\SourceCodePro-VariableFont_wght.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\Fonts\Teletactile-3zavL.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\Fonts\ThinPrintRegular-ALl4A.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\Fonts\VT323-Regular.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\Fonts\ZenKurenaido-Regular.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\icons\icon512.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\bloomFinal.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\bloomFinal.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\downsample.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\downsample.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\framebuffer.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\framebuffer.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\pbr.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\pbr1.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\pbr.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\skybox.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\skybox.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\hdr.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\hdr.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\upsample.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\upsample.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\Imgui\shaders\GUI.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\Imgui\shaders\GUI.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AssimpNet" Version="4.1.0" />
+    <PackageReference Include="BulletSharp" Version="0.11.1" />
+    <PackageReference Include="DiscordRichPresence" Version="1.0.175" />
+    <PackageReference Include="Evergine.Bindings.Imguizmo" Version="2022.6.24.1084" />
+    <PackageReference Include="freetypesharp" Version="1.1.3" />
+    <PackageReference Include="ImGui.NET" Version="1.87.3" />
+    <PackageReference Include="OpenTK" Version="4.7.5" />
+    <PackageReference Include="SharpFont" Version="4.0.1" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.2" />
+    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
+    <PackageReference Include="YamlDotNet" Version="12.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Engine\Rendering\Renderer3D-dupe.cs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ImNodes.NET">
+      <HintPath>Engine\Imgui\imnodes\ImNodes.NET.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpFont">
+      <HintPath>Engine\deps\SharpFont.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Engine\EngineContent\icons\icon512-stroke.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

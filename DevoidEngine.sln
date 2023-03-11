@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31729.503
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevoidEngine", "DevoidEngine.csproj", "{E36DD997-2506-4A67-8875-69C9C6F8C911}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		EditorMode|Any CPU = EditorMode|Any CPU
+		EditorMode|x64 = EditorMode|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E36DD997-2506-4A67-8875-69C9C6F8C911}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E36DD997-2506-4A67-8875-69C9C6F8C911}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E36DD997-2506-4A67-8875-69C9C6F8C911}.Debug|x64.ActiveCfg = Debug|x64
+		{E36DD997-2506-4A67-8875-69C9C6F8C911}.Debug|x64.Build.0 = Debug|x64
+		{E36DD997-2506-4A67-8875-69C9C6F8C911}.EditorMode|Any CPU.ActiveCfg = EditorMode|Any CPU
+		{E36DD997-2506-4A67-8875-69C9C6F8C911}.EditorMode|Any CPU.Build.0 = EditorMode|Any CPU
+		{E36DD997-2506-4A67-8875-69C9C6F8C911}.EditorMode|x64.ActiveCfg = EditorMode|x64
+		{E36DD997-2506-4A67-8875-69C9C6F8C911}.EditorMode|x64.Build.0 = EditorMode|x64
+		{E36DD997-2506-4A67-8875-69C9C6F8C911}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E36DD997-2506-4A67-8875-69C9C6F8C911}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E36DD997-2506-4A67-8875-69C9C6F8C911}.Release|x64.ActiveCfg = Release|x64
+		{E36DD997-2506-4A67-8875-69C9C6F8C911}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0B690834-E88F-4DBF-95F5-FD4CE7AFF88D}
+	EndGlobalSection
+EndGlobal
