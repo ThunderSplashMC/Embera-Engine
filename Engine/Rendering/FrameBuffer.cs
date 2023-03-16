@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DevoidEngine.Engine.Core;
 using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL;
+using DevoidEngine.Engine.Utilities;
 
 namespace DevoidEngine.Engine.Rendering
 {
@@ -37,6 +38,7 @@ namespace DevoidEngine.Engine.Rendering
     {
         public int width, height;
         public FrameBufferTextureType textureType;
+        public bool stencilOnly;
     }
 
     struct FrameBufferSpecification
@@ -89,9 +91,15 @@ namespace DevoidEngine.Engine.Rendering
             GL.TexParameter(textureTarget, TextureParameterName.TextureWrapS, (float)TextureWrapMode.ClampToEdge);
             GL.TexParameter(textureTarget, TextureParameterName.TextureWrapT, (float)TextureWrapMode.ClampToEdge);
             GL.TexParameter(textureTarget, TextureParameterName.TextureWrapR, (float)TextureWrapMode.ClampToEdge);
+            if (frameBufferSpecification.DepthAttachment.stencilOnly)
+            {
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureSwizzleR, (int)All.Red); // Map red channel to stencil component
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureSwizzleG, (int)All.Zero);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureSwizzleB, (int)All.Zero);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureSwizzleA, (int)All.Zero);
+            }
 
-
-            switch (textureTarget)
+                switch (textureTarget)
             {
                 case TextureTarget.Texture2D:
                     GL.TexImage2D(textureTarget, 0, PixelInternalFormat.Depth24Stencil8, width, height, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
@@ -208,13 +216,16 @@ namespace DevoidEngine.Engine.Rendering
         {
             if (ColorAttachments.Count > 0)
             {
-                GL.DeleteTextures(ColorAttachments.Count, ColorAttachments.ToArray());
+                for (int i = 0; i < ColorAttachments.Count; i++)
+                {
+                    OpenGLObjectManager.AddTexToDispose(ColorAttachments[i]);
+                }
             }
-            if ((frameBufferSpecification.DepthAttachment.width != 0 || frameBufferSpecification.DepthAttachment.height != 0) && GL.IsTexture(DepthAttachment))
+            if ((frameBufferSpecification.DepthAttachment.width != 0 || frameBufferSpecification.DepthAttachment.height != 0))
             {
-                GL.DeleteTexture(DepthAttachment);
+                OpenGLObjectManager.AddTexToDispose(DepthAttachment);
             }
-            GL.DeleteFramebuffer(RendererID);
+            OpenGLObjectManager.AddFBToDispose(RendererID);
         }
 
         public int GetRendererID()
@@ -226,7 +237,15 @@ namespace DevoidEngine.Engine.Rendering
         {
             frameBufferSpecification.width = width;
             frameBufferSpecification.height = height;
+            frameBufferSpecification.DepthAttachment.width = width;
+            frameBufferSpecification.DepthAttachment.height = height;
             Create();
+        }
+
+        public void ResizeDepthStencil(int width, int height)
+        {
+            frameBufferSpecification.DepthAttachment.width = width;
+            frameBufferSpecification.DepthAttachment.height = height;
         }
 
         public Vector2i GetSize()

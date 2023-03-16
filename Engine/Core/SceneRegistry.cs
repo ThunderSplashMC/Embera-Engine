@@ -12,15 +12,14 @@ namespace DevoidEngine.Engine.Core
         public List<Camera> Cameras = new List<Camera>();
 
 
-        public List<LightComponent> PointLights = new List<LightComponent>();
-        public List<LightComponent> SpotLights = new List<LightComponent>();
+        public List<LightComponent> Lights = new List<LightComponent>();
 
         public List<Component> EditorRunnableComponents = new List<Component>();
         public List<Rigidbody> RigidBodies = new List<Rigidbody>();
 
         public void AddGameObject(GameObject gameObject)
         {
-            gameObject.ID = GameObjects.Count + new Random().Next(10000);
+            gameObject.ID = new Random().Next(100000);
             GameObjects.Add(gameObject);
         }
 
@@ -79,36 +78,18 @@ namespace DevoidEngine.Engine.Core
 
         public void AddLight(LightComponent light)
         {
-            if (light.Lighttype == LightComponent.LightType.PointLight)
-            {
-                PointLights.Add(light);
-            } else
-            {
-                SpotLights.Add(light);
-            }
+            Lights.Add(light);
         }
 
         public void RemoveLight(LightComponent light)
         {
-            if (light.Lighttype == LightComponent.LightType.PointLight)
-            {
-                PointLights.Remove(light);
-            } else
-            {
-                SpotLights.Remove(light);
-            }
+            Lights.Remove(light);
         }
 
-        public ref List<LightComponent> GetPointLights()
+        public ref List<LightComponent> GetLights()
         {
-            return ref PointLights;
+            return ref Lights;
         }
-
-        public ref List<LightComponent> GetSpotLights()
-        {
-            return ref SpotLights;
-        }
-
 
         public T[] GetComponentsOfType<T>() where T : Component
         {

@@ -20,10 +20,10 @@ namespace DevoidEngine.Engine.Utilities
         {
             this.isdisposed = false;
 
-            if (indexCount > MaxIndexCount || indexCount < MinIndexCount)
-            {
-                throw new ArgumentException();
-            }
+            //if (indexCount > MaxIndexCount || indexCount < MinIndexCount)
+            //{
+            //    throw new ArgumentException();
+            //}
 
             this.IndexCount = indexCount;
             this.IsStatic = isStatic;

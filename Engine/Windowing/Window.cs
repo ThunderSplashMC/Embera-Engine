@@ -96,7 +96,7 @@ namespace DevoidEngine.Engine.Windowing
 
         ~Window()
         {
-
+            GC.SuppressFinalize(this);
         }
     }
 }

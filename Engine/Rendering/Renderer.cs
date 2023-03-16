@@ -10,6 +10,8 @@ namespace DevoidEngine.Engine.Rendering
 
         public static void Init(int width, int height)
         {
+            RenderGraph.ViewportHeight = height;
+            RenderGraph.ViewportWidth = width;
             RendererUtils.Init();
             Renderer2D.Init(width, height);
             Renderer3D.Init(width, height);

@@ -14,6 +14,8 @@ namespace DevoidEngine.Engine.Rendering
         public Vector3 rotation;
         public Vector3 scale;
         public Mesh mesh;
+        public float distFromCam;
+        public object associateObject;
     }
 
     class Renderer3D
@@ -22,6 +24,8 @@ namespace DevoidEngine.Engine.Rendering
         static List<LightComponent> PointLights = new List<LightComponent>();
         static List<LightComponent> SpotLights = new List<LightComponent>();
         static List<LightComponent> DirectionalLights = new List<LightComponent>();
+
+        static List<Texture> ShadowDepthAttachments = new List<Texture>();
 
         static List<RenderPass> RenderPasses = new List<RenderPass>();
 
@@ -50,7 +54,7 @@ namespace DevoidEngine.Engine.Rendering
                 height = height,
                 ColorAttachments = new ColorAttachment[]
                 {
-                    new ColorAttachment() {textureFormat = FrameBufferTextureFormat.RGBA16F}
+                    new ColorAttachment() {textureFormat = FrameBufferTextureFormat.RGBA16F, textureType = FrameBufferTextureType.Texture2D}
                 },
                 DepthAttachment = new DepthAttachment()
                 {
@@ -68,24 +72,38 @@ namespace DevoidEngine.Engine.Rendering
         public static void AddRenderPass(RenderPass renderpass)
         {
             RenderPasses.Add(renderpass);
+            if (isInitialized)
+            {
+                renderpass.Initialize(RenderGraph.ViewportWidth, RenderGraph.ViewportHeight);
+            }
         }
 
 
-        public static void Submit(Vector3 position, Vector3 rotation, Vector3 scale, Mesh mesh)
+        public static void Submit(Vector3 position, Vector3 rotation, Vector3 scale, Mesh mesh, object associateObject = null)
         {
             DrawList.Add(new DrawItem()
             {
                 position = position,
                 rotation = rotation,
                 scale = scale,
-                mesh = mesh
+                mesh = mesh,
+                distFromCam = Vector3.Distance(RenderGraph.Camera.position, position),
+                associateObject = associateObject
             });
         }
 
-        public static void BeginScene(ref List<LightComponent> pointLights, ref List<LightComponent> spotLights)//, ref List<LightComponent> directionalLights = null)
+        public static void BeginScene(List<LightComponent> Lights)//, ref List<LightComponent> directionalLights = null)
         {
-            PointLights = pointLights;
-            SpotLights = spotLights;
+            for (int i = 0; i < Lights.Count; i++)
+            {
+                if (Lights[i].Lighttype == LightComponent.LightType.PointLight)
+                {
+                    PointLights.Add(Lights[i]);
+                } else
+                {
+                    SpotLights.Add(Lights[i]);
+                }
+            }
         }
 
         public static void RenderStart()
@@ -111,7 +129,12 @@ namespace DevoidEngine.Engine.Rendering
 
             RenderStart();
 
+            SortDrawListByDistance();
+
+            //ShadowPass();
             LightingPass();
+            BloomPass();
+            CompositePass();
 
             for (int i = 0; i < RenderPasses.Count; i++)
             {
@@ -126,9 +149,11 @@ namespace DevoidEngine.Engine.Rendering
             PointLights.Clear();
             SpotLights.Clear();
             DirectionalLights.Clear();
+            ShadowDepthAttachments.Clear();
 
             ResetViewport();
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
             DrawList.Clear();
         }
 
@@ -139,7 +164,8 @@ namespace DevoidEngine.Engine.Rendering
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
-            if (RenderGraph.SkyboxCubemap != null) {
+            if (RenderGraph.SkyboxCubemap != null)
+            {
 
                 GL.Disable(EnableCap.DepthTest);
                 GL.Disable(EnableCap.CullFace);
@@ -153,77 +179,161 @@ namespace DevoidEngine.Engine.Rendering
                 RendererUtils.CubeVAO.Render();
                 GL.Enable(EnableCap.DepthTest);
                 GL.Enable(EnableCap.CullFace);
-
             }
 
-            Draw();
+            for (int i = 0; i < DrawList.Count; i++)
+            {
+                DrawList[i].mesh.Material.GetShader().Use();
+                ResetLighting(DrawList[i].mesh.Material.GetShader());
+                UploadLightingData(DrawList[i].mesh.Material.GetShader());
+
+                UploadCameraData(DrawList[i].mesh.Material.GetShader());
+                UploadModelData(DrawList[i].mesh.Material.GetShader(), DrawList[i].position, DrawList[i].rotation, DrawList[i].scale);
+
+                DrawList[i].mesh.Material.Apply();
+
+                int texCount = DrawList[i].mesh.Material.GetAllTexAttributes().Length;
+
+                for (int x = 0; x < ShadowDepthAttachments.Count; x++)
+                {
+                    DrawList[i].mesh.Material.GetShader().SetInt("W_SHADOW_BUFFERS[" + x + "]", x + texCount);
+                    GL.ActiveTexture(TextureUnit.Texture0 + x + texCount);
+                    GL.BindTexture(TextureTarget.TextureCubeMap, ShadowDepthAttachments[x].GetTexture());
+                }
+
+                DrawList[i].mesh.Draw();
+
+                RenderGraph.Renderer_3D_DrawCalls += 1;
+                //Texture.UnbindTexture();
+            }
 
             RenderGraph.LightBuffer.UnBind();
         }
 
-        public static void Draw()
+        static void BloomPass()
         {
-            DrawModels(DrawList);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            RenderGraph.BloomRenderer.RenderBloomTexture(RenderGraph.LightBuffer.GetColorAttachment(0));
+            ResetViewport();
         }
 
-        public static void DrawModels(List<DrawItem> drawList)
+        static void CompositePass()
         {
-            for (int i = 0; i < drawList.Count; i++)
+            RenderGraph.CompositeBuffer.Bind();
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            RendererUtils.HDRShader.Use();
+            RendererUtils.HDRShader.SetInt("S_RENDERED_TEXTURE", 0);
+            RendererUtils.HDRShader.SetInt("S_BLOOM_TEXTURE", 1);
+            RendererUtils.HDRShader.SetInt("S_VIGNETTE_TEXTURE", 2);
+            RendererUtils.HDRShader.SetFloat("U_BLOOM_STRENGTH", RenderGraph.BLOOM ? RenderGraph.BloomRenderer.bloomStr : 0);
+            RendererUtils.HDRShader.SetFloat("U_VIGNETTE_STRENGTH", 0);
+
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, RenderGraph.LightBuffer.GetColorAttachment(0));
+
+            GL.ActiveTexture(TextureUnit.Texture1);
+            GL.BindTexture(TextureTarget.Texture2D, RenderGraph.BloomRenderer.GetBloomTexture());
+
+            GL.Disable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.CullFace);
+            RendererUtils.QuadVAO.Render();
+            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.CullFace);
+
+            RenderGraph.CompositeBuffer.UnBind();
+        }
+
+        public static void ShadowPass()
+        {
+            for (int i = 0; i < PointLights.Count; i++)
             {
-                Mesh mesh = drawList[i].mesh;
 
-                //
+                LightComponent light = PointLights[i];
 
-                Matrix4 MODELMATRIX = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(drawList[i].rotation.X));
-                MODELMATRIX *= Matrix4.CreateRotationY(MathHelper.DegreesToRadians(drawList[i].rotation.Y));
-                MODELMATRIX *= Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(drawList[i].rotation.Z));
-                MODELMATRIX *= Matrix4.CreateScale(drawList[i].scale);
-                MODELMATRIX *= Matrix4.CreateTranslation(drawList[i].position);
+                Vector2i Size = light.shadowBufferPointLight.GetSize();
+                Vector3 lightPos = light.gameObject.transform.position;
+                GL.Viewport(0, 0, Size.X, Size.Y);
+                light.shadowBufferPointLight.Bind();
+                GL.Clear(ClearBufferMask.DepthBufferBit);
 
-                //
+                Matrix4 shadowProj = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(90f), (float)Size.X / (float)Size.Y, 0.1f, 300f);
+                Matrix4[] shadowTransforms = new Matrix4[]
+                {
+                    Matrix4.LookAt(lightPos, lightPos + new Vector3(1.0f, 0.0f, 0.0f), new Vector3(0.0f, -1.0f, 0.0f)) * shadowProj,
+                    Matrix4.LookAt(lightPos, lightPos + new Vector3(-1.0f, 0.0f, 0.0f), new Vector3(0.0f, -1.0f, 0.0f)) * shadowProj,
+                    Matrix4.LookAt(lightPos, lightPos + new Vector3(0.0f, 1.0f, 0.0f), new Vector3(0.0f, 0.0f, 1.0f)) * shadowProj,
+                    Matrix4.LookAt(lightPos, lightPos + new Vector3(0.0f, -1.0f, 0.0f), new Vector3(0.0f, 0.0f, -1.0f)) * shadowProj,
+                    Matrix4.LookAt(lightPos, lightPos + new Vector3(0.0f, 0.0f, 1.0f), new Vector3(0.0f, -1.0f, 0.0f)) * shadowProj,
+                    Matrix4.LookAt(lightPos, lightPos + new Vector3(0.0f, 0.0f, -1.0f), new Vector3(0.0f, -1.0f, 0.0f)) * shadowProj
+                };
 
-                mesh.Material.Set("W_MODEL_MATRIX", MODELMATRIX);
-                mesh.Material.Set("W_PROJECTION_MATRIX", RenderGraph.Camera.GetProjectionMatrix());
-                mesh.Material.Set("W_VIEW_MATRIX", RenderGraph.Camera.GetViewMatrix());
-                mesh.Material.Set("C_VIEWPOS", RenderGraph.Camera.position);
+                RendererUtils.ShadowShader.Use();
+                for (int x = 0; x < 6; ++x)
+                    RendererUtils.ShadowShader.SetMatrix4("shadowMatrices[" + x + "]", shadowTransforms[x]);
 
-                //
+                RendererUtils.ShadowShader.SetFloat("far_plane", 300f);
+                RendererUtils.ShadowShader.SetVector3("lightPos", light.gameObject.transform.position);
 
-                mesh.Draw();
-                
-                //
+                for (int y = 0; y < DrawList.Count; y++)
+                {
+                    UploadModelData(RendererUtils.ShadowShader, DrawList[y].position, DrawList[y].rotation, DrawList[y].scale);
+                    DrawList[y].mesh.Draw();
 
-                RenderGraph.Renderer_3D_DrawCalls += 1;
+                    RenderGraph.Renderer_3D_DrawCalls += 1;
+                }
+
+                light.shadowBufferPointLight.UnBind();
+                ResetViewport();
+                ShadowDepthAttachments.Add(light.depthTexture);
             }
+        }
 
+        public static void UploadCameraData(Shader shader)
+        {
+            shader.SetMatrix4("W_PROJECTION_MATRIX", RenderGraph.Camera.GetProjectionMatrix());
+            shader.SetMatrix4("W_VIEW_MATRIX", RenderGraph.Camera.GetViewMatrix());
+            shader.SetVector3("C_VIEWPOS", RenderGraph.Camera.position);
+        }
+
+        public static void UploadModelData(Shader shader, Vector3 position, Vector3 rotation, Vector3 scale)
+        {
+            Matrix4 MODELMATRIX = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(rotation.X));
+            MODELMATRIX *= Matrix4.CreateRotationY(MathHelper.DegreesToRadians(rotation.Y));
+            MODELMATRIX *= Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(rotation.Z));
+            MODELMATRIX *= Matrix4.CreateScale(scale);
+            MODELMATRIX *= Matrix4.CreateTranslation(position);
+
+            shader.SetMatrix4("W_MODEL_MATRIX", MODELMATRIX);
+        }
+
+        static void ResetLighting(Shader shader)
+        {
+            for (int i = 0; i < RenderGraph.MAX_POINT_LIGHTS; i++)
+            {
+                shader.SetFloat("L_POINTLIGHTS[" + i + "].intensity", 0f);
+                shader.SetBool("L_POINTLIGHTS[" + i + "].shadows", false);
+            }
+            for (int i = 0; i < RenderGraph.MAX_SPOT_LIGHTS; i++)
+            {
+                shader.SetFloat("L_SPOTLIGHTS[" + i + "].intensity", 0f);
+            }
         }
 
         public static void UploadLightingData(Shader shader)
         {
-            for (int i = 0; i < RenderGraph.MAX_POINT_LIGHTS; i++)
+            for (int i = 0; i < PointLights.Count; i++)
             {
-                if (RenderGraph.MAX_POINT_LIGHTS > PointLights.Count)
-                {
-                    shader.SetFloat("L_POINTLIGHTS[" + i + "].intensity", 0f);
-                    continue;
-                }
                 LightComponent light = PointLights[i];
-
                 shader.SetFloat("L_POINTLIGHTS[" + i + "].intensity", (float)light.Intensity);
-                shader.SetFloat("L_POINTLIGHTS[" + i + "].constant", 1f);
+                shader.SetFloat("L_POINTLIGHTS[" + i + "].constant", light.Attenuation);
                 shader.SetVector3("L_POINTLIGHTS[" + i + "].diffuse", new Vector3(light.color.R, light.color.G, light.color.B));
                 shader.SetVector3("L_POINTLIGHTS[" + i + "].position", light.gameObject.transform.position);
                 shader.SetBool("L_POINTLIGHTS[" + i + "].shadows", light.CanEmitShadows);
-
             }
 
-            for (int i = 0; i < RenderGraph.MAX_SPOT_LIGHTS; i++)
+            for (int i = 0; i < SpotLights.Count; i++)
             {
-                if (RenderGraph.MAX_POINT_LIGHTS > PointLights.Count)
-                {
-                    shader.SetFloat("L_POINTLIGHTS[" + i + "].intensity", 0f);
-                    continue;
-                }
                 LightComponent light = SpotLights[i];
                 shader.SetFloat("L_SPOTLIGHTS[" + i + "].intensity", (float)light.Intensity);
                 shader.SetVector3("L_SPOTLIGHTS[" + i + "].diffuse", new Vector3(light.color.R, light.color.G, light.color.B));
@@ -232,6 +342,11 @@ namespace DevoidEngine.Engine.Rendering
                 shader.SetFloat("L_SPOTLIGHTS[" + i + "].cutOff", light.cutOff);
                 shader.SetFloat("L_SPOTLIGHTS[" + i + "].outerCutOff", light.OuterCutOff);
             }
+        }
+
+        static void SortDrawListByDistance()
+        {
+            DrawList.Sort((x, y) => x.distFromCam.CompareTo(y.distFromCam));
         }
 
         public static void ResetViewport()
@@ -247,6 +362,11 @@ namespace DevoidEngine.Engine.Rendering
             RenderGraph.HDRFrameBuffer.Resize(width, height);
             RenderGraph.BloomRenderer.Resize(width, height);
             RenderGraph.GeometryBuffer.Resize(width, height);
+
+            for (int i = 0; i < RenderPasses.Count; i++)
+            {
+                RenderPasses[i].Resize(width, height);
+            }
         }
 
         public static List<LightComponent> GetPointLights()
@@ -259,5 +379,9 @@ namespace DevoidEngine.Engine.Rendering
             return SpotLights;
         }
 
+        public static List<DrawItem> GetRenderDrawList()
+        {
+            return DrawList;
+        }
     }
 }

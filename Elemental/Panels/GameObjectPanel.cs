@@ -24,7 +24,7 @@ namespace DevoidEngine.Elemental.Panels
 
     class GameObjectPanel : Panel
     {
-        GameObject CurrentSelectedGameObject;
+        public GameObject CurrentSelectedGameObject;
         int EmptyTextureIcon;
 
         List<CustomEditorScriptItem> CustomEditorScriptComponents;
@@ -63,21 +63,13 @@ namespace DevoidEngine.Elemental.Panels
         {
             bool selected = gameObject == CurrentSelectedGameObject;
             if (selected) { ImGui.PushStyleColor(ImGuiCol.Button, new System.Numerics.Vector4(0.4f, 0.4f, 0.4f, 1)); }
-            else
-            {
-                if (id % 2 == 0) { ImGui.PushStyleColor(ImGuiCol.Button, new System.Numerics.Vector4(0.2f, 0.2f, 0.2f, 1)); }
-                else
-                {
-                    ImGui.PushStyleColor(ImGuiCol.Button, new System.Numerics.Vector4(0.1f, 0.1f, 0.1f, 1));
-                }
-            }
             ImGui.PushID("##object" + id);
             if (DevoidGUI.Button(FontAwesome.ForkAwesome.DotCircleO + " " + gameObject.name, new Vector2(ImGui.GetWindowWidth(), 20f)))
             {
                 CurrentSelectedGameObject = gameObject;
             }
             ImGui.PopID();
-            ImGui.PopStyleColor();
+            if (selected) { ImGui.PopStyleColor(); }
         }
 
 
@@ -98,12 +90,24 @@ namespace DevoidEngine.Elemental.Panels
             SceneRegistry sceneRegistry = Editor.EditorScene.GetSceneRegistry();
             GameObject[] gameObjects = sceneRegistry.GetAllGameObjects();
 
+            if (ImGui.BeginTable("#game_obj_hier_panel", 2, ImGuiTableFlags.Resizable))
             {
+                ImGui.TableSetupColumn("Name");
+                ImGui.TableSetupColumn("Status");
+                ImGui.TableHeadersRow();
+                ImGui.TableNextColumn();
+
                 for (int i = 0; i < gameObjects.Length; i++)
                 {
                     DrawObjectButton(gameObjects[i], i);
+                    ImGui.TableNextColumn();
+                    ImGui.Text(gameObjects[i].enabled.ToString());
+                    ImGui.TableNextColumn();
                 }
+
+                ImGui.EndTable();
             }
+
             ImGui.PopStyleVar(5);
             ImGui.PopStyleColor();
 
@@ -128,7 +132,6 @@ namespace DevoidEngine.Elemental.Panels
 
             ImGui.PushStyleColor(ImGuiCol.Text, (new System.Numerics.Vector4(0.8f, 0.8f, 0.8f, 1)));
             ImGui.Begin($"{FontAwesome.ForkAwesome.InfoCircle} Properties");
-
 
             //ImGui.BeginTable("##hihi", 2);
             //ImGui.TableSetupColumn("Prop", 0);
@@ -159,6 +162,21 @@ namespace DevoidEngine.Elemental.Panels
 
             if (CurrentSelectedGameObject != null)
             {
+                UI.BeginPropertyGrid("obj_name_game");
+                UI.BeginProperty("Name: ");
+                UI.PropertyString(ref CurrentSelectedGameObject.name, false);
+                UI.EndProperty();
+
+                UI.BeginProperty("ID: ");
+                UI.PropertyText(CurrentSelectedGameObject.ID.ToString());
+                UI.EndProperty();
+
+                UI.BeginProperty("Components: ");
+                UI.PropertyText(CurrentSelectedGameObject.components.Count.ToString());
+                UI.EndProperty();
+
+                UI.EndPropertyGrid();
+
                 Component[] components = CurrentSelectedGameObject.GetAllComponents();
                 for (int i = 0; i < components.Length; i++)
                 {
@@ -312,6 +330,10 @@ namespace DevoidEngine.Elemental.Panels
                 if (textureAttributes[x].AttrName == name)
                 {
                     UI.PropertyTexture((IntPtr)(textureAttributes[x].Tex.GetTexture()));
+                    if (UI.DrawButton("ChangeFiltering"))
+                    {
+                        textureAttributes[x].Tex.ChangeFilterType(MagMinFilterTypes.Nearest);
+                    }
                     return false;
                 }
             }

@@ -241,7 +241,7 @@ namespace DevoidEngine.Engine.Rendering
             BrightFrameBuffer.UnBind();
         }
 
-        public void RenderBloomTexture(int srcTexture, float filterRadius)
+        public void RenderBloomTexture(int srcTexture)
         {
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.CullFace);
@@ -283,9 +283,10 @@ namespace DevoidEngine.Engine.Rendering
             GL.Enable(EnableCap.CullFace);
         }
 
-        float bloomStr = 0.4f;
-        float bloomExposure = 0.1f;
-        float filterRadius = 0f;
+        public bool enabled = true;
+        public float bloomStr = 0.19f;
+        public float bloomExposure = 1f;
+        public float filterRadius = 0f;
 
         public void Resize(int width, int height)
         {

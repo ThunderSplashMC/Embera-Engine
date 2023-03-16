@@ -131,7 +131,7 @@ vec3 CalcPointLight(PointLight light, vec3 N, vec3 F0, vec3 V) {
     vec3 H = normalize(V + L);
     float distance    = length(light.position - WorldPos);
     float attenuation = (1.0 / (distance * distance)) * light.intensity;
-    vec3 radiance     = light.diffuse * attenuation;        
+    vec3 radiance     = light.diffuse * attenuation * light.constant;        
         
     // cook-torrance brdf
     float NDF = DistributionGGX(N, H, GetRoughness());        
@@ -236,7 +236,7 @@ float ShadowCalculation(vec3 fragPos,vec3 lightPos, int index)
     for(int i = 0; i < samples; i++)
     {
         vec3 fragToLight = fragPos - lightPos;
-        float closestDepth = texture(W_SHADOW_BUFFERS[0], fragToLight + sampleOffsetDirections[i] * diskRadius).r;
+        float closestDepth = texture(W_SHADOW_BUFFERS[index], fragToLight + sampleOffsetDirections[i] * diskRadius).r;
         closestDepth *= 300;   // undo mapping [0;1]
         float currentDepth = length(fragToLight);
         shadow += currentDepth -  bias > closestDepth ? 1.0 : 0.0;
@@ -262,8 +262,9 @@ void main() {
     vec3 Lo = vec3(0);
 
     for (int i = 0; i < NR_POINT_LIGHTS; i++) {
-        float shadow = ShadowCalculation(FragPos, L_POINTLIGHTS[i].position, i);
-        Lo += max(0, 1 - (shadow * L_POINTLIGHTS[i].shadows)) * CalcPointLight(L_POINTLIGHTS[i], GetNormal(N), F0, V);
+        float shadow = ShadowCalculation(FragPos, L_POINTLIGHTS[i].position, i) * L_POINTLIGHTS[i].shadows;
+        /* max(0, 1 - (shadow * L_POINTLIGHTS[i].shadows)) *  */
+        Lo += /* max(0, 1 - (shadow)) * */ CalcPointLight(L_POINTLIGHTS[i], GetNormal(N), F0, V);
     }
 
     for (int i = 0; i < NR_SPOT_LIGHTS; i++) {
@@ -274,7 +275,9 @@ void main() {
     vec3 I = normalize(WorldPos - C_VIEWPOS);
     vec3 R = reflect(I, normalize(Normal));
 
-    vec3 ambient = vec3(0.03) * GetAlbedo() * material.ao + ((1 - GetRoughness()) * IBL(material, V, N, vec3(material.metallic)));
+    vec3 ambient = vec3(0.03) * GetAlbedo() * material.ao;
+    // + ((1 - GetRoughness()) * IBL(material, V, N, vec3(material.metallic)));
+
     vec3 color = ambient + Lo + GetEmission();
     
     color = color / (color + vec3(1.0));

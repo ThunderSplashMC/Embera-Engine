@@ -13,6 +13,8 @@ namespace DevoidEngine.Engine.Utilities
 
         static List<int> d_FrameBuffers = new List<int>();
 
+        static List<int> d_Textures = new List<int>();
+
         public static void AddVAOToDispose(int VAO)
         {
             d_VertexArrays.Add(VAO);
@@ -28,6 +30,11 @@ namespace DevoidEngine.Engine.Utilities
             d_FrameBuffers.Add(FBO);
         }
 
+        public static void AddTexToDispose(int TO)
+        {
+            d_Textures.Add(TO);
+        }
+
         public static void Dispose()
         {
             for (int i = 0; i < d_VertexArrays.Count; i++)
@@ -37,17 +44,20 @@ namespace DevoidEngine.Engine.Utilities
             }
             for (int i = 0; i < d_VertexBuffers.Count; i++)
             {
-                if (d_VertexBuffers[i] == 1) continue;
                 GL.DeleteBuffer(d_VertexBuffers[i]);
             }
             for (int i = 0; i < d_FrameBuffers.Count; i++)
             {
-                if (d_VertexBuffers[i] == 1) continue;
-                GL.DeleteBuffer(d_VertexBuffers[i]);
+                GL.DeleteFramebuffer(d_FrameBuffers[i]);
+            }
+            for (int i = 0; i < d_Textures.Count; i++)
+            {
+                GL.DeleteTexture(d_Textures[i]);
             }
             d_VertexArrays.Clear();
             d_VertexBuffers.Clear();
             d_FrameBuffers.Clear();
+            d_Textures.Clear();
         }
     }
 }

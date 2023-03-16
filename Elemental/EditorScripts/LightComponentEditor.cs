@@ -37,6 +37,10 @@ namespace DevoidEngine.Elemental.EditorScripts
             UI.PropertyInt(ref light.Intensity);
             UI.EndProperty();
 
+            UI.BeginProperty("Attenuation");
+            UI.PropertyFloat(ref light.Attenuation);
+            UI.EndProperty();
+
             UI.BeginProperty("Light Type");
             UI.DrawEnumField(light.GetType().GetField("Lighttype"), light);
             UI.EndProperty();

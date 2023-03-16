@@ -22,12 +22,16 @@ namespace DevoidEngine.Elemental.EditorUtils
         static int propertyCount;
         static string propertyLabel;
         static uint warnColDefault = ToUIntA(new Vector4(0.5f, 0.5f, 0.7f, 0.5f));
+        static bool hasBegun = false;
 
         public static void BeginPropertyGrid(string id)
         {
             propertyCount = 0;
             firstProperty_ = true;
-            ImGui.BeginTable("##" + id, 2);
+            hasBegun = ImGui.BeginTable("##" + id, 2);
+
+            if (!hasBegun) return;
+
             ImGui.TableSetupColumn("Prop", 0);
             ImGui.TableSetupColumn("Val", ImGuiTableColumnFlags.WidthStretch);
             ImGui.TableNextColumn();
@@ -35,11 +39,14 @@ namespace DevoidEngine.Elemental.EditorUtils
 
         public static void EndPropertyGrid()
         {
+            if (!hasBegun) return;
             ImGui.EndTable();
+            hasBegun = false;
         }
 
         public static void BeginProperty(string fieldname)
         {
+            if (!hasBegun) return;
             propertyCount += 1;
             propertyCurr_ = true;
             firstField_ = true;
@@ -62,12 +69,14 @@ namespace DevoidEngine.Elemental.EditorUtils
 
         public static void EndProperty()
         {
+            if (!hasBegun) return;
             propertyCurr_ = false;
             firstField_ = true;
         }
 
         public static void NextField()
         {
+            if (!hasBegun) return;
             if (firstField_)
             {
                 ImGui.TableSetColumnIndex(1);
@@ -102,11 +111,14 @@ namespace DevoidEngine.Elemental.EditorUtils
             value = new Vector3(vec3.X, vec3.Y, vec3.Z);
         }
 
-        public static void PropertyString(ref string value)
+        public static void PropertyString(ref string value, bool multiline = true)
         {
             NextField();
             ImGui.SetNextItemWidth(-1);
-            ImGui.InputTextMultiline("##" + propertyCount + propertyLabel, ref value, 32000, new System.Numerics.Vector2(-1,100));
+            if (multiline)
+                ImGui.InputTextMultiline("##" + propertyCount + propertyLabel, ref value, 32000, new System.Numerics.Vector2(-1, 100));
+            else
+                ImGui.InputText("##" + propertyCount + propertyLabel, ref value, 32000);
         }
 
         public static void PropertyColor4(ref Color4 value)
@@ -305,6 +317,12 @@ namespace DevoidEngine.Elemental.EditorUtils
             ImGui.SetNextItemWidth(-1);
             ImGui.TextWrapped(text);
             ImGui.PopStyleColor();
+        }
+
+        public static bool DrawButton(string label)
+        {
+            NextField();
+            return ImGui.Button(label);
         }
 
         public static uint ToUint(Vector4i c)

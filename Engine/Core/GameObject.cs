@@ -9,6 +9,8 @@ namespace DevoidEngine.Engine.Core
 {
     class GameObject
     {
+        public bool enabled = true;
+
         public string name;
         public GameObject parent;
         public Transform transform;

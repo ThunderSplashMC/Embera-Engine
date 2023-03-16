@@ -14,6 +14,7 @@ namespace DevoidEngine.Engine.Components
 
         [NonSerialized]
         public int Intensity = 1;
+        public float Attenuation = 1f;
         public LightType Lighttype = LightType.PointLight;
         public Color4 color = new Color4(1f,1f,1f,1f);
         public Vector3 direction = new Vector3(0,-1,0);
@@ -83,7 +84,7 @@ namespace DevoidEngine.Engine.Components
 
         public override void OnUpdate(float deltaTime)
         {
-            OuterCutOff = cutOff - OuterCutSoftness;
+        //    OuterCutOff = cutOff - OuterCutSoftness;
 
             if (gameObject.transform.rotation != prevRot)
             {

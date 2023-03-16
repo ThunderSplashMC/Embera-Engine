@@ -37,6 +37,8 @@
     <Compile Remove="Engine\Imgui\imnodes\ImNodes - Copy.cs" />
     <Compile Remove="Engine\Imgui\imnodes\ImNodes.cs" />
     <Compile Remove="Engine\Imgui\imnodes\ImNodesDefinitions.cs" />
+    <Compile Remove="Engine\Rendering\Renderer3D-dupe.cs" />
+    <Compile Remove="Engine\Rendering\VXGI.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -69,8 +71,13 @@
     <None Remove="Elemental\Assets\Shaders\grid.vert" />
     <None Remove="Elemental\Assets\Shaders\guizmo.frag" />
     <None Remove="Elemental\Assets\Shaders\guizmo.vert" />
+    <None Remove="Elemental\Assets\Shaders\outline\edgedetection.frag" />
+    <None Remove="Elemental\Assets\Shaders\outline\edgedetection.vert" />
+    <None Remove="Elemental\Assets\Shaders\outline\outline.frag" />
+    <None Remove="Elemental\Assets\Shaders\outline\outline.vert" />
+    <None Remove="Elemental\Assets\Shaders\viewportID.frag" />
+    <None Remove="Elemental\Assets\Shaders\viewportID.vert" />
     <None Remove="Elemental\Assets\texture-empty-icn.png" />
-    <None Remove="Engine\Core\Devoid.txt" />
     <None Remove="Engine\deps\freetype6.dll" />
     <None Remove="Engine\deps\SharpFont.dll" />
     <None Remove="Engine\EngineContent\cubemaps\back.jpg" />
@@ -115,6 +122,8 @@
     <None Remove="Engine\EngineContent\shaders\font-shader.vert" />
     <None Remove="Engine\EngineContent\shaders\framebuffer.frag" />
     <None Remove="Engine\EngineContent\shaders\framebuffer.vert" />
+    <None Remove="Engine\EngineContent\shaders\Framebuffer\combine.frag" />
+    <None Remove="Engine\EngineContent\shaders\Framebuffer\combine.vert" />
     <None Remove="Engine\EngineContent\shaders\gbuffer.frag" />
     <None Remove="Engine\EngineContent\shaders\gbuffer.vert" />
     <None Remove="Engine\EngineContent\shaders\hdr.frag" />
@@ -150,11 +159,35 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Elemental\Assets\Shaders\outline\edgedetection.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Elemental\Assets\Shaders\outline\edgedetection.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Elemental\Assets\Shaders\outline\outline.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Elemental\Assets\Shaders\outline\outline.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Elemental\Assets\Shaders\viewportID.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Elemental\Assets\Shaders\viewportID.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Engine\EngineContent\icons\icon512-stroke.ico" />
     <Content Include="Engine\EngineContent\model\cube.fbx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Engine\EngineContent\shaders\experimental\voxel_visualize.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\Framebuffer\combine.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\Framebuffer\combine.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Engine\EngineContent\shaders\ToWorldPos.frag">
@@ -343,13 +376,13 @@
     <Content Include="Engine\Imgui\misc\imgui.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Engine\Rendering\Renderer3D-dupe.cs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\Rendering\VXGI.cs" />
     <Content Include="Previews\Screenshot_13.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="Engine\Core\Devoid.txt" />
   </ItemGroup>
 
   <ItemGroup>
@@ -493,12 +526,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Engine\Rendering\Renderer3D-dupe.cs">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="ImNodes.NET">
       <HintPath>Engine\Imgui\imnodes\ImNodes.NET.dll</HintPath>
     </Reference>
@@ -512,6 +539,10 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Engine\EngineContent\shaders\OutlineShader\" />
   </ItemGroup>
 
 </Project>

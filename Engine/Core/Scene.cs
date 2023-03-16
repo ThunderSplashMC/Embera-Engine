@@ -57,17 +57,8 @@ namespace DevoidEngine.Engine.Core
         public void OnRenderEditor()
         {
 
-            //for (int i = 0; i < lights.Count; i++)
-            //{
-            //    if (lights[i].Lighttype == LightComponent.LightType.PointLight)
-            //    {
-            //        RendererData.PointLights.Add(lights[i]);
-            //    }
-            //    if (lights[i].Lighttype == LightComponent.LightType.SpotLight)
-            //    {
-            //        RendererData.SpotLights.Add(lights[i]);
-            //    }
-            //}
+            sceneRegistry.RenderCallAllGameObjects();
+            Renderer3D.BeginScene(sceneRegistry.GetLights());
         }
 
         public void OnUpdate(float deltaTime)
@@ -88,7 +79,7 @@ namespace DevoidEngine.Engine.Core
         public void OnRender()
         {
             sceneRegistry.RenderCallAllGameObjects();
-            Renderer3D.BeginScene(ref sceneRegistry.GetPointLights(), ref sceneRegistry.GetSpotLights());
+            Renderer3D.BeginScene(sceneRegistry.GetLights());
         }
 
         public SceneRegistry GetSceneRegistry()
@@ -191,6 +182,7 @@ namespace DevoidEngine.Engine.Core
         {
             if (component.GetType() == typeof(LightComponent))
             {
+                System.Console.WriteLine("LIGHT REMOVED");
                 sceneRegistry.RemoveLight((LightComponent)component);
             }
             if (component.GetType() == typeof(Rigidbody))

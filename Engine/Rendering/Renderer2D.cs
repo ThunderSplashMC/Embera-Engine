@@ -27,7 +27,6 @@ namespace DevoidEngine.Engine.Rendering
 
         static Renderer2DData RendererData = new Renderer2DData();
         static List<DrawItem> DrawList = new List<DrawItem>();
-        public static VertexArray QuadVAO;
         static Shader QuadShader;
         public static Matrix4 OrthoProjection;
 
@@ -37,12 +36,6 @@ namespace DevoidEngine.Engine.Rendering
             RendererData.ViewportWidth = width;
 
             SetOrthographic();
-
-            Vertex[] QuadVertices = VERTEX_DEFAULTS.GetFrameBufferVertices();
-
-            VertexBuffer QuadBuffer = new VertexBuffer(Vertex.VertexInfo, QuadVertices.Length);
-            QuadBuffer.SetData(QuadVertices, QuadVertices.Length);
-            QuadVAO = new VertexArray(QuadBuffer);
 
             QuadShader = new Shader("Engine/EngineContent/shaders/2d");
         }
@@ -130,13 +123,13 @@ namespace DevoidEngine.Engine.Rendering
                     drawMat.Set("W_MODEL_MATRIX", MODELMATRIX);
                     drawMat.Set("W_PROJECTION_MATRIX", OrthoProjection);
 
-                    drawMat.UpdateUniforms();
+                    drawMat.Apply();
 
                     drawItem.mesh.Draw();
                     continue;
                 }
 
-                QuadVAO.Render();
+                RendererUtils.QuadVAO.Render();
             }
         }
 

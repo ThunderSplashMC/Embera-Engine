@@ -32,7 +32,6 @@ namespace DevoidEngine.Elemental.EditorUtils
             GuizmoBuffer = CompositeBuffer;
 
             Vertex[] vertices = VERTEX_DEFAULTS.GetFrameBufferVertices();
-
             VertexBuffer vertexBuffer = new VertexBuffer(Vertex.VertexInfo, vertices.Length);
             vertexBuffer.SetData(vertices, vertices.Length);
             GuizmoVAO = new VertexArray(vertexBuffer);

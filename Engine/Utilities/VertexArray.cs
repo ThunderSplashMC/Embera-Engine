@@ -15,9 +15,8 @@ namespace DevoidEngine.Engine.Utilities
         private bool isdisposed = false;
         private bool isinitialized = false;
 
-        public VertexArray(VertexBuffer vertexBuffer)//, IndexBuffer indexBuffer)
+        public VertexArray(VertexBuffer vertexBuffer)
         {
-            Console.WriteLine("VERTEX ARRAY FOR THE ABOVE VERTEX BUFFER");
             this.isdisposed = false;
             this.isinitialized = true;
 

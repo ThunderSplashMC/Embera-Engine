@@ -106,15 +106,15 @@ namespace DevoidEngine.Engine.Rendering
 
         public void Voxelize()
         {
-            ClearTextures();
-            voxelize_shader.Use();
-            voxelize_shader.SetVector3("C_VIEWPOS", RenderGraph.Camera.position);
+            //ClearTextures();
+            //voxelize_shader.Use();
+            //voxelize_shader.SetVector3("C_VIEWPOS", RenderGraph.Camera.position);
 
-            Renderer3D.UploadLightingData(voxelize_shader);
+            //Renderer3D.UploadLightingData(voxelize_shader);
 
-            GL.BindImageTexture(0, voxel_texture, 0, true, 0, TextureAccess.ReadWrite, SizedInternalFormat.Rgba8);
-            Renderer3D.Draw();
-            GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit | MemoryBarrierFlags.TextureFetchBarrierBit);
+            //GL.BindImageTexture(0, voxel_texture, 0, true, 0, TextureAccess.ReadWrite, SizedInternalFormat.Rgba8);
+            //Renderer3D.Draw();
+            //GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit | MemoryBarrierFlags.TextureFetchBarrierBit);
         }
 
         public void Visualize()

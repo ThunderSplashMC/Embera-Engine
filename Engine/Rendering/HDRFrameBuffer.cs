@@ -34,6 +34,7 @@ namespace DevoidEngine.Engine.Rendering
             HDRFBShader = new Shader("Engine/EngineContent/shaders/hdr");
 
             Vertex[] vertices = VERTEX_DEFAULTS.GetFrameBufferVertices();
+            Console.WriteLine("HDR FB");
             VertexBuffer vertexBuffer = new VertexBuffer(Vertex.VertexInfo, vertices.Length);
             vertexBuffer.SetData(vertices, vertices.Length);
             FrameBufferPlane = new VertexArray(vertexBuffer);

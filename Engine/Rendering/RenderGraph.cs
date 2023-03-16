@@ -10,6 +10,9 @@ namespace DevoidEngine.Engine.Rendering
     {
         public static int MAX_POINT_LIGHTS = 8;
         public static int MAX_SPOT_LIGHTS = 8;
+        public static int MAX_POINT_SHADOW_BUFFERS = 4;
+
+        public static bool BLOOM = true;
 
         //public static FrameBuffer CompositePass;
         public static Camera Camera;

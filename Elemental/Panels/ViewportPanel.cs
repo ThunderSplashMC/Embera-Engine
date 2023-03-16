@@ -12,15 +12,21 @@ using imnodesNET;
 using System.IO;
 using System.Text;
 using DevoidEngine.Engine.Serializing;
+using System.Drawing.Imaging;
+using System.Drawing;
+using System.Linq;
 
 namespace DevoidEngine.Elemental.Panels
 {
     class ViewportPanel : Panel
     {
+
+        private EditorRendererPass EditorRendererPass;
+        private EditorOutlinePass EditorOutlinePass;
         private EditorCamera editorCamera;
         public int ViewportTexture;
         private float prev_h, prev_w;
-        private PostEffectSettings.BloomSettings bloomSettings;
+        //private PostEffectSettings.BloomSettings bloomSettings;
 
         private Texture SampleTex;
         private Texture LightComponentTex;
@@ -29,8 +35,7 @@ namespace DevoidEngine.Elemental.Panels
 
         public override void OnInit()
         {
-            ViewportTexture = RenderGraph.LightBuffer.GetColorAttachment(0);
-            //bloomSettings = Renderer3D.GetBloomSettings();
+            ViewportTexture = RenderGraph.CompositeBuffer.GetColorAttachment(0);
             editorCamera = new EditorCamera(MathHelper.DegreesToRadians(45.0f), (int)Editor.Application.GetWindowSize().X, (int)Editor.Application.GetWindowSize().Y, 1000f, 0.1f);
             Renderer.SetCamera(editorCamera.Camera);
 
@@ -43,19 +48,11 @@ namespace DevoidEngine.Elemental.Panels
             CameraComponentTex = new Texture("Elemental/Assets/CameraComponentTexture.png");
             CameraComponentTex.ChangeFilterType(MagMinFilterTypes.Linear);
 
-            //{
-            //    GameObject Omoli = Editor.EditorScene.NewGameObject("Omoli");
-            //    SpriteRenderer _2DSpriteRenderer = Omoli.AddComponent<SpriteRenderer>();
-            //    _2DSpriteRenderer.Texture = new Texture("Engine/EngineContent/models/textures/omoli.png");
-            //}
+            EditorRendererPass = new EditorRendererPass();
+            EditorOutlinePass = new EditorOutlinePass();
 
-            //{
-            //    GameObject Luci = Editor.EditorScene.NewGameObject("Luci");
-            //    SpriteRenderer _2DSpriteRenderer = Luci.AddComponent<SpriteRenderer>();
-            //    _2DSpriteRenderer.Texture = new Texture("Engine/EngineContent/models/textures/luci.png");
-            //}
-
-            //FontTex = FontLoader.LoadFace("Elemental/Assets/Fonts/OpenSans.ttf");
+            Renderer3D.AddRenderPass(EditorRendererPass);
+            Renderer3D.AddRenderPass(EditorOutlinePass);
         }
 
         public void SetContext(EditorLayer editor)
@@ -68,7 +65,7 @@ namespace DevoidEngine.Elemental.Panels
 
             if (Editor.EditorScene.GetSceneState() != Scene.SceneState.Play)
             {
-                //DrawGuizmos();
+                DrawGuizmos();
             }
 
 
@@ -78,6 +75,7 @@ namespace DevoidEngine.Elemental.Panels
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, System.Numerics.Vector2.Zero);
             ImGui.Begin($"{MaterialIconFont.MaterialDesign.Landscape} Game View", ImGuiWindowFlags.NoBackground);
             DevoidGUI.Image((IntPtr)ViewportTexture, new Vector2(ImGui.GetContentRegionMax().X, ImGui.GetContentRegionMax().Y - 32));
+            HandleObjectSelect();
             HandleDragDrop();
 
 
@@ -167,6 +165,13 @@ namespace DevoidEngine.Elemental.Panels
 
                 ImGui.TreePop();
             }
+            if (ImGui.CollapsingHeader("EditorOutline"))
+            {
+                ImGui.TreePush();
+                DevoidGUI.DrawFloatField("Outline Width", ref EditorOutlinePass.outlineWidth, 0.1f);
+
+                ImGui.TreePop();
+            }
 
 
             if (ImGui.CollapsingHeader("PostProcess Effects"))
@@ -175,10 +180,10 @@ namespace DevoidEngine.Elemental.Panels
                 if (ImGui.CollapsingHeader("Bloom"))
                 {
                     ImGui.TreePush();
-                    DevoidGUI.DrawCheckboxField("Enabled", ref bloomSettings.enabled);
-                    DevoidGUI.DrawFloatField("Intensity", ref bloomSettings.BloomIntensity);
-                    DevoidGUI.DrawFloatField("Exposure", ref bloomSettings.CameraIntensity);
-                    DevoidGUI.DrawFloatField("FilterRadius", ref bloomSettings.FilterRadius);
+                    DevoidGUI.DrawCheckboxField("Enabled", ref RenderGraph.BLOOM);
+                    DevoidGUI.DrawFloatField("Intensity", ref RenderGraph.BloomRenderer.bloomStr);
+                    DevoidGUI.DrawFloatField("Exposure", ref RenderGraph.BloomRenderer.bloomExposure);
+                    DevoidGUI.DrawFloatField("FilterRadius", ref RenderGraph.BloomRenderer.filterRadius);
                     ImGui.TreePop();
 
                     //Renderer3D.SetBloomSettings(bloomSettings);
@@ -188,33 +193,33 @@ namespace DevoidEngine.Elemental.Panels
 
             ImGui.End();
 
-            //ImGui.Begin("3D Debug");
 
-            //ImGui.Image((IntPtr)VXGI.debugTexture, new System.Numerics.Vector2(256, 256));
+            //NodeManager.BeginNodeEditor("Node Editor");
 
-            //ImGui.End();
+            //NodeManager.BeginNode("ash" + 1, "GameObject ", new Vector2(50, 50), new Vector2(300, 300));
 
+            //NodeManager.PropertyText("Position      ", "X: 0 Y: 0 Z: 0", new Vector2(0, 0));
+            //NodeManager.PropertyText("Rotation      ", "X: 0 Y: 0 Z: 0", new Vector2(0, 0));
+            //NodeManager.PropertyText("Components    ", "List<Component>", new Vector2(0, 0));
+            //NodeManager.PropertyText("Current Scene ", "DevoidScene1", new Vector2(0, 0));
+            //NodeManager.PropertyText("Object Index  ", "0", new Vector2(0, 0));
+            //NodeManager.PropertyText("Object Status ", "Hidden", new Vector2(0, 0));
+            //NodeManager.PropertyFloat("SCALE: ", ref val, new Vector2(0, 0));
 
-            NodeManager.BeginNodeEditor("../a");
+            //NodeManager.EndNode();
 
-            NodeManager.BeginNode("ash" + 1, "GameObject ", new Vector2(50, 50), new Vector2(300, 300));
+            //NodeManager.BeginNode("ash" + 2, "Value Inspecter ", new Vector2(55, 50), new Vector2(300, 300));
+            //NodeManager.PropertyFloat("Value: ", ref val, new Vector2(0, 0));
 
-            NodeManager.PropertyText("Position      ", "X: 0 Y: 0 Z: 0", new Vector2(0, 0));
-            NodeManager.PropertyText("Rotation      ", "X: 0 Y: 0 Z: 0", new Vector2(0, 0));
-            NodeManager.PropertyText("Components    ", "List<Component>", new Vector2(0, 0));
-            NodeManager.PropertyText("Current Scene ", "DevoidScene1", new Vector2(0, 0));
-            NodeManager.PropertyText("Object Index  ", "0", new Vector2(0, 0));
-            NodeManager.PropertyText("Object Status ", "Hidden", new Vector2(0, 0));
-            NodeManager.PropertyFloat("SCALE: ", ref val, new Vector2(0, 0));
+            //NodeManager.EndNode();
 
-            NodeManager.EndNode();
+            //NodeManager.EndNodeEditor();
 
-            NodeManager.BeginNode("ash" + 2, "Value Inspecter ", new Vector2(55, 50), new Vector2(300, 300));
-            NodeManager.PropertyFloat("Value: ", ref val, new Vector2(0, 0));
+            ImGui.Begin("S");
 
-            NodeManager.EndNode();
+            ImGui.Image((IntPtr)(EditorOutlinePass.frameBuffer.GetDepthAttachment()), new System.Numerics.Vector2(1280, 720));
 
-            NodeManager.EndNodeEditor();
+            ImGui.End();
 
         }
         Vector4 rectSize = new Vector4(40, 40, 300, 350);
@@ -297,6 +302,41 @@ namespace DevoidEngine.Elemental.Panels
             Guizmo3D.End();
         }
 
+        void HandleObjectSelect()
+        {
+            if (ImGui.IsItemClicked())
+            {
+                if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
+                {
+                    EditorRendererPass.frameBuffer.Bind();
+
+                    float rel_x = ((ImGui.GetContentRegionMax().X - (ImGui.GetMousePos().X - ImGui.GetWindowPos().X)) / ImGui.GetContentRegionMax().X);
+                    float rel_y = ((ImGui.GetContentRegionMax().Y - (ImGui.GetMousePos().Y - (ImGui.GetWindowPos().Y))) / ImGui.GetContentRegionMax().Y);
+
+                    float mouseX = (int)(rel_x * Editor.Application.GetWindowSize().X);
+                    float mouseY = (int)(rel_y * Editor.Application.GetWindowSize().Y);
+
+                    int count = 0;
+
+                    int[] pixels = new int[1];
+                    OpenTK.Graphics.OpenGL.GL.ReadPixels((int)mouseX, (int)mouseY,  1, 1, OpenTK.Graphics.OpenGL.PixelFormat.RedInteger, OpenTK.Graphics.OpenGL.PixelType.Int, pixels);
+
+                    GameObject[] gameObjects = Editor.EditorScene.GetSceneRegistry().GetAllGameObjects();
+
+                    for (int i = 0; i < gameObjects.Length; i++) 
+                    { 
+                        if (gameObjects[i].ID == pixels[0])
+                        {
+                            ((GameObjectPanel)Editor.EditorPanels[2]).CurrentSelectedGameObject = gameObjects[i];
+                            EditorOutlinePass.CurrentOutlinedObjectUUID = gameObjects[i].ID;
+                        }
+                    }
+
+                    EditorRendererPass.frameBuffer.UnBind();
+                }
+            }
+        }
+
         void HandleDragDrop()
         {
             if (ImGui.BeginDragDropTarget())
@@ -325,6 +365,9 @@ namespace DevoidEngine.Elemental.Panels
                 case ".gltf":
                     HandleDropMeshFile(item.path);
                     break;
+                case ".dmesh":
+                    HandleDropMeshFile(item.path);
+                    break;
                 case ".devoidscene":
                     HandleDropSceneFile(item.path);
                     break;
@@ -334,7 +377,7 @@ namespace DevoidEngine.Elemental.Panels
         void HandleDropMeshFile(string path)
         {
             Mesh[] meshes = ModelImporter.LoadModel(path);
-            if (meshes == null ||meshes.Length == 0) { return; }
+            if (meshes == null || meshes.Length == 0) { return; }
             GameObject DropObject = Editor.EditorScene.NewGameObject(meshes[0].name);
             MeshHolder MeshHolder = DropObject.AddComponent<MeshHolder>();
             MeshHolder.AddMeshes(meshes);

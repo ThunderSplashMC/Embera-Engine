@@ -1,9 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-
+using System.Text.Encodings;
 using Assimp;
 using OpenTK.Mathematics;
+using System.Linq;
+using SharpFont;
+using System.Text;
 
 namespace DevoidEngine.Engine.Utilities
 {
@@ -14,15 +17,16 @@ namespace DevoidEngine.Engine.Utilities
 
         public static Mesh[] LoadModel(string path)
         {
+
             AssimpContext ImporterObject = new AssimpContext();
             Assimp.Scene scene;
             try
             {
-                scene = ImporterObject.ImportFile(path, PostProcessSteps.Triangulate | PostProcessSteps.GenerateNormals | PostProcessSteps.FlipWindingOrder | PostProcessSteps.CalculateTangentSpace | PostProcessSteps.FlipUVs | PostProcessSteps.GenerateUVCoords);
+                scene = ImporterObject.ImportFile(path, PostProcessSteps.Triangulate | PostProcessSteps.GenerateNormals /* | PostProcessSteps.FlipWindingOrder*/ | PostProcessSteps.CalculateTangentSpace | PostProcessSteps.FlipUVs | PostProcessSteps.GenerateUVCoords);
             }
             catch (Exception E)
             {
-                Console.WriteLine("Model was not found at path: " + path);
+                Console.WriteLine("Model was not found at path: " + path + "\nOr Model file was invalid");
                 return null;
             }
             List<Mesh> ModelTotalMeshes = new List<Mesh>();
@@ -166,6 +170,7 @@ namespace DevoidEngine.Engine.Utilities
             }
 
             mesh1.SetMaterial(material);
+            //ConvertMeshToFile(vertices.ToArray());
             return mesh1;
         }
 
@@ -240,6 +245,47 @@ namespace DevoidEngine.Engine.Utilities
                 finalPath = path;
             // resolves any internal "..\" to get the true full path.
             return Path.GetFullPath(finalPath);
+        }
+
+        public static Mesh[] LoadDmesh(string path)
+        {
+            List<string> lines = File.ReadLines(path).ToList();
+
+            for (int i = 0; i < lines.Count; i++)
+            {
+                string data = lines[i];
+
+                int firstOpenBrackInd = data.IndexOf("(");
+
+                string positionNormalSubstring = data.Substring(firstOpenBrackInd + 1, data.IndexOf(")") - 1);
+
+                string positionSubstring = positionNormalSubstring.Substring(firstOpenBrackInd + 1, positionNormalSubstring.Substring(positionNormalSubstring.IndexOf(",")).IndexOf(",") - 1);
+
+                //float positionX = positionNormalSubstring.Substring(firstOpenBrackInd + 1, )
+
+                Console.WriteLine(positionSubstring);
+
+
+                Vector3 position = new Vector3();
+            }
+            return new Mesh[0];
+        }
+
+        public static void ConvertMeshToFile(Vertex[] vertices)
+        {
+            string output = "";
+
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                output += new Tuple<float, float, float, /* */ float, float, float>(vertices[i].Position.X, vertices[i].Position.Y, vertices[i].Position.Z, vertices[i].Normal.X, vertices[i].Normal.Y, vertices[i].Normal.Z).ToString();
+                output += new Tuple<float, float>(vertices[i].TexCoord.X, vertices[i].TexCoord.Y).ToString();
+                output += new Tuple<float, float, float, float, float, float>(vertices[i].Tangent.X, vertices[i].Tangent.Y, vertices[i].Tangent.Z, vertices[i].BiTangent.X, vertices[i].BiTangent.Y, vertices[i].BiTangent.Z).ToString() + "\n";
+
+
+            }
+
+            FileStream fs = File.Create("D:\\BlenderProjects\\MeshFile.dmesh");
+            fs.Write(ASCIIEncoding.ASCII.GetBytes(output));
         }
 
     }

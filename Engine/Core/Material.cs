@@ -124,10 +124,9 @@ namespace DevoidEngine.Engine.Core
             return Vector3.Zero;
         }
 
-        public void UpdateUniforms()
+        public void Apply()
         {
             Texture.UnbindTexture();
-            shader.Use();
             foreach (string key in uniformInts.Keys)
             {
                 shader.SetInt(key, uniformInts[key]);

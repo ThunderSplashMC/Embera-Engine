@@ -29,7 +29,7 @@ namespace DevoidEngine.Engine.Components
             }
             for (int i = 0; i < MeshHolder.Meshes.Count; i++)
             {
-                Renderer3D.Submit(gameObject.transform.position, gameObject.transform.rotation, gameObject.transform.scale, MeshHolder.Meshes[i]);
+                Renderer3D.Submit(gameObject.transform.position, gameObject.transform.rotation, gameObject.transform.scale, MeshHolder.Meshes[i], (object)gameObject.ID);
             }
         }
     }

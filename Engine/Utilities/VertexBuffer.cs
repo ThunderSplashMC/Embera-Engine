@@ -21,13 +21,8 @@ namespace DevoidEngine.Engine.Utilities
 
         public VertexBuffer(VertexInfo vertexInfo, int vertexCount, bool isStatic = true)
         {
-            Console.WriteLine("CREATED");
             this.isdisposed = false;
             this.isinitialized = true;
-            //if (vertexCount > MaxVertices || vertexCount < MinVertices)
-            //{
-            //    throw new ArgumentException("Vertex Count exceeds " + MaxVertices + " or is lower than " + MinVertices);
-            //}
 
             this.VertexInfo = vertexInfo;
             this.VertexCount = vertexCount;
@@ -49,10 +44,6 @@ namespace DevoidEngine.Engine.Utilities
         public VertexBuffer(VertexInfo vertexInfo, Vertex[] data, bool isStatic = true)
         {
             this.isdisposed = false;
-            //if (vertexCount > MaxVertices || vertexCount < MinVertices)
-            //{
-            //    throw new ArgumentException("Vertex Count exceeds " + MaxVertices + " or is lower than " + MinVertices);
-            //}
 
             this.VertexInfo = vertexInfo;
             this.VertexCount = data.Length;

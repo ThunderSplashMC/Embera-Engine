@@ -39,6 +39,7 @@ namespace DevoidEngine.Engine.Imgui
         public static void CreateBuffer(string Name, out int Buffer)
         {
             Buffer = GL.GenBuffer();
+            Console.WriteLine("IMGUI BUFFER CREATE: " + Buffer);
             GL.BindBuffer(BufferTarget.ArrayBuffer, Buffer);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             //LabelObject(ObjectLabelIdentifier.Buffer, Buffer, $"Buffer: {Name}");
