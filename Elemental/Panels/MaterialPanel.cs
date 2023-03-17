@@ -66,6 +66,7 @@ namespace DevoidEngine.Elemental.Panels
             }
 
             ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(0.5f, 0.5f, 0.5f, 1));
+
             ImGui.TextWrapped("Materials");
             ImGui.PopStyleColor();
 
@@ -82,6 +83,9 @@ namespace DevoidEngine.Elemental.Panels
             for (int i = 0 ; i < materials.Count; i++)
             {
                 ImGui.PushID("folder-" + i);
+
+                ImDrawListPtr drawData = ImGui.GetWindowDrawList();
+
 
                 ImGui.ImageButton((IntPtr)thumbnailRenderer.GetThumbnail(materialThumbnailIndex[i]), new System.Numerics.Vector2(thumbnailSize, thumbnailSize));
 

@@ -175,7 +175,6 @@ namespace DevoidEngine.Engine.Utilities
             }
 
             mesh1.SetMaterial(material);
-            //ConvertMeshToFile(vertices.ToArray());
             return new ModelData()
             {
                 mesh = mesh1,
@@ -286,11 +285,11 @@ namespace DevoidEngine.Engine.Utilities
 
             for (int i = 0; i < vertices.Length; i++)
             {
-                output += new Tuple<float, float, float, /* */ float, float, float>(vertices[i].Position.X, vertices[i].Position.Y, vertices[i].Position.Z, vertices[i].Normal.X, vertices[i].Normal.Y, vertices[i].Normal.Z).ToString();
-                output += new Tuple<float, float>(vertices[i].TexCoord.X, vertices[i].TexCoord.Y).ToString();
-                output += new Tuple<float, float, float, float, float, float>(vertices[i].Tangent.X, vertices[i].Tangent.Y, vertices[i].Tangent.Z, vertices[i].BiTangent.X, vertices[i].BiTangent.Y, vertices[i].BiTangent.Z).ToString() + "\n";
-
-
+                output += vertices[i].Position.X + "P" + vertices[i].Position.Y + "P" + vertices[i].Position.Z + "|";
+                output += vertices[i].Normal.X + "N" + vertices[i].Normal.Y + "N" + vertices[i].Normal.Z + "|";
+                output += vertices[i].TexCoord.X + "t" + vertices[i].TexCoord.Y + "|";
+                output += vertices[i].Tangent.X + "T" + vertices[i].Tangent.Y + "T" + vertices[i].Tangent.Z + "|";
+                output += vertices[i].BiTangent.X + "B" + vertices[i].BiTangent.Y + "B" + vertices[i].BiTangent.Z + "|\n";
             }
 
             FileStream fs = File.Create("D:\\BlenderProjects\\MeshFile.dmesh");

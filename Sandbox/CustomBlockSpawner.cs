@@ -25,6 +25,8 @@ namespace DevoidEngine.Sandbox
         {
             Mesh[] meshes = ModelImporter.AddMaterialsToScene(gameObject.scene, ModelImporter.LoadModel("D:\\Programming\\Devoid\\ExampleAssets\\gress\\scene.gltf")); ;
 
+            ModelImporter.ConvertMeshToFile(VERTEX_DEFAULTS.GetCubeVertex());
+
             for (int i = 0; i < 25; i++)
             {
                 for (int y = 0; y < 25; y++)

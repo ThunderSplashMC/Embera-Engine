@@ -86,6 +86,9 @@ namespace DevoidEngine.Elemental.EditorUtils
             ReRender();
         }
 
+        public Vector3 pos = new Vector3(0, 0, -60.8f);
+        public int intensity = 10000;
+
         public override void DoRenderPass()
         {
             if (!reRender) return;
@@ -125,10 +128,10 @@ namespace DevoidEngine.Elemental.EditorUtils
 
                 Renderer3D.ResetLighting(material.GetShader());
 
-                material.GetShader().SetFloat("L_POINTLIGHTS[0].intensity", 20000f);
+                material.GetShader().SetFloat("L_POINTLIGHTS[0].intensity", intensity);
                 material.GetShader().SetFloat("L_POINTLIGHTS[0].constant", 1f);
                 material.GetShader().SetVector3("L_POINTLIGHTS[0].diffuse", new Vector3(1));
-                material.GetShader().SetVector3("L_POINTLIGHTS[0].position", new Vector3(0, 0, -45f));
+                material.GetShader().SetVector3("L_POINTLIGHTS[0].position", pos);
                 material.GetShader().SetBool("L_POINTLIGHTS[0].shadows", false);
 
                 material.Apply();
