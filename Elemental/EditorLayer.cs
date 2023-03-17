@@ -45,6 +45,7 @@ namespace DevoidEngine.Elemental
             EditorPanels.Add(new ViewportPanel());
             EditorPanels.Add(new ContentBrowserPanel());
             EditorPanels.Add(new GameObjectPanel());
+            EditorPanels.Add(new MaterialPanel());
             EditorPanels.Add(ConsoleService);
 
             // On Init

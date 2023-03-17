@@ -67,6 +67,8 @@
     <None Remove="Elemental\Assets\LightComponentTexture.png" />
     <None Remove="Elemental\Assets\pause-icn.png" />
     <None Remove="Elemental\Assets\play-icn.png" />
+    <None Remove="Elemental\Assets\Shaders\dummy\dummy.frag" />
+    <None Remove="Elemental\Assets\Shaders\dummy\dummy.vert" />
     <None Remove="Elemental\Assets\Shaders\grid.frag" />
     <None Remove="Elemental\Assets\Shaders\grid.vert" />
     <None Remove="Elemental\Assets\Shaders\guizmo.frag" />
@@ -159,6 +161,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Elemental\Assets\Shaders\dummy\dummy.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Elemental\Assets\Shaders\dummy\dummy.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Elemental\Assets\Shaders\outline\edgedetection.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

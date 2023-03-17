@@ -376,7 +376,7 @@ namespace DevoidEngine.Elemental.Panels
 
         void HandleDropMeshFile(string path)
         {
-            Mesh[] meshes = ModelImporter.LoadModel(path);
+            Mesh[] meshes = ModelImporter.AddMaterialsToScene(Editor.EditorScene, ModelImporter.LoadModel(path));
             if (meshes == null || meshes.Length == 0) { return; }
             GameObject DropObject = Editor.EditorScene.NewGameObject(meshes[0].name);
             MeshHolder MeshHolder = DropObject.AddComponent<MeshHolder>();

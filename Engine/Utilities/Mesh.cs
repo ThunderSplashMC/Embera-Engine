@@ -15,6 +15,8 @@ namespace DevoidEngine.Engine.Utilities
         public IndexBuffer IBO;
         public VertexArray VAO;
 
+        public int MaterialIndex;
+
         public Material Material;
         public int MeshID;
         public int VertexCount;

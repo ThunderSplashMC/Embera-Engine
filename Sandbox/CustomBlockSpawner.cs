@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using DevoidEngine.Engine.Components;
 using DevoidEngine.Engine.Utilities;
 using DevoidEngine.Engine.Core;
+using DevoidEngine.Elemental;
+using System.IO;
 
 namespace DevoidEngine.Sandbox
 {
@@ -18,12 +20,10 @@ namespace DevoidEngine.Sandbox
 
         public override void OnUpdate(float deltaTime)
         {
-
         }
-
         public void Generate()
         {
-            Mesh[] meshes = ModelImporter.LoadModel("D:\\Programming\\Devoid\\ExampleAssets\\gress\\scene.gltf");
+            Mesh[] meshes = ModelImporter.AddMaterialsToScene(gameObject.scene, ModelImporter.LoadModel("D:\\Programming\\Devoid\\ExampleAssets\\gress\\scene.gltf")); ;
 
             for (int i = 0; i < 25; i++)
             {

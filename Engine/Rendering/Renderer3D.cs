@@ -307,7 +307,7 @@ namespace DevoidEngine.Engine.Rendering
             shader.SetMatrix4("W_MODEL_MATRIX", MODELMATRIX);
         }
 
-        static void ResetLighting(Shader shader)
+        public static void ResetLighting(Shader shader)
         {
             for (int i = 0; i < RenderGraph.MAX_POINT_LIGHTS; i++)
             {

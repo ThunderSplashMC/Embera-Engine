@@ -17,6 +17,8 @@ namespace DevoidEngine.Engine.Core
         public List<Component> EditorRunnableComponents = new List<Component>();
         public List<Rigidbody> RigidBodies = new List<Rigidbody>();
 
+        public List<Material> Materials = new List<Material>();
+
         public void AddGameObject(GameObject gameObject)
         {
             gameObject.ID = new Random().Next(100000);
@@ -54,6 +56,17 @@ namespace DevoidEngine.Engine.Core
         public void RemoveGameObject(GameObject gameObject)
         {
             GameObjects.Remove(gameObject);
+        }
+
+        public int AddMaterial(Material material)
+        {
+            Materials.Add(material);
+            return Materials.Count - 1;
+        }
+
+        public List<Material> GetAllMaterials()
+        {
+            return Materials;
         }
 
         public GameObject[] GetAllGameObjects() {

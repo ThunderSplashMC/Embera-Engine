@@ -12,10 +12,15 @@ namespace DevoidEngine.Engine.Utilities
 {
     class ModelImporter
     {
+        public struct ModelData {
+            public Mesh mesh;
+            public Core.Material material;
+        }
+
 
         static Dictionary<string, Core.Texture> Textures = new Dictionary<string, Core.Texture>();
 
-        public static Mesh[] LoadModel(string path)
+        public static ModelData[] LoadModel(string path)
         {
 
             AssimpContext ImporterObject = new AssimpContext();
@@ -29,7 +34,7 @@ namespace DevoidEngine.Engine.Utilities
                 Console.WriteLine("Model was not found at path: " + path + "\nOr Model file was invalid");
                 return null;
             }
-            List<Mesh> ModelTotalMeshes = new List<Mesh>();
+            List<ModelData> ModelTotalMeshes = new List<ModelData>();
 
             string[] splitPath = Path.GetFullPath(path).Split("\\");
             string completepath = string.Join("/", splitPath[0..(splitPath.Length - 1)]);
@@ -52,7 +57,7 @@ namespace DevoidEngine.Engine.Utilities
 
             for (int i = 0; i < ModelTotalMeshes.Count; i++)
             {
-                ModelTotalMeshes[i].SetPath(path);
+                ModelTotalMeshes[i].mesh.SetPath(path);
             }
 
             return ModelTotalMeshes.ToArray();
@@ -63,7 +68,7 @@ namespace DevoidEngine.Engine.Utilities
 
         }
 
-        public static Mesh ProcessMesh(Assimp.Mesh mesh, Assimp.Scene scene, Matrix4x4 transform, string path = "")
+        public static ModelData ProcessMesh(Assimp.Mesh mesh, Assimp.Scene scene, Matrix4x4 transform, string path = "")
         {
             List<Vertex> vertices = new List<Vertex>();
             int[] indices = mesh.GetIndices();
@@ -171,7 +176,11 @@ namespace DevoidEngine.Engine.Utilities
 
             mesh1.SetMaterial(material);
             //ConvertMeshToFile(vertices.ToArray());
-            return mesh1;
+            return new ModelData()
+            {
+                mesh = mesh1,
+                material = mesh1.Material
+            };
         }
 
         static Core.Texture CheckTextureExists(string path)
@@ -286,6 +295,31 @@ namespace DevoidEngine.Engine.Utilities
 
             FileStream fs = File.Create("D:\\BlenderProjects\\MeshFile.dmesh");
             fs.Write(ASCIIEncoding.ASCII.GetBytes(output));
+        }
+
+        public static Mesh AddMaterialToScene(Core.Scene scene, ModelData modelData)
+        {
+            int index = scene.GetSceneRegistry().AddMaterial(modelData.material);
+
+            modelData.mesh.MaterialIndex = index;
+            return modelData.mesh;
+
+        }
+
+        public static Mesh[] AddMaterialsToScene(Core.Scene scene, ModelData[] modelData)
+        {
+
+            List<Mesh> meshes = new List<Mesh>();
+
+            for (int i = 0; i < modelData.Length; i++)
+            {
+                int index = scene.GetSceneRegistry().AddMaterial(modelData[i].material);
+
+                modelData[i].mesh.MaterialIndex = index;
+                meshes.Add(modelData[i].mesh);
+            }
+            return meshes.ToArray();
+
         }
 
     }
