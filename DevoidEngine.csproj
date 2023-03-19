@@ -530,10 +530,9 @@
   <ItemGroup>
     <PackageReference Include="AssimpNet" Version="4.1.0" />
     <PackageReference Include="BulletSharp" Version="0.11.1" />
-    <PackageReference Include="DiscordRichPresence" Version="1.0.175" />
-    <PackageReference Include="Evergine.Bindings.Imguizmo" Version="2022.6.24.1084" />
     <PackageReference Include="freetypesharp" Version="1.1.3" />
     <PackageReference Include="ImGui.NET" Version="1.87.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="OpenTK" Version="4.7.5" />
     <PackageReference Include="SharpFont" Version="4.0.1" />
     <PackageReference Include="SixLabors.ImageSharp" Version="2.1.2" />
