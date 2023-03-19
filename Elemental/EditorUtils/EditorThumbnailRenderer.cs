@@ -21,7 +21,11 @@ namespace DevoidEngine.Elemental.EditorUtils
 
         Camera Camera;
 
+        FrameBuffer fb;
+
         Mesh mesh = ModelImporter.LoadModel("D:\\Programming\\Devoid\\ExampleAssets\\sphere.fbx")[0].mesh;
+
+        Bloom bloomRenderer = new Bloom();
 
         bool reRender = true;
 
@@ -75,6 +79,19 @@ namespace DevoidEngine.Elemental.EditorUtils
 
         public override void Initialize(int width, int height)
         {
+            fb = new FrameBuffer(new FrameBufferSpecification()
+            {
+                width = 128,
+                height = 128,
+                ColorAttachments = new ColorAttachment[]
+                {
+                    new ColorAttachment()
+                    {
+                        textureFormat = FrameBufferTextureFormat.RGBA16F, textureType = FrameBufferTextureType.Texture2D
+                    }
+                }
+            });
+
             Camera = new Camera();
 
             Camera.position = new Vector3(0, 0, -100);
@@ -82,6 +99,8 @@ namespace DevoidEngine.Elemental.EditorUtils
             Camera.SetProjectionMatrix(Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45.0f), 1f, 0.001f, 1000f));
 
             Camera.SetViewMatrix(Matrix4.LookAt(Camera.position, Camera.position + new Vector3(0, 0, 1), new Vector3(0, 1, 0))); ;
+
+            bloomRenderer.Init(128, 128);
 
             ReRender();
         }
@@ -98,7 +117,7 @@ namespace DevoidEngine.Elemental.EditorUtils
                 FrameBuffer materialFB = materials[i].fb;
                 Material material = materials[i].material;
 
-                materialFB.Bind();
+                fb.Bind();
 
                 GL.Viewport(0, 0, 128, 128);
                 GL.ClearColor(0,0,0,1);
@@ -147,7 +166,40 @@ namespace DevoidEngine.Elemental.EditorUtils
                 GL.Enable(EnableCap.DepthTest);
                 GL.Enable(EnableCap.CullFace);
 
-                materialFB.UnBind();
+
+                fb.UnBind();
+
+                bloomRenderer.RenderBloomTexture(fb.GetColorAttachment(0));
+
+
+                materials[i].fb.Bind();
+
+                RendererUtils.Clear();
+                GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+                RendererUtils.HDRShader.Use();
+                RendererUtils.HDRShader.SetInt("S_RENDERED_TEXTURE", 0);
+                RendererUtils.HDRShader.SetInt("S_BLOOM_TEXTURE", 1);
+                RendererUtils.HDRShader.SetInt("S_VIGNETTE_TEXTURE", 2);
+                RendererUtils.HDRShader.SetFloat("U_BLOOM_STRENGTH", RenderGraph.BLOOM ? RenderGraph.BloomRenderer.bloomStr : 0);
+                RendererUtils.HDRShader.SetFloat("U_VIGNETTE_STRENGTH", 0);
+
+                GL.ActiveTexture(TextureUnit.Texture0);
+                GL.BindTexture(TextureTarget.Texture2D, fb.GetColorAttachment(0));
+
+                GL.ActiveTexture(TextureUnit.Texture1);
+                GL.BindTexture(TextureTarget.Texture2D, bloomRenderer.GetBloomTexture());
+
+                GL.Disable(EnableCap.DepthTest);
+                GL.Disable(EnableCap.CullFace);
+                RendererUtils.QuadVAO.Render();
+                GL.Enable(EnableCap.DepthTest);
+                GL.Enable(EnableCap.CullFace);
+
+
+
+                materials[i].fb.UnBind();
+
             }
 
             reRender = false;

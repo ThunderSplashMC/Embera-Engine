@@ -118,8 +118,8 @@ namespace DevoidEngine.Engine.Rendering
                 else if (drawItem.mesh != null)
                 {
                     Material drawMat = drawItem.mesh.Material;
-                    drawMat.Set("u_Texture", 0);
-                    drawMat.Set("USE_TEX_0", 1);
+                    //drawMat.Set("u_Texture", 0);
+                    //drawMat.Set("USE_TEX_0", 1);
                     drawMat.Set("W_MODEL_MATRIX", MODELMATRIX);
                     drawMat.Set("W_PROJECTION_MATRIX", OrthoProjection);
 

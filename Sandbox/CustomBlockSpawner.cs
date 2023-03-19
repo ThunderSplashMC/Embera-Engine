@@ -1,10 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using DevoidEngine.Engine.Components;
 using DevoidEngine.Engine.Utilities;
 using DevoidEngine.Engine.Core;
 using DevoidEngine.Elemental;
-using System.IO;
 
 namespace DevoidEngine.Sandbox
 {
@@ -27,9 +26,9 @@ namespace DevoidEngine.Sandbox
 
             ModelImporter.ConvertMeshToFile(VERTEX_DEFAULTS.GetCubeVertex());
 
-            for (int i = 0; i < 25; i++)
+            for (int i = 0; i < 500; i++)
             {
-                for (int y = 0; y < 25; y++)
+                for (int y = 0; y < 500; y++)
                 {
                     GameObject go = gameObject.scene.NewGameObject("H" + i);
                     go.transform.position = new OpenTK.Mathematics.Vector3(i * 0.4f, 0, y * 0.4f);

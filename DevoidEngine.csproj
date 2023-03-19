@@ -130,6 +130,8 @@
     <None Remove="Engine\EngineContent\shaders\gbuffer.vert" />
     <None Remove="Engine\EngineContent\shaders\hdr.frag" />
     <None Remove="Engine\EngineContent\shaders\hdr.vert" />
+    <None Remove="Engine\EngineContent\shaders\NullShader2d\null2d.frag" />
+    <None Remove="Engine\EngineContent\shaders\NullShader2d\null2d.vert" />
     <None Remove="Engine\EngineContent\shaders\pbr.frag" />
     <None Remove="Engine\EngineContent\shaders\pbr.vert" />
     <None Remove="Engine\EngineContent\shaders\pbr1.frag" />
@@ -196,6 +198,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Engine\EngineContent\shaders\Framebuffer\combine.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\NullShader2d\null2d.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\NullShader2d\null2d.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Engine\EngineContent\shaders\ToWorldPos.frag">

@@ -11,6 +11,7 @@ using DevoidEngine.Elemental.EditorUtils;
 using DevoidEngine.Engine.Serializing.Converters;
 
 using Newtonsoft.Json;
+using OpenTK.Windowing.Common;
 
 namespace DevoidEngine.Elemental
 {
@@ -55,6 +56,14 @@ namespace DevoidEngine.Elemental
             EditorScene.SetSceneState(Scene.SceneState.EditorPlay);
             SetEditorStyling();
 
+        }
+
+        public override void KeyDown(KeyboardKeyEventArgs keyboardevent)
+        {
+            for (int i = 0; i < EditorPanels.Count; i++)
+            {
+                EditorPanels[i].OnKeyDown(keyboardevent);
+            }
         }
 
         public void SandBoxSetup()

@@ -49,6 +49,7 @@ namespace DevoidEngine.Elemental.EditorUtils
 
             for (int i = 0; i < drawlist.Count; i++)
             {
+                if (drawlist[i].associateObject == null) { return; }
                 viewportSelectShader.Use();
                 Renderer3D.UploadCameraData(viewportSelectShader);
                 Renderer3D.UploadModelData(viewportSelectShader, drawlist[i].position, drawlist[i].rotation, drawlist[i].scale);

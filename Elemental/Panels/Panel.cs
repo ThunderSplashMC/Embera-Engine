@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenTK.Windowing.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,7 @@ namespace DevoidEngine.Elemental.Panels
         public virtual void OnRender() { }
 
         public virtual void OnResize(int width, int height) { }
+        public virtual void OnKeyDown(KeyboardKeyEventArgs key) { }
 
     }
 }

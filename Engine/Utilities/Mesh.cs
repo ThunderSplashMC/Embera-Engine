@@ -93,6 +93,11 @@ namespace DevoidEngine.Engine.Utilities
             this.VertexCount = vertices.Length;
         }
 
+        public void SetVertexArrayObject(VertexArray vao)
+        {
+            VAO = vao;
+        }
+
         public void SetIndices(int[] indices)
         {
             IBO = new IndexBuffer(indices.Length, IsStatic);

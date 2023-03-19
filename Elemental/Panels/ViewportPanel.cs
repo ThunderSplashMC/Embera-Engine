@@ -194,26 +194,26 @@ namespace DevoidEngine.Elemental.Panels
             ImGui.End();
 
 
-            //NodeManager.BeginNodeEditor("Node Editor");
+            NodeManager.BeginNodeEditor("Node Editor");
 
-            //NodeManager.BeginNode("ash" + 1, "GameObject ", new Vector2(50, 50), new Vector2(300, 300));
+            NodeManager.BeginNode("ash" + 1, "GameObject ", new Vector2(50, 50), new Vector2(300, 300));
 
-            //NodeManager.PropertyText("Position      ", "X: 0 Y: 0 Z: 0", new Vector2(0, 0));
-            //NodeManager.PropertyText("Rotation      ", "X: 0 Y: 0 Z: 0", new Vector2(0, 0));
-            //NodeManager.PropertyText("Components    ", "List<Component>", new Vector2(0, 0));
-            //NodeManager.PropertyText("Current Scene ", "DevoidScene1", new Vector2(0, 0));
-            //NodeManager.PropertyText("Object Index  ", "0", new Vector2(0, 0));
-            //NodeManager.PropertyText("Object Status ", "Hidden", new Vector2(0, 0));
-            //NodeManager.PropertyFloat("SCALE: ", ref val, new Vector2(0, 0));
+            NodeManager.PropertyText("Position      ", "X: 0 Y: 0 Z: 0", new Vector2(0, 0));
+            NodeManager.PropertyText("Rotation      ", "X: 0 Y: 0 Z: 0", new Vector2(0, 0));
+            NodeManager.PropertyText("Components    ", "List<Component>", new Vector2(0, 0));
+            NodeManager.PropertyText("Current Scene ", "DevoidScene1", new Vector2(0, 0));
+            NodeManager.PropertyText("Object Index  ", "0", new Vector2(0, 0));
+            NodeManager.PropertyText("Object Status ", "Hidden", new Vector2(0, 0));
+            NodeManager.PropertyFloat("SCALE: ", ref val, new Vector2(0, 0));
 
-            //NodeManager.EndNode();
+            NodeManager.EndNode();
 
-            //NodeManager.BeginNode("ash" + 2, "Value Inspecter ", new Vector2(55, 50), new Vector2(300, 300));
-            //NodeManager.PropertyFloat("Value: ", ref val, new Vector2(0, 0));
+            NodeManager.BeginNode("ash" + 2, "Value Inspecter ", new Vector2(55, 50), new Vector2(300, 300));
+            NodeManager.PropertyFloat("Value: ", ref val, new Vector2(0, 0));
 
-            //NodeManager.EndNode();
+            NodeManager.EndNode();
 
-            //NodeManager.EndNodeEditor();
+            NodeManager.EndNodeEditor();
 
             ImGui.Begin("S");
 

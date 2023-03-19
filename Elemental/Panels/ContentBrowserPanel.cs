@@ -6,6 +6,8 @@ using DevoidEngine.Engine.Utilities;
 using ImGuiNET;
 using DevoidEngine.Elemental.EditorUtils;
 using DevoidEngine.Engine.GUI;
+using System.Text;
+using OpenTK.Windowing.Common;
 
 namespace DevoidEngine.Elemental.Panels
 {
@@ -89,7 +91,15 @@ namespace DevoidEngine.Elemental.Panels
 
                 if (ImGui.ImageButton(FileTypes.GetFileTypeIcon(fileExtension), new System.Numerics.Vector2(thumbnailSize, thumbnailSize)))
                 {
-                    FileSystem.OpenWithDefaultProgram(Path.Join(FileSystem.GetBasePath(),CurrentDir,fileName));
+                    if (fileExtension == "cs" || fileExtension == "txt")
+                    {
+                       OpenTextFile(Path.Join(FileSystem.GetBasePath(), CurrentDir, fileName));
+                    }
+                    else
+                    {
+                        FileSystem.OpenWithDefaultProgram(Path.Join(FileSystem.GetBasePath(), CurrentDir, fileName));
+                    }
+                    
                 }
 
                 
@@ -137,6 +147,9 @@ namespace DevoidEngine.Elemental.Panels
             ImGui.End();
             ImGui.PopStyleVar();
             ImGui.PopStyleColor();
+
+            DisplayFileEditor();
+
         }
 
         string lastDirScan;
@@ -170,5 +183,52 @@ namespace DevoidEngine.Elemental.Panels
 
             return lastDirList;
         }
+
+        string OpenedTXTFileContent = "";
+        string openedPath = "";
+
+        void OpenTextFile(string path)
+        {
+            openedPath = path;
+            using (StreamReader reader = new StreamReader(path, Encoding.UTF8))
+            {
+                OpenedTXTFileContent = reader.ReadToEnd();
+            }
+        }
+
+        void SaveTextFile()
+        {
+            using (StreamWriter writer = new StreamWriter(openedPath))
+            {
+                writer.Write(OpenedTXTFileContent);
+            }
+        }
+
+        void DisplayFileEditor()
+        {
+            ImGui.Begin("Script Editor");
+
+
+            ImGui.InputTextMultiline("##scripteditor", ref OpenedTXTFileContent, 20000, new System.Numerics.Vector2(ImGui.GetContentRegionMax().X, ImGui.GetContentRegionMax().Y - 75));
+
+
+            if (ImGui.Button("Save"))
+            {
+                SaveTextFile();
+            }
+
+            ImGui.End();
+        
+        }
+
+        
+
+        public override void OnKeyDown(KeyboardKeyEventArgs key)
+        {
+
+            base.OnKeyDown(key);
+        }
+
+
     }
 }
