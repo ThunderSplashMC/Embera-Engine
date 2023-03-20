@@ -6,6 +6,7 @@
 uniform sampler2D textureBack; // Unit cube back FBO.
 uniform sampler2D textureFront; // Unit cube front FBO.
 uniform sampler3D texture3D1; // Texture in which voxelization is stored.
+//layout(binding = 2, rgba8) uniform image3D texture3D1;
 uniform vec3 C_VIEWPOS; // World camera position.
 uniform int state = 0; // Decides mipmap sample level.
 
@@ -29,7 +30,7 @@ void main() {
 	direction = normalize(direction);
 
 	// Trace.
-	color = vec4(0.0);
+	color = vec4(0.01);
 	for(uint step = 0; step < numberOfSteps && color.a < 0.99f; ++step) {
 		const vec3 currentPoint = origin + STEP_LENGTH * step * direction;
 		vec3 coordinate = scaleAndBias(currentPoint);
@@ -37,7 +38,7 @@ void main() {
 		color += (1.0f - color.a) * currentSample;
 	} 
 	//color.rgb = texture(textureBack, textureCoordinateFrag).xyz;//pow(color.rgb, vec3(1.0 / 2.2));
-	color.a = 1;
+	//color.a = 1;
 
 //    float weight = 1.0;
 //    float stepSize = 0.01;

@@ -19,7 +19,7 @@ out vec2 texCoords;
 vec2 scaleAndBias(vec2 p) { return 0.5f * p + vec2(0.5); }
 
 void main(){
-	gl_Position = vec4(aPosition.x, aPosition.y, -0.1, 1.0) * W_MODEL_MATRIX *  W_PROJECTION_MATRIX;	
+	gl_Position = vec4(aPosition.x, aPosition.y,-0.1, 1.0) * W_MODEL_MATRIX *  W_PROJECTION_MATRIX;	
 	textureCoordinateFrag = scaleAndBias(gl_Position.xy);
 	texCoords = aTexCoord;
 	

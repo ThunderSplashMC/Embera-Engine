@@ -16,6 +16,10 @@ namespace DevoidEngine.Engine.Rendering
             Renderer2D.Init(width, height);
             Renderer3D.Init(width, height);
             isInitialized = true;
+
+            //
+            Renderer3D.AddRenderPass(new VoxelTracer());
+            //
         }
 
         public static void Render()

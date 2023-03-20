@@ -10,5 +10,17 @@ void main() {
     
     vec4 image = imageLoad(out_tex, imgCoord);
 
-    imageStore(out_tex, imgCoord,vec4(0.0));
+//    if (imgCoord == ivec3(2,2,2)) {
+//    imageStore(out_tex, imgCoord,vec4(0.7, 0, 0, 1));
+//    }
+//    else if (imgCoord == ivec3(2, 1, 1)) {
+//    imageStore(out_tex, imgCoord,vec4(0.7, 0.7, 0, 1));
+//    }
+//    else {
+//    imageStore(out_tex, imgCoord,vec4(0));
+//    }
+
+    imageStore(out_tex, imgCoord,vec4(0));
+    //imageStore(out_tex, imgCoord,image);
+
 }

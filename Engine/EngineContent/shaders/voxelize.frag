@@ -21,6 +21,8 @@ uniform vec3 C_VIEWPOS;
 layout (binding = 0, rgba8) uniform image3D gTexture3D;
 
 uniform vec3 color;
+
+uniform mat4 W_O_PROJECTION_MATRIX;
  
 bool isInsideUnitCube()
 {
@@ -92,13 +94,20 @@ vec3 CalcPointLight(PointLight light, vec3 N, vec3 F0, vec3 V) {
     return (kD * vec3(1.0) / PI + specular) * radiance * NdotL;
 
 }
+
+ivec3 WorldSpaceToVoxelImageSpace(vec3 worldPos)
+{
+    vec3 ndc = worldPos;// * W_O_PROJECTION_MATRIX).xyz;
+    ivec3 voxelPos = ivec3((ndc * 0.5 + 0.5) * imageSize(gTexture3D));
+    return voxelPos;
+}   
  
 void main()
 {
-    if (!isInsideUnitCube())
-    {
-        return;
-    }
+//    if (!isInsideUnitCube())
+//    {
+//        return;
+//    }
  
     // ...
 
@@ -116,6 +125,6 @@ void main()
         final += CalcPointLight(L_POINTLIGHTS[i], N, F0, V);
     }
  
-    vec3 position = WorldPos * 0.5f + 0.5f;
-    imageStore(gTexture3D, ivec3(imageSize(gTexture3D) * position), vec4(1.0));
+    vec3 position = WorldSpaceToVoxelImageSpace(WorldPos);// * 0.5f + 0.5f;
+    imageStore(gTexture3D, ivec3(position), vec4(1.0));
 }

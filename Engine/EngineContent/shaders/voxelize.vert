@@ -7,6 +7,7 @@ layout (location = 3) in vec3 aTangent;
 layout (location = 4) in vec3 aBiTangent;
 
 uniform mat4 W_MODEL_MATRIX;
+uniform mat4 W_PROJECTION_MATRIX;
  
 out vec3 WorldPosGS;
 out vec3 WorldNormalGS;

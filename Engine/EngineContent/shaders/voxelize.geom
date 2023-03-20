@@ -7,20 +7,35 @@ in vec3 WorldNormalGS[];
  
 out vec3 WorldPos;
 out vec3 WorldNormal;
+
+int getDominantAxisIdx(vec3 v0, vec3 v1, vec3 v2)
+{
+    vec3 aN = abs(cross(v1 - v0, v2 - v0));
+    
+    if (aN.x > aN.y && aN.x > aN.z)
+        return 0;
+        
+    if (aN.y > aN.z)
+        return 1;
+
+    return 2;
+}
  
 void main()
 {
+    int idx = getDominantAxisIdx(gl_in[0].gl_Position.xyz, gl_in[1].gl_Position.xyz, gl_in[2].gl_Position.xyz);
+
     // Plane normal
     const vec3 N = abs(cross(WorldPosGS[1] - WorldPosGS[0], WorldPosGS[2] - WorldNormalGS[0]));
     for (int i = 0; i < 3; ++i)
     {
         WorldPos = WorldPosGS[i];
         WorldNormal = WorldNormalGS[i];
-        if (N.z > N.x && N.z > N.y)
+        if (idx == 0)
         {
             gl_Position = vec4(WorldPos.x, WorldPos.y, 0.0f, 1.0f);
         }
-        else if (N.x > N.y && N.x > N.z)
+        else if (idx == 1)
         {
             gl_Position = vec4(WorldPos.y, WorldPos.z, 0.0f, 1.0f);
         }

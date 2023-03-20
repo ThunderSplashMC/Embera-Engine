@@ -172,7 +172,20 @@ namespace DevoidEngine.Elemental.EditorUtils
             NextField();
 
             ImGui.SetNextItemWidth(-1);
-            ImGui.Button(fieldType.Name);
+            ImGui.PushStyleVar(ImGuiStyleVar.ButtonTextAlign, new System.Numerics.Vector2(0f, 0f));
+            
+            System.Numerics.Vector2 cursorPos = ImGui.GetCursorPos();
+
+            ImGui.BeginDisabled();
+
+            ImGui.Button("", new System.Numerics.Vector2(-1, 32));
+
+            ImGui.EndDisabled();
+
+            ImGui.SetCursorPos(cursorPos);
+
+            ImGui.Button(fieldType.Name, new System.Numerics.Vector2(-1, 30));
+            ImGui.PopStyleVar();
         }
 
         public static void DrawComponentField(FieldInfo[] fieldInfo, object component)
