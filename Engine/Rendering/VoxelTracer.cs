@@ -45,22 +45,6 @@ namespace DevoidEngine.Engine.Rendering
 
             GL.BindTexture(TextureTarget.Texture3D, 0);
 
-            //
-
-            GL.BindTexture(TextureTarget.Texture2D, visualize_texture);
-
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (float)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (float)TextureMagFilter.Linear);
-
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (float)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (float)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (float)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, 1);
-
-            GL.TexStorage2D(TextureTarget2d.Texture2D, 1, SizedInternalFormat.Rgba8, 1920, 1080);
-
-            GL.BindTexture(TextureTarget.Texture2D, 0);
-
             Console.WriteLine("Handle " + voxel_texture);
 
             FrameBufferSpecification specs = new FrameBufferSpecification()
