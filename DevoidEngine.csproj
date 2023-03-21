@@ -146,12 +146,17 @@
     <None Remove="Engine\EngineContent\shaders\upsample.vert" />
     <None Remove="Engine\EngineContent\shaders\vignette.frag" />
     <None Remove="Engine\EngineContent\shaders\vignette.vert" />
+    <None Remove="Engine\EngineContent\shaders\Visualize\visualize.frag" />
+    <None Remove="Engine\EngineContent\shaders\Visualize\visualize.vert" />
     <None Remove="Engine\EngineContent\shaders\voxel-visualizer.frag" />
     <None Remove="Engine\EngineContent\shaders\voxel-visualizer.vert" />
     <None Remove="Engine\EngineContent\shaders\voxelize.frag" />
     <None Remove="Engine\EngineContent\shaders\voxelize.geom" />
     <None Remove="Engine\EngineContent\shaders\voxelize.glsl" />
     <None Remove="Engine\EngineContent\shaders\voxelize.vert" />
+    <None Remove="Engine\EngineContent\shaders\Voxelize\voxelize.frag" />
+    <None Remove="Engine\EngineContent\shaders\Voxelize\voxelize.geom" />
+    <None Remove="Engine\EngineContent\shaders\Voxelize\voxelize.vert" />
     <None Remove="Engine\EngineContent\shaders\voxel_visualization.frag" />
     <None Remove="Engine\EngineContent\shaders\voxel_visualization.vert" />
     <None Remove="Engine\EngineContent\textures\ambient_occulsion_noise.png" />
@@ -210,6 +215,21 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Engine\EngineContent\shaders\ToWorldPos.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\Visualize\visualize.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\Visualize\visualize.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\Voxelize\voxelize.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\Voxelize\voxelize.geom">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\Voxelize\voxelize.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Engine\EngineContent\shaders\voxel_visualization.frag">

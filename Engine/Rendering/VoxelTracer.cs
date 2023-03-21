@@ -13,14 +13,14 @@ namespace DevoidEngine.Engine.Rendering
 {
     class VoxelTracer : RenderPass
     {
-        Shader voxelize_shader = new Shader("Engine/EngineContent/shaders/voxelize.vert", "Engine/EngineContent/shaders/voxelize.frag", "Engine/EngineContent/shaders/voxelize.geom");
-        Shader vizualize_voxel = new Shader("Engine/EngineContent/shaders/voxel_visualization");
+        Shader voxelize_shader = new Shader("Engine/EngineContent/shaders/Voxelize/voxelize.vert", "Engine/EngineContent/shaders/Voxelize/voxelize.frag", "Engine/EngineContent/shaders/Voxelize/voxelize.geom");
+        Shader vizualize_voxel = new Shader("Engine/EngineContent/shaders/Visualize/visualize");
 
         Shader world_pos = new Shader("Engine/EngineContent/shaders/ToWorldPos");
 
         ComputeShader compute = new ComputeShader("Engine/EngineContent/shaders/voxelize.glsl", new Vector3i(64, 64, 64));
 
-        FrameBuffer fb, fb1, fb2;
+        FrameBuffer FrontFace, BackFace;
 
         int voxel_texture, visualize_texture;
 
@@ -76,9 +76,8 @@ namespace DevoidEngine.Engine.Rendering
                 }
             };
 
-            fb = new FrameBuffer(specs);
-            fb1 = new FrameBuffer(specs);
-            fb2 = new FrameBuffer(specs);
+            FrontFace = new FrameBuffer(specs);
+            BackFace = new FrameBuffer(specs);
         }
 
         public override void DoRenderPass()
@@ -90,39 +89,53 @@ namespace DevoidEngine.Engine.Rendering
 
         public override void Resize(int width, int height)
         {
+            FrontFace.Resize(width, height);
+            BackFace.Resize(width, height);
+
             base.Resize(width, height);
         }
 
         public void Voxelize()
         {
-            ClearTextures();
+            //ClearTextures();
+            GL.ClearTexImage(voxel_texture, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
 
-            //fb.Bind();
+
+            FrontFace.UnBind();
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.Viewport(0, 0, 64, 64);
+            GL.ColorMask(false, false, false, false);
+            GL.Disable(EnableCap.CullFace);
+            GL.Disable(EnableCap.DepthTest);
+
 
             voxelize_shader.Use();
 
-            Renderer3D.UploadCameraData(voxelize_shader);
-
-            voxelize_shader.SetMatrix4("W_O_PROJECTION_MATRIX", Renderer2D.OrthoProjection);
+            GL.BindImageTexture(0, voxel_texture, 0, true, 0, TextureAccess.ReadWrite, SizedInternalFormat.Rgba8);
 
             Renderer3D.UploadLightingData(voxelize_shader);
-
-            GL.BindImageTexture(0, voxel_texture, 0, true, 0, TextureAccess.ReadWrite, SizedInternalFormat.Rgba8);
 
             List<DrawItem> drawList = Renderer3D.GetRenderDrawList();
 
             for (int i = 0; i < drawList.Count; i++)
             {
                 Renderer3D.UploadModelData(voxelize_shader, drawList[i].position, drawList[i].rotation, drawList[i].scale);
-                drawList[i].mesh.Draw();
 
+                Material material = drawList[i].mesh.Material;
+
+                voxelize_shader.SetVector3("material.albedo", material.GetVec3("material.albedo"));
+
+                drawList[i].mesh.Draw();
             }
 
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit | MemoryBarrierFlags.TextureFetchBarrierBit);
 
-            //fb.UnBind();
+            GL.GenerateMipmap(GenerateMipmapTarget.Texture3D);
+
+            Renderer3D.ResetViewport();
+
+            GL.ColorMask(true, true, true, true);
 
         }
 
@@ -141,29 +154,6 @@ namespace DevoidEngine.Engine.Rendering
 
         public void Visualize()
         {
-            //vizualize_voxel_cs.Use();
-
-            //GL.BindImageTexture(0, visualize_texture, 0, false, 0, TextureAccess.WriteOnly, SizedInternalFormat.Rgba8);
-            //GL.BindImageTexture(1, voxel_texture, 0, true, 0, TextureAccess.ReadOnly, SizedInternalFormat.Rgba8);
-
-            //vizualize_voxel_cs.Dispatch((1920 + 8 - 1) / 8, (1080 + 8 - 1) / 8, 1);
-
-            //RenderGraph.CompositePass.Bind();
-
-            //GL.Disable(EnableCap.DepthTest);
-            //GL.Disable(EnableCap.CullFace);
-
-            //world_pos.Use();
-            //world_pos.SetMatrix4("W_MODEL_MATRIX", Matrix4.CreateTranslation(0, 0, 0));
-            //world_pos.SetMatrix4("W_PROJECTION_MATRIX", RenderGraph.Camera.GetProjectionMatrix());
-            //world_pos.SetMatrix4("W_VIEW_MATRIX", RenderGraph.Camera.GetViewMatrix());
-            //world_pos.SetVector3("C_VIEWPOS", RenderGraph.Camera.position);
-
-            //cubemesh.Draw();
-
-            //RenderGraph.CompositePass.UnBind();
-
-            fb.Bind();
 
             world_pos.Use();
             world_pos.SetMatrix4("W_MODEL_MATRIX", Matrix4.CreateTranslation(0, 0, 0) * Matrix4.CreateScale(10));
@@ -171,25 +161,32 @@ namespace DevoidEngine.Engine.Rendering
             world_pos.SetMatrix4("W_VIEW_MATRIX", RenderGraph.Camera.GetViewMatrix());
             world_pos.SetVector3("C_VIEWPOS", RenderGraph.Camera.position);
 
+            GL.ClearColor(0, 0, 0, 1);
 
+            GL.Enable(EnableCap.CullFace);
+            GL.Enable(EnableCap.DepthTest);
 
+            // FrontFace
+            FrontFace.Bind();
             GL.ClearColor(RenderGraph.Camera.GetClearColor().X, RenderGraph.Camera.GetClearColor().Y, RenderGraph.Camera.GetClearColor().Z, 1);
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.CullFace);
 
-            GL.CullFace(CullFaceMode.Back);
-            GL.Viewport(0, 0, fb.GetSize().X, fb.GetSize().Y);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            RendererUtils.CubeVAO.Render();
-
-            // Front.
             GL.CullFace(CullFaceMode.Front);
-            fb1.Bind();
-            GL.Viewport(0, 0, fb1.GetSize().X, fb1.GetSize().Y);
+            GL.Viewport(0, 0, FrontFace.GetSize().X, FrontFace.GetSize().Y);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             RendererUtils.CubeVAO.Render();
 
-            fb.UnBind();
+            // Backface
+
+            GL.CullFace(CullFaceMode.Back);
+            BackFace.Bind();
+            GL.Viewport(0, 0, BackFace.GetSize().X, BackFace.GetSize().Y);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            RendererUtils.CubeVAO.Render();
+            BackFace.UnBind();
+
+            //
 
             GL.CullFace(CullFaceMode.Back);
 
@@ -197,7 +194,7 @@ namespace DevoidEngine.Engine.Rendering
 
             RenderGraph.CompositeBuffer.Bind();
 
-            //GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             vizualize_voxel.Use();
             vizualize_voxel.SetMatrix4("W_MODEL_MATRIX", Matrix4.CreateTranslation(0, 0, 0) * Matrix4.CreateScale(1920,1080,1));
@@ -212,15 +209,15 @@ namespace DevoidEngine.Engine.Rendering
             GL.Disable(EnableCap.CullFace);
 
             // Activate textures.
-            vizualize_voxel.SetInt("textureBack", 0);
-            vizualize_voxel.SetInt("textureFront", 1);
-            vizualize_voxel.SetInt("texture3D1", 2);
+            vizualize_voxel.SetInt("gBackfaceTexture", 0);
+            vizualize_voxel.SetInt("gFrontfaceTexture", 1);
+            vizualize_voxel.SetInt("gTexture3D", 2);
 
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, fb.GetColorAttachment(0));
+            GL.BindTexture(TextureTarget.Texture2D, BackFace.GetColorAttachment(0));
 
             GL.ActiveTexture(TextureUnit.Texture1);
-            GL.BindTexture(TextureTarget.Texture2D, fb1.GetColorAttachment(0));
+            GL.BindTexture(TextureTarget.Texture2D, FrontFace.GetColorAttachment(0));
 
             GL.ActiveTexture(TextureUnit.Texture2);
             GL.BindTexture(TextureTarget.Texture3D, voxel_texture);
@@ -235,8 +232,6 @@ namespace DevoidEngine.Engine.Rendering
             GL.Enable(EnableCap.CullFace);
 
             RenderGraph.CompositeBuffer.UnBind();
-
-            //RendererUtils.BlitFBToScreen(fb2, RenderGraph.CompositeBuffer);
 
         }
 

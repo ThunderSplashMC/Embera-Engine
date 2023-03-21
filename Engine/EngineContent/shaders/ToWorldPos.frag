@@ -1,10 +1,9 @@
+#version 460 core
+out vec4 FragColor;
 
-#version 450 core
+in vec3 WorldPos;
 
-in vec3 worldPosition;
-
-out vec4 color;
-
-void main(){
-	color = vec4(worldPosition, 1.0);
+void main()
+{
+    FragColor.rgb = WorldPos;
 }

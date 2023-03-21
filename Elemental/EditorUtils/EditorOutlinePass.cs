@@ -58,7 +58,10 @@ namespace DevoidEngine.Elemental.EditorUtils
 
         public override void DoRenderPass()
         {
-            if (CurrentOutlinedObjectUUID == 0) return;
+            if (CurrentOutlinedObjectUUID == 0)
+            {
+                return;
+            }
 
             frameBuffer.Bind();
 

@@ -254,6 +254,14 @@ namespace DevoidEngine.Elemental.Panels
                 RenderGraph.EnableLighting = !RenderGraph.EnableLighting;
             }
 
+            ImGui.SetCursorPosX(size * 5);
+            ImGui.SetCursorPosY(size + 22);
+
+            if (DevoidGUI.Button(FontAwesome.ForkAwesome.LightbulbO, new Vector2(size + 10, size)))
+            {
+                EditorOutlinePass.CurrentOutlinedObjectUUID = 0;
+            }
+
             ImGui.SetCursorPosX((ImGui.GetWindowContentRegionMax().X * 0.5f) - (size * 0.5f));
             ImGui.SetCursorPosY(size + 22);
             ImGui.PushStyleColor(ImGuiCol.Button, new System.Numerics.Vector4(.21f, .21f, .21f, 0.7f));
