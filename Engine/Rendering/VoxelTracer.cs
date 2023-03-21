@@ -8,6 +8,7 @@ using OpenTK.Graphics.OpenGL;
 using DevoidEngine.Engine.Utilities;
 using OpenTK.Mathematics;
 using ImGuiNET;
+using DevoidEngine.Engine.Imgui;
 
 namespace DevoidEngine.Engine.Rendering
 {
@@ -15,6 +16,8 @@ namespace DevoidEngine.Engine.Rendering
     {
         Shader voxelize_shader = new Shader("Engine/EngineContent/shaders/Voxelize/voxelize.vert", "Engine/EngineContent/shaders/Voxelize/voxelize.frag", "Engine/EngineContent/shaders/Voxelize/voxelize.geom");
         Shader vizualize_voxel = new Shader("Engine/EngineContent/shaders/Visualize/visualize");
+        
+        ComputeShader vizualize_voxel_cs = new ComputeShader("Engine/EngineContent/shaders/Visualize/visualize.glsl", new Vector3i(64,64,64));
 
         Shader world_pos = new Shader("Engine/EngineContent/shaders/ToWorldPos");
 
@@ -45,6 +48,21 @@ namespace DevoidEngine.Engine.Rendering
 
             GL.BindTexture(TextureTarget.Texture3D, 0);
 
+            int w = 64, h = 64, d = 64;
+            Vector4[] voxels = new Vector4[w * h * d];
+            Random rng = new Random();
+            for (int i = 0; i < voxels.Length; i++)
+            {
+                if (rng.Next(0, 1000) < 1) // 0.1% chance of setting a voxel
+                {
+                    Vector4 rnd = new Vector4(rng.NextSingle(), rng.NextSingle(), rng.NextSingle(), 1.0f);
+                    voxels[i] = rnd;
+                }
+            }
+            GL.TextureSubImage3D(voxel_texture, 0, 0, 0, 0, w, h, d, PixelFormat.Rgba, PixelType.Float, voxels);
+
+            GL.TextureSubImage3D(voxel_texture, 0, 3, 3, 3, 1, 1, 1, PixelFormat.Rgba, PixelType.Float, new Vector4[] { new Vector4(0.5f, 0.7f, 0.2f, 1f) });
+
             Console.WriteLine("Handle " + voxel_texture);
 
             FrameBufferSpecification specs = new FrameBufferSpecification()
@@ -67,7 +85,7 @@ namespace DevoidEngine.Engine.Rendering
         public override void DoRenderPass()
         {
             Voxelize();
-            Visualize();
+            //Visualize();
             base.DoRenderPass();
         }
 
@@ -79,11 +97,19 @@ namespace DevoidEngine.Engine.Rendering
             base.Resize(width, height);
         }
 
+        int count = 0;
+
+        public Vector3 GridMin, GridMax = new Vector3(2);
+
         public void Voxelize()
         {
-            //ClearTextures();
-            GL.ClearTexImage(voxel_texture, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            count += 1;
 
+            //GL.ClearTexImage(voxel_texture, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+
+            ClearTextures();
+
+            return;
 
             FrontFace.UnBind();
 
@@ -102,6 +128,8 @@ namespace DevoidEngine.Engine.Rendering
 
             List<DrawItem> drawList = Renderer3D.GetRenderDrawList();
 
+            Renderer3D.UploadCameraData(voxelize_shader);
+
             for (int i = 0; i < drawList.Count; i++)
             {
                 Renderer3D.UploadModelData(voxelize_shader, drawList[i].position, drawList[i].rotation, drawList[i].scale);
@@ -109,7 +137,11 @@ namespace DevoidEngine.Engine.Rendering
                 Material material = drawList[i].mesh.Material;
 
                 voxelize_shader.SetVector3("material.albedo", material.GetVec3("material.albedo"));
-
+                //voxelize_shader.SetInt("USE_TEX_0", material.GetInt("USE_TEX_0"));
+                //voxelize_shader.SetInt("USE_TEX_0", 0);
+                //voxelize_shader.SetInt("material.ALBEDO_TEX", 0);
+                //material.Apply();
+                
                 drawList[i].mesh.Draw();
             }
 
@@ -125,14 +157,35 @@ namespace DevoidEngine.Engine.Rendering
 
         public void ClearTextures()
         {
-            compute.Use();
+            vizualize_voxel_cs.Use();
 
-            GL.BindImageTexture(0, voxel_texture, 0, true, 0, TextureAccess.ReadWrite, SizedInternalFormat.Rgba8);
+            GL.BindImageTexture(0, RenderGraph.CompositeBuffer.GetColorAttachment(0), 0, false, 0, TextureAccess.WriteOnly, SizedInternalFormat.Rgba16f);
 
-            compute.Dispatch(16, 16, 16);
-            compute.Wait();
+            GL.BindTextureUnit(0, voxel_texture);
 
+            vizualize_voxel_cs.SetMatrix4("W_PROJECTION_MATRIX", RenderGraph.Camera.GetProjectionMatrix());
+            vizualize_voxel_cs.SetMatrix4("W_VIEW_MATRIX", RenderGraph.Camera.GetViewMatrix());
+            vizualize_voxel_cs.SetVector3("C_VIEWPOS", RenderGraph.Camera.position);
+
+            vizualize_voxel_cs.SetMatrix4("W_ORTHOGRAPHIC_MATRIX", Renderer2D.OrthoProjection);
+
+            vizualize_voxel_cs.SetVector3("GridMin", GridMin);
+            vizualize_voxel_cs.SetVector3("GridMax", GridMax);
+
+
+            vizualize_voxel_cs.Dispatch((int)(RenderGraph.CompositeBuffer.GetSize().X / 8), (int)(RenderGraph.CompositeBuffer.GetSize().Y / 8), 1);
+
+            vizualize_voxel_cs.Wait();
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit | MemoryBarrierFlags.TextureFetchBarrierBit);
+
+            //compute.Use();
+
+            //GL.BindImageTexture(0, voxel_texture, 0, true, 0, TextureAccess.ReadWrite, SizedInternalFormat.Rgba8);
+
+            //compute.Dispatch(16, 16, 16);
+            //compute.Wait();
+
+            //GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit | MemoryBarrierFlags.TextureFetchBarrierBit);
 
         }
 
@@ -142,6 +195,7 @@ namespace DevoidEngine.Engine.Rendering
             world_pos.Use();
             world_pos.SetMatrix4("W_MODEL_MATRIX", Matrix4.CreateTranslation(0, 0, 0) * Matrix4.CreateScale(10));
             world_pos.SetMatrix4("W_PROJECTION_MATRIX", RenderGraph.Camera.GetProjectionMatrix());
+            world_pos.SetMatrix4("W_ORTHOGRAPHIC_MATRIX", Renderer2D.OrthoProjection);
             world_pos.SetMatrix4("W_VIEW_MATRIX", RenderGraph.Camera.GetViewMatrix());
             world_pos.SetVector3("C_VIEWPOS", RenderGraph.Camera.position);
 
@@ -196,6 +250,9 @@ namespace DevoidEngine.Engine.Rendering
             vizualize_voxel.SetInt("gBackfaceTexture", 0);
             vizualize_voxel.SetInt("gFrontfaceTexture", 1);
             vizualize_voxel.SetInt("gTexture3D", 2);
+
+            vizualize_voxel.SetVector3("GridMin", GridMin);
+            vizualize_voxel.SetVector3("GridMax", GridMax);
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, BackFace.GetColorAttachment(0));

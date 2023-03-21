@@ -23,6 +23,8 @@ namespace DevoidEngine.Elemental.Panels
 
         private EditorRendererPass EditorRendererPass;
         private EditorOutlinePass EditorOutlinePass;
+        private VoxelTracer VoxelTracer;
+
         private EditorCamera editorCamera;
         public int ViewportTexture;
         private float prev_h, prev_w;
@@ -50,9 +52,11 @@ namespace DevoidEngine.Elemental.Panels
 
             EditorRendererPass = new EditorRendererPass();
             EditorOutlinePass = new EditorOutlinePass();
+            VoxelTracer = new VoxelTracer();
 
             Renderer3D.AddRenderPass(EditorRendererPass);
             Renderer3D.AddRenderPass(EditorOutlinePass);
+            Renderer3D.AddRenderPass(VoxelTracer);
         }
 
         public void SetContext(EditorLayer editor)
@@ -220,6 +224,28 @@ namespace DevoidEngine.Elemental.Panels
             ImGui.Image((IntPtr)(EditorOutlinePass.frameBuffer.GetDepthAttachment()), new System.Numerics.Vector2(1280, 720));
 
             ImGui.End();
+
+
+            ImGui.Begin("VXGI Settings");
+
+            UI.BeginPropertyGrid("VXGI_SETTINGS");
+
+            UI.BeginProperty("GridMin");
+
+            UI.PropertyVector3(ref VoxelTracer.GridMin);
+
+            UI.EndProperty();
+
+            UI.BeginProperty("GridMax");
+
+            UI.PropertyVector3(ref VoxelTracer.GridMax);
+
+            UI.EndProperty();
+
+            UI.EndPropertyGrid();
+
+            ImGui.End();
+
 
         }
         Vector4 rectSize = new Vector4(40, 40, 300, 350);

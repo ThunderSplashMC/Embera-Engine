@@ -12,9 +12,13 @@ uniform mat4 W_PROJECTION_MATRIX;
 out vec3 WorldPosGS;
 out vec3 WorldNormalGS;
 out vec3 Normal;
+
+out vec2 texCoords;
  
 void main()
 {
     WorldNormalGS = normalize((aNormal * mat3(transpose(inverse(W_MODEL_MATRIX)))));
 	WorldPosGS = vec3(vec4(aPosition, 1.0) * W_MODEL_MATRIX);
+	texCoords = aTexCoord;
+
 }

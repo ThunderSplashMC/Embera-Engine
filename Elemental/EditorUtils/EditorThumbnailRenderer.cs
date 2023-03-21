@@ -23,7 +23,7 @@ namespace DevoidEngine.Elemental.EditorUtils
 
         FrameBuffer fb;
 
-        Mesh mesh = ModelImporter.LoadModel("D:\\Programming\\Devoid\\ExampleAssets\\sphere.fbx")[0].mesh;
+        Mesh mesh = ModelImporter.LoadModel("Engine/EngineContent/model/sphere.fbx")[0].mesh;
 
         Bloom bloomRenderer = new Bloom();
 

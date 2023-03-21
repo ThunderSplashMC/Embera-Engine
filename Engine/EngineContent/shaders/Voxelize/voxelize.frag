@@ -110,20 +110,10 @@ vec3 CalcPointLight(PointLight light, vec3 N, vec3 F0, vec3 V) {
 }
 
 
-bool isInsideUnitCube()
-{
-    return abs(WorldPos.x) < 1.0f && abs(WorldPos.y) < 1.0f && abs(WorldPos.z) < 1.0f;
-}
-
-
 
 
 void main()
 {
-    if (!isInsideUnitCube())
-    {
-        return;
-    }
 
     vec3 V = normalize(C_VIEWPOS - WorldPos);
 
@@ -137,5 +127,5 @@ void main()
     }
 
     vec3 position = WorldPos * 0.5f + 0.5f;
-    imageStore(gTexture3D, ivec3(imageSize(gTexture3D) * position), vec4(vec3(Lo), 1.0f));
+    imageStore(gTexture3D, ivec3(imageSize(gTexture3D) * position), vec4(Lo + vec3(0.06), 1.0f));
 }

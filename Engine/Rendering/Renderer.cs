@@ -18,7 +18,7 @@ namespace DevoidEngine.Engine.Rendering
             isInitialized = true;
 
             //
-            Renderer3D.AddRenderPass(new VoxelTracer());
+            //Renderer3D.AddRenderPass(new VoxelTracer());
             //
         }
 

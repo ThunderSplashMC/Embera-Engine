@@ -141,6 +141,54 @@ namespace DevoidEngine.Engine.Core
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.R32f, WorkGroupSize.X, WorkGroupSize.Y, 0, PixelFormat.Red, PixelType.Float, values);
         }
 
+        public void SetFloat(string name, float value)
+        {
+            int location = this.GetUniformLocation(name);
+            GL.Uniform1(location, value);
+        }
+        public void SetBool(string name, bool value)
+        {
+            int location = this.GetUniformLocation(name);
+            GL.Uniform1(location, value ? 1 : 0);
+        }
+
+        public void SetMatrix4(string name, Matrix4 value)
+        {
+            int location = this.GetUniformLocation(name);
+            GL.UniformMatrix4(location, true, ref value);
+        }
+
+        public void SetMatrix4(string name, Matrix4 value, bool transpose)
+        {
+            int location = this.GetUniformLocation(name);
+            GL.UniformMatrix4(location, transpose, ref value);
+        }
+
+        public void SetVector4(string name, Vector4 value)
+        {
+            int location = this.GetUniformLocation(name);
+            GL.Uniform4(location, value);
+        }
+
+        public void SetVector3(string name, Vector3 value)
+        {
+            int location = this.GetUniformLocation(name);
+            GL.Uniform3(location, value);
+        }
+
+        public void SetVector2(string name, Vector2 value)
+        {
+            int location = this.GetUniformLocation(name);
+            GL.Uniform2(location, value);
+        }
+
+
+        public void SetInt(string name, int value)
+        {
+            int location = this.GetUniformLocation(name);
+            GL.Uniform1(location, value);
+        }
+
         public int GetAttribLocation(string AttribName)
         {
             return GL.GetAttribLocation(Handle, AttribName);
