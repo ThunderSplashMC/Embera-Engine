@@ -127,5 +127,5 @@ void main()
     }
 
     vec3 position = WorldPos * 0.5f + 0.5f;
-    imageStore(gTexture3D, ivec3(imageSize(gTexture3D) * position), vec4(Lo + vec3(0.06), 1.0f));
+    imageStore(gTexture3D, ivec3(imageSize(gTexture3D) * position), vec4(Lo + vec3(0.03), 1.0f));
 }

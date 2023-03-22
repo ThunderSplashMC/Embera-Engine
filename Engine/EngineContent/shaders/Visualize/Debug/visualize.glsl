@@ -34,11 +34,12 @@ layout(location = 1) uniform float ConeAngle = 0.0;
 void main()
 {
     ivec2 imgCoord = ivec2(gl_GlobalInvocationID.xy);
+
     vec2 ndc = (imgCoord + 0.5) / imageSize(ImgResult) * 2.0 - 1.0;
 
     Ray worldRay;
     worldRay.Origin = C_VIEWPOS;
-    worldRay.Direction = GetWorldSpaceDirection(inverse(W_PROJECTION_MATRIX), inverse(W_VIEW_MATRIX), ndc);
+    worldRay.Direction = GetWorldSpaceDirection(inverse(W_PROJECTION_MATRIX), W_VIEW_MATRIX, ndc);
 
     float t1, t2;
     if (!(RayCuboidIntersect(worldRay, GridMin, GridMax, t1, t2) && t2 > 0.0))
@@ -82,7 +83,7 @@ vec4 TraceCone(vec3 start, vec3 direction, float coneAngle, float stepMultiplier
         float sampleLod = log2(sampleDiameter / voxelMinLength);
         
         vec3 worldPos = start + direction * distFromStart;
-        vec3 sampleUVT = (vec4(worldPos, 1.0) *  W_ORTHOGRAPHIC_MATRIX).xyz * 0.5 + 0.5;
+        vec3 sampleUVT = worldPos * 0.5 + 0.5;
         if (any(lessThan(sampleUVT, vec3(0.0))) || any(greaterThanEqual(sampleUVT, vec3(1.0))) || sampleLod > maxLevel)
         {
             break;

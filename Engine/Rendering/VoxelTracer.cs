@@ -17,15 +17,17 @@ namespace DevoidEngine.Engine.Rendering
         Shader voxelize_shader = new Shader("Engine/EngineContent/shaders/Voxelize/voxelize.vert", "Engine/EngineContent/shaders/Voxelize/voxelize.frag", "Engine/EngineContent/shaders/Voxelize/voxelize.geom");
         Shader vizualize_voxel = new Shader("Engine/EngineContent/shaders/Visualize/visualize");
         
-        ComputeShader vizualize_voxel_cs = new ComputeShader("Engine/EngineContent/shaders/Visualize/visualize.glsl", new Vector3i(64,64,64));
+        ComputeShader vizualize_voxel_cs = new ComputeShader("Engine/EngineContent/shaders/Visualize/Debug/visualize.glsl", new Vector3i(64,64,64));
 
         Shader world_pos = new Shader("Engine/EngineContent/shaders/ToWorldPos");
 
-        ComputeShader compute = new ComputeShader("Engine/EngineContent/shaders/voxelize.glsl", new Vector3i(64, 64, 64));
+        //ComputeShader compute = new ComputeShader("Engine/EngineContent/shaders/voxelize.glsl", new Vector3i(64, 64, 64));
 
         FrameBuffer FrontFace, BackFace;
 
         int voxel_texture, visualize_texture;
+
+        int textureRes = 256;
 
         public override void Initialize(int width, int height)
         {
@@ -44,7 +46,7 @@ namespace DevoidEngine.Engine.Rendering
             GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureMaxLevel, 1);
             GL.GenerateMipmap(GenerateMipmapTarget.Texture3D);
 
-            GL.TexStorage3D(TextureTarget3d.Texture3D, 1, SizedInternalFormat.Rgba8, 64, 64, 64);
+            GL.TexStorage3D(TextureTarget3d.Texture3D, 1, SizedInternalFormat.Rgba8, textureRes, textureRes, textureRes);
 
             GL.BindTexture(TextureTarget.Texture3D, 0);
 
@@ -105,16 +107,12 @@ namespace DevoidEngine.Engine.Rendering
         {
             count += 1;
 
-            //GL.ClearTexImage(voxel_texture, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-
-            ClearTextures();
-
-            return;
+            GL.ClearTexImage(voxel_texture, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
 
             FrontFace.UnBind();
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.Viewport(0, 0, 64, 64);
+            GL.Viewport(0, 0, textureRes, textureRes);
             GL.ColorMask(false, false, false, false);
             GL.Disable(EnableCap.CullFace);
             GL.Disable(EnableCap.DepthTest);
@@ -137,10 +135,6 @@ namespace DevoidEngine.Engine.Rendering
                 Material material = drawList[i].mesh.Material;
 
                 voxelize_shader.SetVector3("material.albedo", material.GetVec3("material.albedo"));
-                //voxelize_shader.SetInt("USE_TEX_0", material.GetInt("USE_TEX_0"));
-                //voxelize_shader.SetInt("USE_TEX_0", 0);
-                //voxelize_shader.SetInt("material.ALBEDO_TEX", 0);
-                //material.Apply();
                 
                 drawList[i].mesh.Draw();
             }
@@ -152,6 +146,8 @@ namespace DevoidEngine.Engine.Rendering
             Renderer3D.ResetViewport();
 
             GL.ColorMask(true, true, true, true);
+
+            ClearTextures();
 
         }
 
@@ -167,8 +163,6 @@ namespace DevoidEngine.Engine.Rendering
             vizualize_voxel_cs.SetMatrix4("W_VIEW_MATRIX", RenderGraph.Camera.GetViewMatrix());
             vizualize_voxel_cs.SetVector3("C_VIEWPOS", RenderGraph.Camera.position);
 
-            vizualize_voxel_cs.SetMatrix4("W_ORTHOGRAPHIC_MATRIX", Renderer2D.OrthoProjection);
-
             vizualize_voxel_cs.SetVector3("GridMin", GridMin);
             vizualize_voxel_cs.SetVector3("GridMax", GridMax);
 
@@ -177,16 +171,6 @@ namespace DevoidEngine.Engine.Rendering
 
             vizualize_voxel_cs.Wait();
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit | MemoryBarrierFlags.TextureFetchBarrierBit);
-
-            //compute.Use();
-
-            //GL.BindImageTexture(0, voxel_texture, 0, true, 0, TextureAccess.ReadWrite, SizedInternalFormat.Rgba8);
-
-            //compute.Dispatch(16, 16, 16);
-            //compute.Wait();
-
-            //GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit | MemoryBarrierFlags.TextureFetchBarrierBit);
-
         }
 
         public void Visualize()

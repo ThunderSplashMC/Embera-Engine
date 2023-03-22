@@ -232,13 +232,13 @@ namespace DevoidEngine.Elemental.Panels
 
             UI.BeginProperty("GridMin");
 
-            UI.PropertyVector3(ref VoxelTracer.GridMin);
+            UI.PropertyVector3(ref VoxelTracer.GridMin, 0.2f, float.MinValue, -0.1f);
 
             UI.EndProperty();
 
             UI.BeginProperty("GridMax");
 
-            UI.PropertyVector3(ref VoxelTracer.GridMax);
+            UI.PropertyVector3(ref VoxelTracer.GridMax, 0.2f, 0.1f);
 
             UI.EndProperty();
 
