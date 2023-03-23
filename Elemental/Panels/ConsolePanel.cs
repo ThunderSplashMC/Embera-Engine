@@ -14,8 +14,6 @@ namespace DevoidEngine.Elemental.Panels
         {
             ImGui.Begin($"{FontAwesome.ForkAwesome.Terminal} Console Output");
 
-            ImGui.SetScrollHereY(0.999f);
-
             ImGui.TextWrapped(HistoryO);
 
             ImGui.End();
@@ -31,7 +29,7 @@ namespace DevoidEngine.Elemental.Panels
                 HistoryO = "";
                 HistoryO += "Message Log Overflow: Exceeds 10000\nMessages Cleared";
             }
-            HistoryO += "\n" + msg;
+            HistoryO = messageCount + ". " + msg + "\n" + HistoryO;
             messageCount += 1;
         }
     }

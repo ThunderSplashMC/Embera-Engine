@@ -10,24 +10,23 @@ out vec3 WorldNormal;
 
 void main()
 {
-    // Plane normal
-    const vec3 N = abs(cross(WorldPosGS[1] - WorldPosGS[0], WorldPosGS[2] - WorldNormalGS[0]));
-    for (int i = 0; i < 3; ++i)
+
+    vec3 p1 = gl_in[1].gl_Position.xyz - gl_in[0].gl_Position.xyz;
+    vec3 p2 = gl_in[2].gl_Position.xyz - gl_in[0].gl_Position.xyz;
+    vec3 normalWeights = abs(cross(p1, p2));
+
+    int dominantAxis = normalWeights.y > normalWeights.x ? 1 : 0;
+    dominantAxis = normalWeights.z > normalWeights[dominantAxis] ? 2 : dominantAxis;
+
+    for (int i = 0; i < 3; i++)
     {
         WorldPos = WorldPosGS[i];
         WorldNormal = WorldNormalGS[i];
-        if (N.z > N.x && N.z > N.y)
-        {
-            gl_Position = vec4(WorldPos.x, WorldPos.y, 0.0f, 1.0f);
-        }
-        else if (N.x > N.y && N.x > N.z)
-        {
-            gl_Position = vec4(WorldPos.y, WorldPos.z, 0.0f, 1.0f);
-        }
-        else
-        {
-            gl_Position = vec4(WorldPos.x, WorldPos.z, 0.0f, 1.0f);
-        }
+        gl_Position = gl_in[i].gl_Position;
+
+        if (dominantAxis == 0) gl_Position = gl_Position.zyxw;
+        else if (dominantAxis == 1) gl_Position = gl_Position.xzyw;
+
         EmitVertex();
     }
     EndPrimitive();

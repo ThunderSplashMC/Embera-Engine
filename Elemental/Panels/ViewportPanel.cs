@@ -242,6 +242,30 @@ namespace DevoidEngine.Elemental.Panels
 
             UI.EndProperty();
 
+            UI.BeginProperty("NearPlane");
+
+            UI.PropertyFloat(ref VoxelTracer.NearPlane);
+
+            UI.EndProperty();
+
+            UI.BeginProperty("FarPlane");
+
+            UI.PropertyFloat(ref VoxelTracer.FarPlane);
+
+            UI.EndProperty();
+
+            UI.BeginProperty("Cone Angle");
+
+            UI.PropertyFloat(ref VoxelTracer.ConeAngle);
+
+            UI.EndProperty();
+
+            UI.BeginProperty("Step Multiplier");
+
+            UI.PropertyFloat(ref VoxelTracer.StepMultiplier, 0.1f);
+
+            UI.EndProperty();
+
             UI.EndPropertyGrid();
 
             ImGui.End();
@@ -261,12 +285,12 @@ namespace DevoidEngine.Elemental.Panels
         public void DrawViewportTools()
         {
             ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding, 5f);
-            float size = 22;
+            float size = 25;
 
             ImGui.SetCursorPosX(size);
             ImGui.SetCursorPosY(size + 22);
 
-            if (DevoidGUI.Button(FontAwesome.ForkAwesome.Camera, new Vector2(size + 10, size)))
+            if (DevoidGUI.Button(MaterialIconFont.MaterialDesign.Camera, new Vector2(size, size)))
             {
                 editorCamera.projectionType = editorCamera.projectionType == 0 ? 1 : 0;
                 editorCamera.UpdateProjection();
@@ -275,7 +299,7 @@ namespace DevoidEngine.Elemental.Panels
             ImGui.SetCursorPosX(size * 3);
             ImGui.SetCursorPosY(size + 22);
 
-            if (DevoidGUI.Button(FontAwesome.ForkAwesome.LightbulbO, new Vector2(size + 10, size)))
+            if (DevoidGUI.Button(FontAwesome.ForkAwesome.LightbulbO, new Vector2(size, size)))
             {
                 RenderGraph.EnableLighting = !RenderGraph.EnableLighting;
             }
@@ -283,7 +307,7 @@ namespace DevoidEngine.Elemental.Panels
             ImGui.SetCursorPosX(size * 5);
             ImGui.SetCursorPosY(size + 22);
 
-            if (DevoidGUI.Button(FontAwesome.ForkAwesome.LightbulbO, new Vector2(size + 10, size)))
+            if (DevoidGUI.Button(FontAwesome.ForkAwesome.LightbulbO, new Vector2(size, size)))
             {
                 EditorOutlinePass.CurrentOutlinedObjectUUID = 0;
             }

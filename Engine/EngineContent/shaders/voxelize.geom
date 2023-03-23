@@ -5,6 +5,8 @@ layout (triangle_strip, max_vertices = 3) out;
 in vec3 WorldPosGS[];
 in vec3 WorldNormalGS[];
  
+uniform vec3 C_VIEWPOS;
+
 out vec3 WorldPos;
 out vec3 WorldNormal;
 

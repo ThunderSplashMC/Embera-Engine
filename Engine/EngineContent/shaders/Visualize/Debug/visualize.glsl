@@ -44,7 +44,7 @@ void main()
     float t1, t2;
     if (!(RayCuboidIntersect(worldRay, GridMin, GridMax, t1, t2) && t2 > 0.0))
     {
-        vec4 skyColor = vec4(0.0);
+        vec4 skyColor = vec4(0.5);
         imageStore(ImgResult, imgCoord, skyColor);
         return;
     }
@@ -63,7 +63,7 @@ void main()
 
     vec4 color = TraceCone(gridRayStart, worldRay.Direction, ConeAngle, StepMultiplier);
 
-    imageStore(ImgResult, imgCoord, color);
+    imageStore(ImgResult, imgCoord, color.a == 0.0 ? vec4(1.0) : vec4(1,0,0,1));
 }
 
 vec4 TraceCone(vec3 start, vec3 direction, float coneAngle, float stepMultiplier)
@@ -83,7 +83,7 @@ vec4 TraceCone(vec3 start, vec3 direction, float coneAngle, float stepMultiplier
         float sampleLod = log2(sampleDiameter / voxelMinLength);
         
         vec3 worldPos = start + direction * distFromStart;
-        vec3 sampleUVT = worldPos * 0.5 + 0.5;
+        vec3 sampleUVT = (vec4(worldPos, 1.0) * W_ORTHOGRAPHIC_MATRIX).xyz * 0.5 + 0.5;
         if (any(lessThan(sampleUVT, vec3(0.0))) || any(greaterThanEqual(sampleUVT, vec3(1.0))) || sampleLod > maxLevel)
         {
             break;

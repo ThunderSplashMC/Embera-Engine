@@ -8,6 +8,8 @@ layout (location = 4) in vec3 aBiTangent;
 
 uniform mat4 W_MODEL_MATRIX;
 uniform mat4 W_PROJECTION_MATRIX;
+
+uniform mat4 W_ORTHOGRAPHIC_MATRIX;
  
 out vec3 WorldPosGS;
 out vec3 WorldNormalGS;
@@ -20,5 +22,5 @@ void main()
     WorldNormalGS = normalize((aNormal * mat3(transpose(inverse(W_MODEL_MATRIX)))));
 	WorldPosGS = vec3(vec4(aPosition, 1.0) * W_MODEL_MATRIX);
 	texCoords = aTexCoord;
-
+	gl_Position = (vec4(WorldPosGS,1.0) * W_ORTHOGRAPHIC_MATRIX);
 }

@@ -156,6 +156,8 @@
     <None Remove="Engine\EngineContent\shaders\voxelize.geom" />
     <None Remove="Engine\EngineContent\shaders\voxelize.glsl" />
     <None Remove="Engine\EngineContent\shaders\voxelize.vert" />
+    <None Remove="Engine\EngineContent\shaders\Voxelize\Debug\voxelize.frag" />
+    <None Remove="Engine\EngineContent\shaders\Voxelize\Debug\voxelize.vert" />
     <None Remove="Engine\EngineContent\shaders\Voxelize\voxelize.frag" />
     <None Remove="Engine\EngineContent\shaders\Voxelize\voxelize.geom" />
     <None Remove="Engine\EngineContent\shaders\Voxelize\voxelize.vert" />
@@ -226,10 +228,19 @@
     <Content Include="Engine\EngineContent\shaders\Visualize\visualize.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Engine\EngineContent\shaders\Visualize\Debug\visualize.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Engine\EngineContent\shaders\Visualize\visualize.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Engine\EngineContent\shaders\Visualize\visualize.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\Voxelize\Debug\voxelize.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\Voxelize\Debug\voxelize.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Engine\EngineContent\shaders\Voxelize\voxelize.frag">

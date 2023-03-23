@@ -11,6 +11,8 @@ uniform vec3 C_VIEWPOS;
 in vec3 WorldPos;
 in vec3 WorldNormal;
 
+uniform mat4 W_ORTHOGRAPHIC_MATRIX;
+
 struct Material {
     sampler2D ALBEDO_TEX;
     sampler2D ROUGHNESS_TEX;
@@ -109,9 +111,6 @@ vec3 CalcPointLight(PointLight light, vec3 N, vec3 F0, vec3 V) {
 
 }
 
-
-
-
 void main()
 {
 
@@ -126,6 +125,13 @@ void main()
         Lo += CalcPointLight(L_POINTLIGHTS[i], WorldNormal, F0, V);
     }
 
-    vec3 position = WorldPos * 0.5f + 0.5f;
-    imageStore(gTexture3D, ivec3(imageSize(gTexture3D) * position), vec4(Lo + vec3(0.03), 1.0f));
+    vec3 position = (vec4(WorldPos, 1.0) * W_ORTHOGRAPHIC_MATRIX).xyz;
+
+    float normalizedX = (position.x + 1) / 2;
+    float normalizedY = (position.y + 1) / 2;
+    float normalizedZ = (position.z + 1) / 2;
+
+    vec3 normalizedPos = vec3(normalizedX, normalizedY, normalizedZ);
+
+    imageStore(gTexture3D, ivec3(imageSize(gTexture3D) * normalizedPos), vec4(Lo + vec3(0.03), 1.0f));
 }

@@ -4,12 +4,13 @@ using DevoidEngine.Engine.Core;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using DevoidEngine.Engine.Utilities;
+using System.Runtime.InteropServices;
 
 namespace DevoidEngine.Engine.Rendering
 {
     class RendererUtils
     {
-        private static DebugProc DebugMessageDelegate = Devoid.OnDebugMessage;
+        private static DebugProc DebugMessageDelegate = OnDebugMessage;
         
         public static VertexArray CubeVAO;
         public static VertexArray QuadVAO;
@@ -18,6 +19,8 @@ namespace DevoidEngine.Engine.Rendering
         public static Shader HDRShader;
         public static Shader FrameBufferCombineShader;
         public static Shader ShadowShader;
+
+        public static string ErrorInfo = string.Empty;
 
         public static void Init()
         {
@@ -48,10 +51,19 @@ namespace DevoidEngine.Engine.Rendering
             ShaderLibrary.AddShader("shadow_shader_internal", ShadowShader);
         }
 
-        public static void BlitFBToScreen(FrameBuffer srcFB, FrameBuffer destFB)
+        public static void BlitFBToScreen(FrameBuffer srcFB, FrameBuffer destFB, float opacity = 0.5f)
         {
 
             //GL.BlitNamedFramebuffer(srcFB.GetRendererID(), destFB.GetRendererID(), 0, 0, RenderGraph.ViewportWidth, RenderGraph.ViewportHeight, 0, 0, RenderGraph.ViewportWidth, RenderGraph.ViewportHeight, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Linear);
+
+            if (opacity == 1.0f)
+            {
+                destFB.Bind();
+
+                GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+                destFB.UnBind();
+            }
 
             destFB.Bind();
 
@@ -59,6 +71,7 @@ namespace DevoidEngine.Engine.Rendering
 
             FrameBufferCombineShader.SetInt("S_SOURCE_TEXTURE", 0);
             FrameBufferCombineShader.SetInt("S_SCREEN_TEXTURE", 1);
+            FrameBufferCombineShader.SetFloat("OPACITY_MIX", opacity);
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, srcFB.GetColorAttachment(0));
@@ -110,6 +123,49 @@ namespace DevoidEngine.Engine.Rendering
         public static void SetSkybox(Cubemap cubemap)
         {
             RenderGraph.SkyboxCubemap = cubemap;
+        }
+
+        public static void OnDebugMessage(
+            DebugSource source,     // Source of the debugging message.
+            DebugType type,         // Type of the debugging message.
+            int id,                 // ID associated with the message.
+            DebugSeverity severity, // Severity of the message.
+            int length,             // Length of the string in pMessage.
+            IntPtr pMessage,        // Pointer to message string.
+            IntPtr pUserParam)      // The pointer you gave to OpenGL, explained later.
+        {
+            // In order to access the string pointed to by pMessage, you can use Marshal
+            // class to copy its contents to a C# string without unsafe code. You can
+            // also use the new function Marshal.PtrToStringUTF8 since .NET Core 1.1.
+            string message = Marshal.PtrToStringAnsi(pMessage, length);
+
+            // The rest of the function is up to you to implement, however a debug output
+            // is always useful.
+
+            // Potentially, you may want to throw from the function for certain severity
+            // messages.
+            if (type == DebugType.DebugTypeError)
+            {
+                ErrorInfo = "ERR: " + message;
+
+                //Console.WriteLine(" ");
+                //Console.WriteLine("##################");
+                //Console.WriteLine("ERR: " + message);
+                //Console.WriteLine("SOURCE: " + source);
+                //Console.WriteLine("TYPE: " + type);
+                //Console.WriteLine("ID: " + id);
+                //Console.WriteLine("##################");
+                //Console.WriteLine(" ");
+                //Console.WriteLine("[{0} source={1} type={2} id={3}] {4}", severity, source, type, id, message);
+            }
+            else if (type == DebugType.DebugTypeDeprecatedBehavior)
+            {
+                ErrorInfo = "DEPRECATED: " + message;
+            }
+            else if (type == DebugType.DontCare)
+            {
+                ErrorInfo = "DONT CARE: " + message;
+            }
         }
 
     }

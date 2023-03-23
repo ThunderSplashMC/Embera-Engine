@@ -100,6 +100,7 @@ namespace DevoidEngine.Elemental
         {
             OnUpdatePanels(deltaTime);
             EditorScene.OnUpdate(deltaTime);
+            ErrorLog();
             this.deltaTime = deltaTime;
         }
 
@@ -214,6 +215,15 @@ namespace DevoidEngine.Elemental
 
                 ImGui.EndMenuBar();
             }
+        }
+
+        void ErrorLog()
+        {
+            if (RendererUtils.ErrorInfo != string.Empty)
+            {
+                ConsoleService.LOG(RendererUtils.ErrorInfo);
+            }
+            RendererUtils.ErrorInfo = string.Empty;
         }
     }
 }
