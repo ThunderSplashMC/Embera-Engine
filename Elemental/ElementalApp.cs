@@ -16,7 +16,7 @@ namespace DevoidEngine.Elemental
             Init(path);
         }
 
-        public void Init(string Path = "D:\\Programming\\Devoid\\DevoidEngine\\Elemental")
+        public void Init(string Path = "C:\\")
         {
             ApplicationSpecification applicationSpecification = new ApplicationSpecification()
             {
