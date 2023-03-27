@@ -13,6 +13,17 @@ namespace DevoidEngine.Engine.Rendering
         public static int MAX_POINT_SHADOW_BUFFERS = 4;
 
         public static bool BLOOM = true;
+        public static bool ShadowPass = false;
+        public static bool PathTrace = false;
+
+        // 
+
+        public static TonemapperModes TonemapMode;
+        public static bool GammeCorrect = true;
+
+        //
+
+        public static float SkyboxIntensity = 1f;
 
         //public static FrameBuffer CompositePass;
         public static Camera Camera;
@@ -40,6 +51,15 @@ namespace DevoidEngine.Engine.Rendering
     class RenderSettings
     {
         public static bool ErrorCheck = false;
+    }
+
+    enum TonemapperModes
+    {
+        ACES,
+        Filmic,
+        Reinhard,
+        Reinhard_Ex,
+        Reinhard_Jodie
     }
 
     enum RenderMode

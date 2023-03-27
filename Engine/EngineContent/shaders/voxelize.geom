@@ -4,11 +4,13 @@ layout (triangle_strip, max_vertices = 3) out;
  
 in vec3 WorldPosGS[];
 in vec3 WorldNormalGS[];
+in vec2 texCoordsGS[];
  
 uniform vec3 C_VIEWPOS;
 
 out vec3 WorldPos;
 out vec3 WorldNormal;
+out vec2 texCoords;
 
 int getDominantAxisIdx(vec3 v0, vec3 v1, vec3 v2)
 {
@@ -33,6 +35,7 @@ void main()
     {
         WorldPos = WorldPosGS[i];
         WorldNormal = WorldNormalGS[i];
+        texCoords = texCoordsGS[i];
         if (idx == 0)
         {
             gl_Position = vec4(WorldPos.x, WorldPos.y, 0.0f, 1.0f);

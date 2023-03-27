@@ -15,6 +15,8 @@ namespace DevoidEngine.Engine.Utilities
         public IndexBuffer IBO;
         public VertexArray VAO;
 
+        Vertex[] Vertices;
+
         public int MaterialIndex;
 
         public Material Material;
@@ -91,6 +93,7 @@ namespace DevoidEngine.Engine.Utilities
             VBO.SetData(vertices, vertices.Length);
             VAO = new VertexArray(VBO);
             this.VertexCount = vertices.Length;
+            this.Vertices = vertices;
         }
 
         public void SetVertexArrayObject(VertexArray vao)
@@ -102,6 +105,11 @@ namespace DevoidEngine.Engine.Utilities
         {
             IBO = new IndexBuffer(indices.Length, IsStatic);
             IBO.SetData(indices, indices.Length);
+        }
+
+        public Vertex[] GetVertices()
+        {
+            return Vertices;
         }
     }
 }

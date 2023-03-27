@@ -22,7 +22,7 @@ namespace DevoidEngine.Engine.Components
     {
         public override string Type { get; } = nameof(TextComponent);
 
-        public string Content = "Demo!";
+        public string Content = "Text!";
         public Color4 OverlayColor = new Color4(0,0,0,0);
         public float CharSpacingOffset = 0.0f;
 
@@ -46,7 +46,7 @@ namespace DevoidEngine.Engine.Components
         {
             fontLoaded = FontUtils.GenerateBitmapFromFile("Elemental/Assets/Fonts/OpenSans.ttf", 48, "Open Sans");
             fontMaterial = new Material(new Shader("Engine/EngineContent/shaders/font-shader"));
-            fontMaterial.SetTexture("u_Texture", fontLoaded.LoadedTexture, 0);
+            fontMaterial.SetTexture("u_Texture", fontLoaded.LoadedTexture);
         }
 
         public override void OnUpdate(float deltaTime)
@@ -67,17 +67,12 @@ namespace DevoidEngine.Engine.Components
                 charSpacing = CharSpacingOffset;
                 ReconstructMesh();
             }
-            mesh.Material.GetShader().SetVector4("v_Color", new Vector4(OverlayColor.R, OverlayColor.G, OverlayColor.B, OverlayColor.A));
+            //mesh.Material.GetShader().SetVector4("v_Color", new Vector4(OverlayColor.R, OverlayColor.G, OverlayColor.B, OverlayColor.A));
             if (Content != "")
             {
                 if (renderType == TextRenderType._2D)
                 {
-                    mesh.Material.Set("Do_3D", 0);
-                    Renderer2D.Submit(mesh, gameObject.transform.position, gameObject.transform.rotation, gameObject.transform.scale);
-                } else
-                {
-                    mesh.Material.Set("Do_3D", 1);
-                    Renderer3D.Submit(gameObject.transform.position, gameObject.transform.rotation, gameObject.transform.scale, mesh);
+                    Renderer2D.Submit(mesh, fontLoaded.LoadedTexture, gameObject.transform.position, gameObject.transform.rotation, gameObject.transform.scale);
                 }
             }
         }

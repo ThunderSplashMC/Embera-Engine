@@ -10,6 +10,7 @@ uniform vec3 C_VIEWPOS;
 
 in vec3 WorldPos;
 in vec3 WorldNormal;
+in vec2 texCoords;
 
 uniform mat4 W_ORTHOGRAPHIC_MATRIX;
 
@@ -84,6 +85,27 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
+vec3 GammaCorrectTexture(sampler2D tex, vec2 uv)
+{
+	vec4 samp = texture(tex, uv);
+	return vec3(pow(samp.rgb, vec3(GAMMA)));
+}
+
+vec3 GammaCorrectTextureAlpha(sampler2D tex, vec2 uv)
+{
+	vec4 samp = texture(tex, uv);
+	return vec3(pow(samp.rgb, vec3(GAMMA)));
+}
+
+vec3 GetAlbedo() {
+    return (1.0 - USE_TEX_0) * material.albedo + USE_TEX_0 * GammaCorrectTexture(material.ALBEDO_TEX, texCoords);
+}
+
+float GetAlbedoAlpha() {
+    return (1 - USE_TEX_0) * 1 + USE_TEX_0 * texture(material.ALBEDO_TEX, texCoords).a;
+}
+
+
 vec3 CalcPointLight(PointLight light, vec3 N, vec3 F0, vec3 V) {
     vec3 L = normalize(light.position - WorldPos);
     vec3 H = normalize(V + L);
@@ -107,7 +129,7 @@ vec3 CalcPointLight(PointLight light, vec3 N, vec3 F0, vec3 V) {
     // add to outgoing radiance Lo
     float NdotL = max(dot(N, L), 0.0);               
 
-    return (kD * material.albedo / PI + specular) * radiance * NdotL;
+    return (kD * GetAlbedo() / PI + specular) * radiance * NdotL;
 
 }
 
@@ -124,6 +146,8 @@ void main()
     for (int i = 0; i < NR_POINT_LIGHTS; i++) {
         Lo += CalcPointLight(L_POINTLIGHTS[i], WorldNormal, F0, V);
     }
+
+
 
     vec3 position = (vec4(WorldPos, 1.0) * W_ORTHOGRAPHIC_MATRIX).xyz;
 

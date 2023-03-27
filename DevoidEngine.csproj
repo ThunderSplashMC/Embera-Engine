@@ -37,8 +37,6 @@
     <Compile Remove="Engine\Imgui\imnodes\ImNodes - Copy.cs" />
     <Compile Remove="Engine\Imgui\imnodes\ImNodes.cs" />
     <Compile Remove="Engine\Imgui\imnodes\ImNodesDefinitions.cs" />
-    <Compile Remove="Engine\Rendering\Renderer3D-dupe.cs" />
-    <Compile Remove="Engine\Rendering\VXGI.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -119,7 +117,11 @@
     <None Remove="Engine\EngineContent\shaders\brightfilter.vert" />
     <None Remove="Engine\EngineContent\shaders\downsample.frag" />
     <None Remove="Engine\EngineContent\shaders\downsample.vert" />
+    <None Remove="Engine\EngineContent\shaders\experimental\basic.frag" />
+    <None Remove="Engine\EngineContent\shaders\experimental\basic.vert" />
     <None Remove="Engine\EngineContent\shaders\experimental\computeshader-example.glsl" />
+    <None Remove="Engine\EngineContent\shaders\experimental\gbuffer.frag" />
+    <None Remove="Engine\EngineContent\shaders\experimental\gbuffer.vert" />
     <None Remove="Engine\EngineContent\shaders\experimental\voxel_visualize.glsl" />
     <None Remove="Engine\EngineContent\shaders\font-shader.frag" />
     <None Remove="Engine\EngineContent\shaders\font-shader.vert" />
@@ -129,6 +131,8 @@
     <None Remove="Engine\EngineContent\shaders\Framebuffer\combine.vert" />
     <None Remove="Engine\EngineContent\shaders\gbuffer.frag" />
     <None Remove="Engine\EngineContent\shaders\gbuffer.vert" />
+    <None Remove="Engine\EngineContent\shaders\GBuffer\geometry.frag" />
+    <None Remove="Engine\EngineContent\shaders\GBuffer\geometry.vert" />
     <None Remove="Engine\EngineContent\shaders\hdr.frag" />
     <None Remove="Engine\EngineContent\shaders\hdr.vert" />
     <None Remove="Engine\EngineContent\shaders\NullShader2d\null2d.frag" />
@@ -204,6 +208,12 @@
     <Content Include="Engine\EngineContent\model\sphere.fbx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Engine\EngineContent\shaders\experimental\basic.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\experimental\basic.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Engine\EngineContent\shaders\experimental\voxel_visualize.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -211,6 +221,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Engine\EngineContent\shaders\Framebuffer\combine.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\GBuffer\geometry.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\shaders\GBuffer\geometry.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Engine\EngineContent\shaders\NullShader2d\null2d.frag">
@@ -435,10 +451,6 @@
     <Content Include="Engine\Imgui\misc\imgui.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Engine\Rendering\Renderer3D-dupe.cs">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Engine\Rendering\VXGI.cs" />
     <Content Include="Previews\Screenshot_13.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

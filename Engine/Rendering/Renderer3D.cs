@@ -120,7 +120,6 @@ namespace DevoidEngine.Engine.Rendering
             GL.Enable(EnableCap.Dither);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-            GL.PolygonMode(MaterialFace.FrontAndBack, RenderGraph.RenderMode == RenderMode.Normal ? PolygonMode.Fill : PolygonMode.Line);
         }
 
         public static void Render()
@@ -129,9 +128,16 @@ namespace DevoidEngine.Engine.Rendering
 
             RenderStart();
 
+            if (RenderGraph.PathTrace)
+            {
+                PathTracedRenderer.Render(DrawList);
+                return;
+            }
+
             SortDrawListByDistance();
 
             //ShadowPass();
+            GeometryPass();
             LightingPass();
             BloomPass();
             CompositePass();
@@ -157,6 +163,25 @@ namespace DevoidEngine.Engine.Rendering
             DrawList.Clear();
         }
 
+        static void SkyboxPass()
+        {
+            if (RenderGraph.SkyboxCubemap == null) return;
+
+            GL.Disable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.CullFace);
+            RendererUtils.SkyboxShader.Use();
+            RendererUtils.SkyboxShader.SetMatrix4("W_MODEL_MATRIX", Matrix4.CreateTranslation(RenderGraph.Camera.position));
+            RendererUtils.SkyboxShader.SetMatrix4("W_PROJECTION_MATRIX", RenderGraph.Camera.GetProjectionMatrix());
+            RendererUtils.SkyboxShader.SetMatrix4("W_VIEW_MATRIX", RenderGraph.Camera.GetViewMatrix());
+            RendererUtils.SkyboxShader.SetFloat("Intensity", RenderGraph.SkyboxIntensity);
+            RendererUtils.SkyboxShader.SetInt("skybox", 0);
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.TextureCubeMap, RenderGraph.SkyboxCubemap.CubeMapTex);
+            RendererUtils.CubeVAO.Render();
+            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.CullFace);
+        }
+
         static void LightingPass()
         {
             RenderGraph.LightBuffer.Bind();
@@ -164,22 +189,9 @@ namespace DevoidEngine.Engine.Rendering
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
-            if (RenderGraph.SkyboxCubemap != null)
-            {
+            GL.PolygonMode(MaterialFace.FrontAndBack, RenderGraph.RenderMode == RenderMode.Normal ? PolygonMode.Fill : PolygonMode.Line);
 
-                GL.Disable(EnableCap.DepthTest);
-                GL.Disable(EnableCap.CullFace);
-                RendererUtils.SkyboxShader.Use();
-                RendererUtils.SkyboxShader.SetMatrix4("W_MODEL_MATRIX", Matrix4.CreateTranslation(RenderGraph.Camera.position));
-                RendererUtils.SkyboxShader.SetMatrix4("W_PROJECTION_MATRIX", RenderGraph.Camera.GetProjectionMatrix());
-                RendererUtils.SkyboxShader.SetMatrix4("W_VIEW_MATRIX", RenderGraph.Camera.GetViewMatrix());
-                RendererUtils.SkyboxShader.SetInt("skybox", 0);
-                GL.ActiveTexture(TextureUnit.Texture0);
-                GL.BindTexture(TextureTarget.TextureCubeMap, RenderGraph.SkyboxCubemap.CubeMapTex);
-                RendererUtils.CubeVAO.Render();
-                GL.Enable(EnableCap.DepthTest);
-                GL.Enable(EnableCap.CullFace);
-            }
+            SkyboxPass();
 
             for (int i = 0; i < DrawList.Count; i++)
             {
@@ -208,6 +220,8 @@ namespace DevoidEngine.Engine.Rendering
             }
 
             RenderGraph.LightBuffer.UnBind();
+
+            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
         }
 
         static void BloomPass()
@@ -228,6 +242,8 @@ namespace DevoidEngine.Engine.Rendering
             RendererUtils.HDRShader.SetInt("S_VIGNETTE_TEXTURE", 2);
             RendererUtils.HDRShader.SetFloat("U_BLOOM_STRENGTH", RenderGraph.BLOOM ? RenderGraph.BloomRenderer.bloomStr : 0);
             RendererUtils.HDRShader.SetFloat("U_VIGNETTE_STRENGTH", 0);
+            RendererUtils.HDRShader.SetInt("TonemapMode", (int)RenderGraph.TonemapMode);
+            RendererUtils.HDRShader.SetBool("GammaCorrect", RenderGraph.GammeCorrect);
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, RenderGraph.LightBuffer.GetColorAttachment(0));
@@ -287,6 +303,28 @@ namespace DevoidEngine.Engine.Rendering
                 ResetViewport();
                 ShadowDepthAttachments.Add(light.depthTexture);
             }
+        }
+
+        public static void GeometryPass()
+        {
+            RenderGraph.GeometryBuffer.Bind();
+
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            RendererUtils.GeometryShader.Use();
+
+            UploadCameraData(RendererUtils.GeometryShader);
+
+
+            for (int i = 0; i < DrawList.Count; i++) 
+            {
+                UploadModelData(RendererUtils.GeometryShader, DrawList[i].position, DrawList[i].rotation, DrawList[i].scale);
+
+                DrawList[i].mesh.Draw();
+            
+            }
+
+            RenderGraph.GeometryBuffer.UnBind();
         }
 
         public static void UploadCameraData(Shader shader)

@@ -4,9 +4,11 @@ layout (triangle_strip, max_vertices = 3) out;
 
 in vec3 WorldPosGS[];
 in vec3 WorldNormalGS[];
+in vec2 texCoordsGS[];
 
 out vec3 WorldPos;
 out vec3 WorldNormal;
+out vec2 texCoords;
 
 void main()
 {
@@ -22,6 +24,7 @@ void main()
     {
         WorldPos = WorldPosGS[i];
         WorldNormal = WorldNormalGS[i];
+        texCoords = texCoordsGS[i];
         gl_Position = gl_in[i].gl_Position;
 
         if (dominantAxis == 0) gl_Position = gl_Position.zyxw;

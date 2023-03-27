@@ -108,7 +108,20 @@ namespace DevoidEngine.Engine.Rendering
                 QuadShader.SetMatrix4("W_MODEL_MATRIX", MODELMATRIX);
                 QuadShader.SetMatrix4("W_PROJECTION_MATRIX", OrthoProjection);
 
-                if (drawItem.Texture != null)
+
+                if (drawItem.Texture != null && drawItem.mesh != null)
+                {
+                    Material drawMat = drawItem.mesh.Material;
+                    drawMat.Set("W_MODEL_MATRIX", MODELMATRIX);
+                    drawMat.Set("W_PROJECTION_MATRIX", OrthoProjection);
+
+                    drawMat.Set("u_Texture", 0);
+                    drawItem.Texture.SetActiveUnit(TextureActiveUnit.UNIT0);
+
+                    drawItem.mesh.Draw();
+                    continue;
+                }
+                else if (drawItem.Texture != null)
                 {
                     QuadShader.SetInt("u_Texture", 0);
                     QuadShader.SetInt("USE_TEX_0", 1);
@@ -182,6 +195,17 @@ namespace DevoidEngine.Engine.Rendering
             DrawList.Add(new DrawItem()
             {
                 mesh = mesh,
+                position = pos,
+                rotation = rot.Xy,
+                scale = scale
+            });
+        }
+        public static void Submit(Mesh mesh, Texture texture, Vector3 pos, Vector3 rot, Vector3 scale)
+        {
+            DrawList.Add(new DrawItem()
+            {
+                mesh = mesh,
+                Texture = texture,
                 position = pos,
                 rotation = rot.Xy,
                 scale = scale

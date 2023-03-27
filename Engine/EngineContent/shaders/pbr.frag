@@ -262,9 +262,8 @@ void main() {
     vec3 Lo = vec3(0);
 
     for (int i = 0; i < NR_POINT_LIGHTS; i++) {
-        float shadow = ShadowCalculation(FragPos, L_POINTLIGHTS[i].position, i) * L_POINTLIGHTS[i].shadows;
-        /* max(0, 1 - (shadow * L_POINTLIGHTS[i].shadows)) *  */
-        Lo += /* max(0, 1 - (shadow)) * */ CalcPointLight(L_POINTLIGHTS[i], GetNormal(N), F0, V);
+        //float shadow = ShadowCalculation(FragPos, L_POINTLIGHTS[i].position, i);
+        Lo += /* (max(0, 1 - (shadow)) * (L_POINTLIGHTS[i].shadows)) * */  CalcPointLight(L_POINTLIGHTS[i], GetNormal(N), F0, V);
     }
 
     for (int i = 0; i < NR_SPOT_LIGHTS; i++) {
@@ -280,8 +279,8 @@ void main() {
 
     vec3 color = ambient + Lo + GetEmission();
     
-    color = color / (color + vec3(1.0));
-    color = color;
+    //color = color / (color + vec3(1.0));
+    //color = color;
 
 
     FragColor = vec4(color, GetAlbedoAlpha());

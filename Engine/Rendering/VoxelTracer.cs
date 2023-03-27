@@ -19,7 +19,15 @@ namespace DevoidEngine.Engine.Rendering
         Shader voxelize_shader = new Shader("Engine/EngineContent/shaders/Voxelize/voxelize.vert", "Engine/EngineContent/shaders/Voxelize/voxelize.frag", "Engine/EngineContent/shaders/Voxelize/voxelize.geom");
         ComputeShader vizualize_voxel_cs = new ComputeShader("Engine/EngineContent/shaders/Visualize/Debug/visualize.glsl", new Vector3i(64,64,64));
 
+        ComputeShader ConeTracer = new ComputeShader("Engine/EngineContent/shaders/Visualize/visualize.glsl", new Vector3i(64,64,64));
+
         FrameBuffer framebuffer;
+
+        public bool Enabled;
+        public bool Debug;
+        public float DebugViewOpacity = 1.0f;
+
+        public Color4 SkyColor;
 
         int voxel_texture;
 
@@ -87,8 +95,17 @@ namespace DevoidEngine.Engine.Rendering
 
         public override void DoRenderPass()
         {
-            Voxelize();
-            Visualize();
+            if (Enabled)
+            {
+                Voxelize();
+                if (Debug)
+                {
+                    VisualizeDebug();
+                } else
+                {
+                    Visualize();
+                }
+            }
         }
 
         public override void Resize(int width, int height)
@@ -148,6 +165,16 @@ namespace DevoidEngine.Engine.Rendering
 
                 voxelize_shader.SetVector3("material.albedo", material.GetVec3("material.albedo"));
 
+                //if (material.GetInt("USE_TEX_0") == 1)
+                //{
+                //    voxelize_shader.SetInt("USE_TEX_0", 1);
+                //    voxelize_shader.SetInt("material.ALBEDO_TEX", 0);
+                //    material.GetTexture("material.ALBEDO_TEX").SetActiveUnit(TextureActiveUnit.UNIT0);
+                //} else
+                //{
+                //    voxelize_shader.SetInt("USE_TEX_0", 0);
+                //}
+
                 drawList[i].mesh.Draw();
             }
 
@@ -161,6 +188,40 @@ namespace DevoidEngine.Engine.Rendering
         }
 
         public void Visualize()
+        {
+
+            ConeTracer.Use();
+
+            GL.BindImageTexture(0, framebuffer.GetColorAttachment(0), 0, false, 0, TextureAccess.WriteOnly, SizedInternalFormat.Rgba16f);
+
+            GL.BindTextureUnit(0, voxel_texture);
+
+            ConeTracer.SetMatrix4("W_PROJECTION_MATRIX", RenderGraph.Camera.GetProjectionMatrix());
+            ConeTracer.SetMatrix4("W_VIEW_MATRIX", RenderGraph.Camera.GetViewMatrix());
+            ConeTracer.SetVector3("C_VIEWPOS", RenderGraph.Camera.position);
+
+            ConeTracer.SetMatrix4("W_ORTHOGRAPHIC_MATRIX", orthographicMatrix);
+
+            ConeTracer.SetVector3("GridMin", GridMin);
+            ConeTracer.SetVector3("GridMax", GridMax);
+            ConeTracer.SetInt("MaxSamples",10);
+            ConeTracer.SetFloat("StepMultiplier", StepMultiplier);
+
+            GL.BindTextureUnit(1, RenderGraph.GeometryBuffer.GetColorAttachment(0));
+            GL.BindTextureUnit(2, RenderGraph.GeometryBuffer.GetDepthAttachment());
+
+            //GL.BindTextureUnit(RenderGraph.CompositeBuffer.GetDepthAttachment());
+
+
+            ConeTracer.Dispatch((int)(RenderGraph.CompositeBuffer.GetSize().X / 8), (int)(RenderGraph.CompositeBuffer.GetSize().Y / 8), 1);
+
+            ConeTracer.Wait();
+            //GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit | MemoryBarrierFlags.TextureFetchBarrierBit);
+
+            RendererUtils.BlitFBToScreen(framebuffer, RenderGraph.CompositeBuffer, 1.0f);
+        }
+
+        public void VisualizeDebug()
         {
 
             vizualize_voxel_cs.Use();
@@ -181,6 +242,7 @@ namespace DevoidEngine.Engine.Rendering
             vizualize_voxel_cs.SetFloat("FarPlane", FarPlane);
             vizualize_voxel_cs.SetFloat("ConeAngle", ConeAngle);
             vizualize_voxel_cs.SetFloat("StepMultiplier", StepMultiplier);
+            vizualize_voxel_cs.SetVector3("SkyColor", new Vector3(SkyColor.R, SkyColor.G, SkyColor.B));
 
 
             vizualize_voxel_cs.Dispatch((int)(RenderGraph.CompositeBuffer.GetSize().X / 8), (int)(RenderGraph.CompositeBuffer.GetSize().Y / 8), 1);
@@ -188,7 +250,7 @@ namespace DevoidEngine.Engine.Rendering
             vizualize_voxel_cs.Wait();
             //GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit | MemoryBarrierFlags.TextureFetchBarrierBit);
 
-            RendererUtils.BlitFBToScreen(framebuffer, RenderGraph.CompositeBuffer, 1.0f);
+            RendererUtils.BlitFBToScreen(framebuffer, RenderGraph.CompositeBuffer, DebugViewOpacity);
 
         }
 

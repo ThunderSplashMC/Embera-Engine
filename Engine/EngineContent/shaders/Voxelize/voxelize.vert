@@ -15,12 +15,12 @@ out vec3 WorldPosGS;
 out vec3 WorldNormalGS;
 out vec3 Normal;
 
-out vec2 texCoords;
+out vec2 texCoordsGS;
  
 void main()
 {
     WorldNormalGS = normalize((aNormal * mat3(transpose(inverse(W_MODEL_MATRIX)))));
 	WorldPosGS = vec3(vec4(aPosition, 1.0) * W_MODEL_MATRIX);
-	texCoords = aTexCoord;
+	texCoordsGS = aTexCoord;
 	gl_Position = (vec4(WorldPosGS,1.0) * W_ORTHOGRAPHIC_MATRIX);
 }

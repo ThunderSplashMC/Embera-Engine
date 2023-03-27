@@ -23,6 +23,7 @@ uniform vec3 C_VIEWPOS;
 uniform vec3 GridMin;
 uniform vec3 GridMax;
 uniform mat4 W_ORTHOGRAPHIC_MATRIX;
+uniform vec3 SkyColor;
 
 vec4 TraceCone(vec3 start, vec3 direction, float coneAngle, float stepMultiplier);
 bool RayCuboidIntersect(Ray ray, vec3 min, vec3 max, out float t1, out float t2);
@@ -44,8 +45,7 @@ void main()
     float t1, t2;
     if (!(RayCuboidIntersect(worldRay, GridMin, GridMax, t1, t2) && t2 > 0.0))
     {
-        vec4 skyColor = vec4(0.5);
-        imageStore(ImgResult, imgCoord, skyColor);
+        imageStore(ImgResult, imgCoord, vec4(SkyColor,1.0));
         return;
     }
 
@@ -63,7 +63,7 @@ void main()
 
     vec4 color = TraceCone(gridRayStart, worldRay.Direction, ConeAngle, StepMultiplier);
 
-    imageStore(ImgResult, imgCoord, color.a == 0.0 ? vec4(1.0) : vec4(1,0,0,1));
+    imageStore(ImgResult, imgCoord, color);
 }
 
 vec4 TraceCone(vec3 start, vec3 direction, float coneAngle, float stepMultiplier)

@@ -19,6 +19,8 @@ namespace DevoidEngine.Engine.Rendering
         public static Shader HDRShader;
         public static Shader FrameBufferCombineShader;
         public static Shader ShadowShader;
+        public static Shader GeometryShader;
+        public static Shader BasicShader;
 
         public static string ErrorInfo = string.Empty;
 
@@ -49,6 +51,12 @@ namespace DevoidEngine.Engine.Rendering
 
             ShadowShader = new Shader("Engine/EngineContent/shaders/shadow.vert", "Engine/EngineContent/shaders/shadow.frag", "Engine/EngineContent/shaders/shadow.geom");
             ShaderLibrary.AddShader("shadow_shader_internal", ShadowShader);
+
+            GeometryShader = new Shader("Engine/EngineContent/shaders/GBuffer/geometry");
+            ShaderLibrary.AddShader("gbuffer_shader_internal", GeometryShader);
+
+            BasicShader = new Shader("Engine/EngineContent/shaders/experimental/basic");
+            ShaderLibrary.AddShader("basic_shader_internal", BasicShader);
         }
 
         public static void BlitFBToScreen(FrameBuffer srcFB, FrameBuffer destFB, float opacity = 0.5f)
@@ -123,6 +131,11 @@ namespace DevoidEngine.Engine.Rendering
         public static void SetSkybox(Cubemap cubemap)
         {
             RenderGraph.SkyboxCubemap = cubemap;
+        }
+
+        public static void SkyboxIntensity(float intensity)
+        {
+            RenderGraph.SkyboxIntensity = intensity;
         }
 
         public static void OnDebugMessage(

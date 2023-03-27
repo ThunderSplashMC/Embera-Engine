@@ -15,6 +15,7 @@ using DevoidEngine.Engine.Serializing;
 using System.Drawing.Imaging;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 
 namespace DevoidEngine.Elemental.Panels
 {
@@ -177,6 +178,25 @@ namespace DevoidEngine.Elemental.Panels
                 ImGui.TreePop();
             }
 
+            if (ImGui.CollapsingHeader("Renderer Settings"))
+            {
+                ImGui.TreePush();
+
+                UI.BeginPropertyGrid("TONEMAP_SETTINGS");
+
+                UI.BeginProperty("Render Mode");
+
+                FieldInfo field = typeof(RenderGraph).GetField("RenderMode", BindingFlags.Public | BindingFlags.Static);
+
+                UI.DrawEnumField(field, null);
+
+                UI.EndProperty();
+
+                UI.EndPropertyGrid();
+
+                ImGui.TreePop();
+            }
+
 
             if (ImGui.CollapsingHeader("PostProcess Effects"))
             {
@@ -193,6 +213,121 @@ namespace DevoidEngine.Elemental.Panels
                     //Renderer3D.SetBloomSettings(bloomSettings);
                 }
                 ImGui.TreePop();
+            }
+
+            if (ImGui.CollapsingHeader("Tonemapper Settings"))
+            {
+                ImGui.TreePush();
+
+                UI.BeginPropertyGrid("TONEMAP_SETTINGS");
+
+                UI.BeginProperty("Tonemapper Mode");
+
+                FieldInfo field = typeof(RenderGraph).GetField("TonemapMode", BindingFlags.Public | BindingFlags.Static);
+
+                UI.DrawEnumField(field, null);
+
+                UI.EndProperty();
+
+                UI.BeginProperty("Gamma Correction");
+
+                UI.PropertyBool(ref RenderGraph.GammeCorrect);
+
+                UI.EndProperty();
+
+                UI.EndPropertyGrid();
+
+                ImGui.TreePop();
+            }
+
+            if (ImGui.CollapsingHeader("VoxelTracer Settings"))
+            {
+                UI.BeginPropertyGrid("VXGI_SETTINGS");
+
+                UI.BeginProperty("VXGI Toggle");
+
+                UI.PropertyBool(ref VoxelTracer.Enabled);
+
+                UI.EndProperty();
+
+                UI.BeginProperty("VXGI Debug View");
+
+                UI.PropertyBool(ref VoxelTracer.Debug);
+
+                UI.EndProperty();
+
+                UI.BeginProperty("VXGI Debug View Opacity");
+
+                UI.PropertyFloat(ref VoxelTracer.DebugViewOpacity, 0, 1, 0.1f);
+
+                UI.EndProperty();
+
+                UI.BeginProperty("SkyColor");
+
+                UI.PropertyColor4(ref VoxelTracer.SkyColor);
+
+                UI.EndProperty();
+
+                UI.BeginProperty("GridMin");
+
+                UI.PropertyVector3(ref VoxelTracer.GridMin, 0.2f, float.MinValue, -0.1f);
+
+                UI.EndProperty();
+
+                UI.BeginProperty("GridMax");
+
+                UI.PropertyVector3(ref VoxelTracer.GridMax, 0.2f, 0.1f);
+
+                UI.EndProperty();
+
+                UI.BeginProperty("NearPlane");
+
+                UI.PropertyFloat(ref VoxelTracer.NearPlane);
+
+                UI.EndProperty();
+
+                UI.BeginProperty("FarPlane");
+
+                UI.PropertyFloat(ref VoxelTracer.FarPlane);
+
+                UI.EndProperty();
+
+                UI.BeginProperty("Cone Angle");
+
+                UI.PropertyFloat(ref VoxelTracer.ConeAngle);
+
+                UI.EndProperty();
+
+                UI.BeginProperty("Step Multiplier");
+
+                UI.PropertyFloat(ref VoxelTracer.StepMultiplier, 0.1f);
+
+                UI.EndProperty();
+
+                UI.EndPropertyGrid();
+            }
+
+            if (ImGui.CollapsingHeader("PathTracer Settings"))
+            {
+                UI.BeginPropertyGrid("PT_SETTINGS");
+
+                UI.BeginProperty("PathTracer Toggle");
+
+                UI.PropertyBool(ref RenderGraph.PathTrace);
+
+                UI.EndProperty();
+
+
+                UI.BeginProperty("Bake Meshes");
+
+                if (UI.DrawButton("Bake"))
+                {
+                    PathTracedRenderer.BakeMeshes();
+                }
+
+                UI.EndProperty();
+
+                UI.EndPropertyGrid();
             }
 
             ImGui.End();
@@ -223,52 +358,8 @@ namespace DevoidEngine.Elemental.Panels
 
             ImGui.Image((IntPtr)(EditorOutlinePass.frameBuffer.GetDepthAttachment()), new System.Numerics.Vector2(1280, 720));
 
-            ImGui.End();
+            ImGui.End();            
 
-
-            ImGui.Begin("VXGI Settings");
-
-            UI.BeginPropertyGrid("VXGI_SETTINGS");
-
-            UI.BeginProperty("GridMin");
-
-            UI.PropertyVector3(ref VoxelTracer.GridMin, 0.2f, float.MinValue, -0.1f);
-
-            UI.EndProperty();
-
-            UI.BeginProperty("GridMax");
-
-            UI.PropertyVector3(ref VoxelTracer.GridMax, 0.2f, 0.1f);
-
-            UI.EndProperty();
-
-            UI.BeginProperty("NearPlane");
-
-            UI.PropertyFloat(ref VoxelTracer.NearPlane);
-
-            UI.EndProperty();
-
-            UI.BeginProperty("FarPlane");
-
-            UI.PropertyFloat(ref VoxelTracer.FarPlane);
-
-            UI.EndProperty();
-
-            UI.BeginProperty("Cone Angle");
-
-            UI.PropertyFloat(ref VoxelTracer.ConeAngle);
-
-            UI.EndProperty();
-
-            UI.BeginProperty("Step Multiplier");
-
-            UI.PropertyFloat(ref VoxelTracer.StepMultiplier, 0.1f);
-
-            UI.EndProperty();
-
-            UI.EndPropertyGrid();
-
-            ImGui.End();
 
 
         }

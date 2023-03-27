@@ -10,9 +10,11 @@ uniform mat4 W_MODEL_MATRIX;
  
 out vec3 WorldPosGS;
 out vec3 WorldNormalGS;
+out vec2 texCoordsGS;
  
 void main()
 {
     WorldPosGS = vec3(vec4(aPosition, 1.0f) * W_MODEL_MATRIX);
     WorldNormalGS = normalize(aNormal * mat3(transpose(inverse(W_MODEL_MATRIX))));
+    texCoordsGS = aTexCoord;
 }

@@ -6,9 +6,12 @@ using DevoidEngine.Engine.Core;
 
 namespace DevoidEngine.Engine.Components
 {
+    [RunInEditMode]
     class Skylight : Component
     {
         public override string Type { get; } = nameof(Skylight);
+
+        public float Intensity = 1f;
 
         private Cubemap Cubemap;
         private bool loaded;
@@ -28,12 +31,14 @@ namespace DevoidEngine.Engine.Components
             //Renderer3D.GetSkybox().SetSkyboxCubemap(Cubemap);
             loaded = true;
 
+            RendererUtils.SetSkybox(Cubemap);
+
             base.OnStart();
         }
 
         public override void OnUpdate(float deltaTime)
         {
-            
+            RendererUtils.SkyboxIntensity(Intensity);
 
             base.OnUpdate(deltaTime);
         }

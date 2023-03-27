@@ -1,6 +1,5 @@
 ﻿#version 460 core
-#define FLOAT_MAX 3.4028235e+38
-#define FLOAT_MIN -FLOAT_MAX
+#define PI 3.14159265
 #extension GL_ARB_bindless_texture : require
 
 layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
@@ -8,75 +7,119 @@ layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 layout(binding = 0) restrict writeonly uniform image2D ImgResult;
 layout(binding = 0) uniform sampler3D SamplerVoxelsAlbedo;
 
-struct Ray
-{
-    vec3 Origin;
-    vec3 Direction;
-};
 
-float NearPlane = 0.1;
-float FarPlane = 1000;
+vec3 IndirectLight(vec3 point, vec3 incomming, vec3 normal, float specularChance, float roughness);
+float GetMaterialVariance(float specularChance, float roughness);
+vec4 TraceCone(vec3 start, vec3 direction, vec3 normal, float coneAngle, float stepMultiplier);
+vec3 UniformSampleSphere(float rnd0, float rnd1);
+vec3 CosineSampleHemisphere(vec3 normal, float rnd0, float rnd1);
+float InterleavedGradientNoise(vec2 imgCoord, uint index);
+vec3 NDCToWorld(vec3 ndc);
 
+uniform float NormalRayOffset;
+uniform int MaxSamples;
+uniform float GIBoost;
+uniform float GISkyBoxBoost;
+uniform float StepMultiplier;
+uniform bool IsTemporalAccumulation;
+
+layout(binding = 1) uniform sampler2D normalBuffer;
+layout(binding = 2) uniform sampler2D depthBuffer;
+uniform vec3 C_VIEWPOS;
+uniform vec3 GridMax;
+uniform vec3 GridMin;
+uniform mat4 W_ORTHOGRAPHIC_MATRIX;
 uniform mat4 W_PROJECTION_MATRIX;
 uniform mat4 W_VIEW_MATRIX;
-uniform vec3 C_VIEWPOS;
-uniform vec3 GridMin;
-uniform vec3 GridMax;
-uniform mat4 W_ORTHOGRAPHIC_MATRIX;
-
-vec4 TraceCone(vec3 start, vec3 direction, float coneAngle, float stepMultiplier);
-bool RayCuboidIntersect(Ray ray, vec3 min, vec3 max, out float t1, out float t2);
-vec3 GetWorldSpaceDirection(mat4 inverseProj, mat4 inverseView, vec2 normalizedDeviceCoords);
-
-layout(location = 0) uniform float StepMultiplier = 0.2;
-layout(location = 1) uniform float ConeAngle = 0.0;
 
 void main()
 {
     ivec2 imgCoord = ivec2(gl_GlobalInvocationID.xy);
+    vec2 uv = (imgCoord + 0.5) / imageSize(ImgResult);
 
-    vec2 ndc = (imgCoord + 0.5) / imageSize(ImgResult) * 2.0 - 1.0;
-
-    Ray worldRay;
-    worldRay.Origin = C_VIEWPOS;
-    worldRay.Direction = GetWorldSpaceDirection(inverse(W_PROJECTION_MATRIX), W_VIEW_MATRIX, ndc);
-
-    float t1, t2;
-    if (!(RayCuboidIntersect(worldRay, GridMin, GridMax, t1, t2) && t2 > 0.0))
+    float depth = texture(depthBuffer, uv).r;
+    if (depth == 1.0)
     {
-        vec4 skyColor = vec4(0.0);
-        imageStore(ImgResult, imgCoord, skyColor);
+        imageStore(ImgResult, imgCoord, vec4(0.0));
         return;
     }
 
-    vec3 gridRayStart, gridRayEnd;
-    bool isInsideGrid = t1 < 0.0 && t2 > 0.0;
-    if (isInsideGrid)
-    {
-        gridRayStart = C_VIEWPOS;
-    }
-    else
-    {
-        gridRayStart = worldRay.Origin + worldRay.Direction * t1;
-    }
-    gridRayEnd = (worldRay.Origin + worldRay.Direction * t2);
+    vec3 fragPos = NDCToWorld(vec3(uv, depth) * 2.0 - 1.0);
+    vec3 normal = texture(normalBuffer, uv).rgb;//texture(gBufferDataUBO.NormalSpecular, uv).rgb;
+    float specular = 0.7f;//texture(gBufferDataUBO.NormalSpecular, uv).a;
+    float roughness = 0.7f;//texture(gBufferDataUBO.EmissiveRoughness, uv).a;
 
-    vec4 color = TraceCone(gridRayStart, worldRay.Direction, ConeAngle, StepMultiplier);
+    vec3 viewDir = fragPos - C_VIEWPOS;
+    vec3 indirectLight = IndirectLight(fragPos, viewDir, normal, specular, roughness) * GIBoost;
 
-    imageStore(ImgResult, imgCoord, color);
+    //float ambientOcclusion = 1.0 - texture(SamplerAO, uv).r;
+    //indirectLight *= ambientOcclusion;
+
+    imageStore(ImgResult, imgCoord, vec4(indirectLight, 1.0));
 }
 
-vec4 TraceCone(vec3 start, vec3 direction, float coneAngle, float stepMultiplier)
+vec3 IndirectLight(vec3 point, vec3 incomming, vec3 normal, float specularChance, float roughness)
+{
+    vec3 irradiance = vec3(0.2);
+    float materialVariance = GetMaterialVariance(specularChance, roughness);
+    uint samples = uint(mix(1.0, float(MaxSamples), materialVariance));
+
+    uint noiseIndex = 0u;// IsTemporalAccumulation ? (taaDataUBO.Frame % taaDataUBO.Samples) * MaxSamples : 0u;
+    for (uint i = 0; i < 10; i++)
+    {
+        float rnd0 = InterleavedGradientNoise(vec2(gl_GlobalInvocationID.xy), noiseIndex + 0);
+        float rnd1 = InterleavedGradientNoise(vec2(gl_GlobalInvocationID.xy), noiseIndex + 1);
+        float rnd2 = InterleavedGradientNoise(vec2(gl_GlobalInvocationID.xy), noiseIndex + 2);
+        noiseIndex++;
+        
+        vec3 dir = CosineSampleHemisphere(normal, rnd0, rnd1);
+
+        const float maxConeAngle = 0.32;
+        const float minConeAngle = 0.005;
+        float coneAngle;
+        if (specularChance > rnd2)
+        {
+            vec3 reflectionDir = reflect(incomming, normal);
+            reflectionDir = normalize(mix(reflectionDir, dir, roughness));
+            dir = reflectionDir;
+            
+            coneAngle = mix(minConeAngle, maxConeAngle, roughness);
+        }
+        else
+        {
+            coneAngle = maxConeAngle;
+        }
+
+        vec4 coneTrace = TraceCone(point, dir, normal, coneAngle, StepMultiplier);
+        coneTrace += (1.0 - coneTrace.a);
+        
+        irradiance += coneTrace.rgb;
+    }
+    irradiance /= float(samples);
+
+    return irradiance;
+}
+
+float GetMaterialVariance(float specularChance, float roughness)
+{
+    float diffuseChance = 1.0 - specularChance;
+    float perceivedFinalRoughness = 1.0 - (specularChance * (1.0 - roughness));
+    return mix(perceivedFinalRoughness, 1.0, diffuseChance);
+}
+
+vec4 TraceCone(vec3 start, vec3 direction, vec3 normal, float coneAngle, float stepMultiplier)
 {
     vec3 voxelGridWorldSpaceSize = GridMax - GridMin;
     vec3 voxelWorldSpaceSize = voxelGridWorldSpaceSize / textureSize(SamplerVoxelsAlbedo, 0);
     float voxelMaxLength = max(voxelWorldSpaceSize.x, max(voxelWorldSpaceSize.y, voxelWorldSpaceSize.z));
     float voxelMinLength = min(voxelWorldSpaceSize.x, min(voxelWorldSpaceSize.y, voxelWorldSpaceSize.z));
     uint maxLevel = textureQueryLevels(SamplerVoxelsAlbedo) - 1;
-    vec4 accumlatedColor = vec4(0.0);
+    vec4 accumlatedColor = vec4(1);
+
+    start += normal * voxelMaxLength * NormalRayOffset;
 
     float distFromStart = voxelMaxLength;
-    while (accumlatedColor.a < 1.0)
+    while (accumlatedColor.a < 0.99)
     {
         float coneDiameter = 2.0 * tan(coneAngle) * distFromStart;
         float sampleDiameter = max(voxelMinLength, coneDiameter);
@@ -97,27 +140,33 @@ vec4 TraceCone(vec3 start, vec3 direction, float coneAngle, float stepMultiplier
     return accumlatedColor;
 }
 
-// Source: https://medium.com/@bromanz/another-view-on-the-classic-ray-aabb-intersection-algorithm-for-bvh-traversal-41125138b525
-bool RayCuboidIntersect(Ray ray, vec3 aabbMin, vec3 aabbMax, out float t1, out float t2)
+vec3 UniformSampleSphere(float rnd0, float rnd1)
 {
-    t1 = FLOAT_MIN;
-    t2 = FLOAT_MAX;
+    float z = rnd0 * 2.0 - 1.0;
+    float a = rnd1 * 2.0 * PI;
+    float r = sqrt(1.0 - z * z);
+    float x = r * cos(a);
+    float y = r * sin(a);
 
-    vec3 t0s = (aabbMin - ray.Origin) / ray.Direction;
-    vec3 t1s = (aabbMax - ray.Origin) / ray.Direction;
-
-    vec3 tsmaller = min(t0s, t1s);
-    vec3 tbigger = max(t0s, t1s);
-
-    t1 = max(t1, max(tsmaller.x, max(tsmaller.y, tsmaller.z)));
-    t2 = min(t2, min(tbigger.x, min(tbigger.y, tbigger.z)));
-
-    return t1 <= t2;
+    return vec3(x, y, z);
 }
 
-vec3 GetWorldSpaceDirection(mat4 inverseProj, mat4 inverseView, vec2 normalizedDeviceCoords)
+// Source: https://blog.demofox.org/2020/05/25/casual-shadertoy-path-tracing-1-basic-camera-diffuse-emissive/
+vec3 CosineSampleHemisphere(vec3 normal, float rnd0, float rnd1)
 {
-    vec4 rayEye = inverseProj * vec4(normalizedDeviceCoords, -1.0, 0.0);
-    rayEye.zw = vec2(-1.0, 0.0);
-    return normalize((inverseView * rayEye).xyz);
+    // Convert unit vector in sphere to a cosine weighted vector in hemisphere
+    return normalize(normal + UniformSampleSphere(rnd0, rnd1));
+}
+
+// Source: https://www.shadertoy.com/view/WsfBDf
+float InterleavedGradientNoise(vec2 imgCoord, uint index)
+{
+    imgCoord += float(index) * 5.588238;
+    return fract(52.9829189 * fract(0.06711056 * imgCoord.x + 0.00583715 * imgCoord.y));
+}
+
+vec3 NDCToWorld(vec3 ndc)
+{
+    vec4 viewPos = vec4(ndc, 1.0) * W_VIEW_MATRIX * W_ORTHOGRAPHIC_MATRIX;
+    return viewPos.xyz / viewPos.w;
 }
