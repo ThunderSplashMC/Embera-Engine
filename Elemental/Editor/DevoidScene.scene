@@ -1,0 +1,79 @@
+{
+  "Name": "Scene",
+  "GameObjects": [
+    {
+      "Name": "GameObject",
+      "Position": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Rotation": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Scale": {
+        "X": 1,
+        "Y": 1,
+        "Z": 1
+      },
+      "Components": [
+        {
+          "Type": "CustomBlockSpawner"
+        },
+        {
+          "Type": "DevoidScript"
+        },
+        {
+          "Type": "ColliderShape3D",
+          "ShapeType": 0,
+          "Size": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0
+          },
+          "SphereRadius": 1
+        },
+        {
+          "Type": "LightComponent",
+          "Intensity": 1,
+          "Attenuation": 1,
+          "Lighttype": 0,
+          "color": {
+            "R": 1,
+            "G": 1,
+            "B": 1,
+            "A": 1
+          },
+          "direction": {
+            "X": -0,
+            "Y": -1,
+            "Z": -0
+          },
+          "cutOff": 0.976296,
+          "OuterCutSoftness": 0,
+          "OuterCutOff": 0,
+          "CanEmitShadows": true,
+          "depthTexture": "Texture"
+        },
+        {
+          "Type": "MeshHolder",
+          "ints": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "Type": "MeshRenderer"
+        },
+        {
+          "Type": "Skylight",
+          "Intensity": 1
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,155 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Editor\Assets\amogus.png" />
+    <None Remove="Editor\Assets\CameraComponentTexture.png" />
+    <None Remove="Editor\Assets\fbx-file-icn.png" />
+    <None Remove="Editor\Assets\file-icn.png" />
+    <None Remove="Editor\Assets\folder-icn.png" />
+    <None Remove="Editor\Assets\font-file-icn.png" />
+    <None Remove="Editor\Assets\Fonts\forkawesome-webfont.ttf" />
+    <None Remove="Editor\Assets\Fonts\JetBrainsMono-Bold.ttf" />
+    <None Remove="Editor\Assets\Fonts\JetBrainsMono-Regular.ttf" />
+    <None Remove="Editor\Assets\Fonts\MaterialIcons-Regular.ttf" />
+    <None Remove="Editor\Assets\Fonts\OpenFontIcons.ttf" />
+    <None Remove="Editor\Assets\Fonts\OpenSans.ttf" />
+    <None Remove="Editor\Assets\Fonts\Roboto-Medium.ttf" />
+    <None Remove="Editor\Assets\Fonts\TerminalDosis-Bold.ttf" />
+    <None Remove="Editor\Assets\Fonts\TerminalDosis-Regular.ttf" />
+    <None Remove="Editor\Assets\imgui.ini" />
+    <None Remove="Editor\Assets\Joe.png" />
+    <None Remove="Editor\Assets\LightComponentTexture.png" />
+    <None Remove="Editor\Assets\play-icn.png" />
+    <None Remove="Editor\Assets\scene-icn.png" />
+    <None Remove="Editor\Assets\script-icn.png" />
+    <None Remove="Editor\Assets\Shaders\dummy\dummy.frag" />
+    <None Remove="Editor\Assets\Shaders\dummy\dummy.vert" />
+    <None Remove="Editor\Assets\Shaders\grid.frag" />
+    <None Remove="Editor\Assets\Shaders\grid.vert" />
+    <None Remove="Editor\Assets\Shaders\guizmo.frag" />
+    <None Remove="Editor\Assets\Shaders\guizmo.vert" />
+    <None Remove="Editor\Assets\Shaders\outline\edgedetection.frag" />
+    <None Remove="Editor\Assets\Shaders\outline\edgedetection.vert" />
+    <None Remove="Editor\Assets\Shaders\outline\outline.frag" />
+    <None Remove="Editor\Assets\Shaders\outline\outline.vert" />
+    <None Remove="Editor\Assets\Shaders\viewportID.frag" />
+    <None Remove="Editor\Assets\Shaders\viewportID.vert" />
+    <None Remove="Editor\Assets\texture-empty-icn.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Editor\Assets\amogus.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\CameraComponentTexture.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\fbx-file-icn.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\file-icn.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\folder-icn.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\font-file-icn.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\Fonts\forkawesome-webfont.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\Fonts\JetBrainsMono-Bold.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\Fonts\JetBrainsMono-Regular.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\Fonts\MaterialIcons-Regular.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\Fonts\OpenFontIcons.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\Fonts\OpenSans.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\Fonts\Roboto-Medium.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\Fonts\TerminalDosis-Bold.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\Fonts\TerminalDosis-Regular.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\imgui.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\Joe.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\LightComponentTexture.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\play-icn.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\scene-icn.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\script-icn.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\Shaders\dummy\dummy.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\Shaders\dummy\dummy.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\Shaders\grid.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\Shaders\grid.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\Shaders\guizmo.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\Shaders\guizmo.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\Shaders\outline\edgedetection.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\Shaders\outline\edgedetection.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\Shaders\outline\outline.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\Shaders\outline\outline.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\Shaders\viewportID.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\Shaders\viewportID.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\texture-empty-icn.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DevoidEngine\DevoidEngine.csproj" />
+  </ItemGroup>
+
+</Project>

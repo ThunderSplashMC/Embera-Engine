@@ -1,0 +1,149 @@
+[33mcommit fdf0c98847bfb9dd6dd1d399e9e2b3c2ed98d3eb[m[33m ([m[1;36mHEAD[m[33m)[m
+Author: Zaqey <thunderdemonx@gmail.com>
+Date:   Fri Feb 10 20:45:41 2023 +0300
+
+    NODE EDITAH!, screw you gran
+
+[33mcommit 4fa1b838bcf697d5e00a75aab7644ec9d695f659[m
+Author: Zaqey <thunderdemonx@gmail.com>
+Date:   Fri Feb 10 20:44:23 2023 +0300
+
+    Node Editor
+
+[33mcommit 58527d75bb08a00b62da87cca4ba4b179308b8f7[m
+Author: Zaqey <thunderdemonx@gmail.com>
+Date:   Thu Feb 2 16:27:22 2023 +0300
+
+    Backup
+
+[33mcommit 45d42cec24b82fe7c9dfe9dc7c50ca62a84cab6a[m
+Author: Zaqey <thunderdemonx@gmail.com>
+Date:   Sun Jan 15 19:04:20 2023 +0300
+
+    New Commit, Added partial Scene Saves and Loads
+
+[33mcommit 7921d34c33ecc4746f41d868c687afeccf1d8f64[m
+Author: Zaqey <thunderdemonx@gmail.com>
+Date:   Mon Dec 12 19:01:25 2022 +0300
+
+    Keyboard Events
+
+[33mcommit 5b403bc38ab4ff902c5da27426fad89ca8bcee56[m
+Author: Zaqey <thunderdemonx@gmail.com>
+Date:   Sun Dec 11 17:37:00 2022 +0300
+
+    Changes to Game.cs
+
+[33mcommit a7286b508c28fb2779f2f1a6f67081b7d92a72af[m
+Author: Zaqey <thunderdemonx@gmail.com>
+Date:   Sun Dec 11 17:36:27 2022 +0300
+
+    Changes to Game.cs template
+
+[33mcommit 17b208f7ae9d106be0c2439d2dc8bfd4dede4a92[m
+Author: Zaqey <thunderdemonx@gmail.com>
+Date:   Sat Dec 10 22:07:33 2022 +0300
+
+    Game.cs added
+
+[33mcommit e413e47ba83535f1840c191f7bbf5c5a0e175a76[m
+Author: Zaqey <thunderdemonx@gmail.com>
+Date:   Fri Dec 9 18:02:57 2022 +0300
+
+    fixes
+
+[33mcommit b64a690e1981904e7839f53f65251af1afb3d5a0[m
+Author: Zaqey <thunderdemonx@gmail.com>
+Date:   Fri Dec 9 17:56:29 2022 +0300
+
+    fixes
+
+[33mcommit be8a4df4d97ac46f4aa16825b3ea3ae5bd8ad774[m
+Author: Zaqey <thunderdemonx@gmail.com>
+Date:   Fri Dec 9 17:51:15 2022 +0300
+
+    Gitignore
+
+[33mcommit 75a0e98dc28185bc96b6b541a551e6908641e960[m
+Author: Zaqey <thunderdemonx@gmail.com>
+Date:   Fri Dec 9 16:50:49 2022 +0300
+
+    Project ENV Friendly
+
+[33mcommit 0ac595ddcc958adf42a6396cfe809c7488534588[m
+Author: Zaqey <thunderdemonx@gmail.com>
+Date:   Fri Dec 9 16:25:23 2022 +0300
+
+    Project ENV Friendly
+
+[33mcommit a9cc34b1a80569eb08dc911da3be5335aff19079[m
+Author: Zaqey <thunderdemonx@gmail.com>
+Date:   Fri Dec 9 14:07:25 2022 +0300
+
+    Storage Improvements
+
+[33mcommit f0ba925df24d2551452f81074f67cd7c0284ca86[m
+Author: Zaqey <thunderdemonx@gmail.com>
+Date:   Fri Dec 9 14:00:25 2022 +0300
+
+    Performance Improvements
+
+[33mcommit b73c1cb146ab170aea730085ded19fe8ab25b25b[m
+Author: Zaqey <thunderdemonx@gmail.com>
+Date:   Fri Dec 2 23:23:28 2022 +0300
+
+    Massive Rendering Updates
+
+[33mcommit 5d98d35ebe69036e616be71ac40bbd3b71a3ba25[m
+Author: Zaqey <thunderdemonx@gmail.com>
+Date:   Tue Nov 15 22:15:02 2022 +0300
+
+    Readme update
+
+[33mcommit ba63f647d09bee40350dd40340aca4e06322f6a0[m
+Author: Zaqey <thunderdemonx@gmail.com>
+Date:   Tue Nov 15 22:10:35 2022 +0300
+
+    Fixed Spot light rotation - Improved Custom Light Component Editor Script
+
+[33mcommit 167cfa292fae4f3cf9a8e7739ccf602cdd75a158[m
+Author: Zaqey <thunderdemonx@gmail.com>
+Date:   Tue Nov 15 22:09:45 2022 +0300
+
+    Fixed Spot light rotation - Custom Editor Script for Light Component
+
+[33mcommit 51d83e8aba1fcb9b8ed23255ba51a5caeec25ecf[m
+Author: Zaqey <thunderdemonx@gmail.com>
+Date:   Sun Nov 13 23:48:40 2022 +0300
+
+    Previews Folder Added
+
+[33mcommit 9f57d4f82bc9ca849ca12b969cf4bac7a364d53b[m
+Author: Zaqey <thunderdemonx@gmail.com>
+Date:   Sun Nov 13 23:41:17 2022 +0300
+
+    Grid Viewport System working :)
+
+[33mcommit fed8e2d07a7695a943cd1ae190c60592dcdc3b59[m
+Author: Zaqey <thunderdemonx@gmail.com>
+Date:   Sun Nov 13 21:29:04 2022 +0300
+
+     Working on Grid Shader Support
+
+[33mcommit 3eef816828e6673294a55ad56c197cb1078bbc79[m
+Author: Zaqey <thunderdemonx@gmail.com>
+Date:   Sun Nov 13 21:06:15 2022 +0300
+
+    Init
+
+[33mcommit a23b3ae6668f907f48e12f28f7ef300e96427405[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m, [m[1;32mlist[m[33m)[m
+Author: ThunderSplashMC <72376845+ThunderSplashMC@users.noreply.github.com>
+Date:   Fri Oct 28 13:05:39 2022 +0300
+
+    Update README.md
+
+[33mcommit a7c9f486d6cf124f0f418aa6e8d0ce287bb9e033[m
+Author: ThunderSplashMC <72376845+ThunderSplashMC@users.noreply.github.com>
+Date:   Fri May 20 19:28:24 2022 +0300
+
+    Initial commit

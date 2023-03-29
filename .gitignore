@@ -1,0 +1,7 @@
+﻿bin
+./bin
+obj
+.vs
+Elemental/bin
+DevoidEngine/bin
+DevoidProject/bin
