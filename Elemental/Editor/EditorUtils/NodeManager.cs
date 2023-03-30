@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Xml.Linq;
 using Assimp;
-using BulletSharp.SoftBody;
 using ImGuiNET;
 using Microsoft.VisualBasic;
 using OpenTK.Mathematics;

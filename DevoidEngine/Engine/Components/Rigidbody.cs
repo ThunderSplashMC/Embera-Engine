@@ -2,72 +2,83 @@
 using System.Collections.Generic;
 using DevoidEngine.Engine.Core;
 using OpenTK.Mathematics;
+using BepuPhysics;
+using BepuPhysics.Collidables;
+using BepuPhysics.Trees;
 
 namespace DevoidEngine.Engine.Components
 {
+    public enum BodyType
+    {
+        Kinematic,
+        Dynamic
+    }
+
     [RunInEditMode]
     public class Rigidbody : Component
     {
         public override string Type { get; } = nameof(Rigidbody);
 
-        public int RigidbodyID;
+        public BodyType RigidbodyType = BodyType.Dynamic;
 
-        public float mass = 0f;
-        public Vector3 gravity = new Vector3(0, 9.8f, 0);
-        public Vector3 Inertia = new Vector3(0);
+        public bool IsKinematic = false;
+        public bool FreeMove = false;
 
-        public Physics PhysicsSystem;
-        public BulletSharp.RigidBody body;
+
+        bool isInitialized = false;
+        bool isKinematic = false;
+
+
+        BodyReference bodyReference;
+        Collider3D collider;
+
 
         public override void OnStart()
         {
-            PhysicsSystem = gameObject.scene.PhysicsSystem;
-            SetupRigidBody();
-            base.OnStart();
-        }
 
-        private float prevMass;
-        private Vector3 prevGrav;
-        private Vector3 prevPosition;
+            if (isInitialized)
+            {
+                gameObject.scene.PhysicsSystem.RemoveBody(bodyReference);
+            }
+
+            collider = gameObject.GetComponent<Collider3D>();
+
+            bodyReference = gameObject.scene.PhysicsSystem.AddBody(gameObject.transform.position, gameObject.transform.rotation);
+            if (collider != null)
+            {
+                bodyReference.SetShape(collider.GetColliderID());
+            }
+        }
 
         public override void OnUpdate(float deltaTime)
         {
-            if (prevMass != mass)
+            if (collider == null) return;
+
+            if (collider.HasShapeChanged())
             {
-                ChangeMass();
-                prevMass = mass;
+                bodyReference.SetShape(collider.GetColliderID());
             }
-            if (prevGrav != gravity)
+            if (isKinematic != IsKinematic)
             {
-                ChangeGravity();
-                prevGrav = gravity;
+                isKinematic = IsKinematic;
+                bodyReference.BecomeKinematic();
             }
-            Inertia = new Vector3(body.LocalInertia.X, body.LocalInertia.Y, body.LocalInertia.Z);
-            base.OnUpdate(deltaTime);
-        }
 
-        public BulletSharp.CollisionShape GetCollisionShape()
-        {
-            return gameObject.GetComponent<ColliderShape3D>().GetCollisionShape();
-        }
+            if (isKinematic)
+            {
+                bodyReference.Velocity.Linear = new System.Numerics.Vector3(0,0,0);
+            }
 
-        public void ChangeMass()
-        {
-            gameObject.scene.PhysicsSystem.PhysicsWorld.RemoveRigidBody(body);
-            body.SetMassProps(mass, new BulletSharp.Math.Vector3(Inertia.X, Inertia.Y, Inertia.Z));
-            gameObject.scene.PhysicsSystem.PhysicsWorld.AddRigidBody(body);
-            body.Activate();
-        }
+            if (FreeMove)
+            {
+                bodyReference.Pose.Position = new System.Numerics.Vector3(gameObject.transform.position.X, gameObject.transform.position.Y, gameObject.transform.position.Z);
+            } else
+            {
+                gameObject.transform.position = new Vector3(bodyReference.Pose.Position.X, bodyReference.Pose.Position.Y, bodyReference.Pose.Position.Z);
+            }
 
-        public void ChangeGravity()
-        {
-            body.Gravity = new BulletSharp.Math.Vector3(gravity.X, gravity.Y, gravity.Z);
-        }
-
-        public void SetupRigidBody()
-        {
-            body = PhysicsSystem.CreateRigidBody(mass, gameObject.transform.GetTransform(), GetCollisionShape());
-            body.Gravity = new BulletSharp.Math.Vector3(gravity.X, gravity.Y, gravity.Z);
+            bodyReference.GetDescription(out BodyDescription bodyDescription);
+            bodyDescription.Collidable.Shape = collider.GetColliderID();
         }
     }
 }

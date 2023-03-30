@@ -27,7 +27,7 @@ namespace DevoidEngine.Engine.Utilities
             Assimp.Scene scene;
             try
             {
-                scene = ImporterObject.ImportFile(path, PostProcessSteps.Triangulate | PostProcessSteps.GenerateNormals /* | PostProcessSteps.FlipWindingOrder*/ | PostProcessSteps.CalculateTangentSpace | PostProcessSteps.FlipUVs | PostProcessSteps.GenerateUVCoords);
+                scene = ImporterObject.ImportFile(path, PostProcessSteps.Triangulate | PostProcessSteps.GenerateNormals /* | PostProcessSteps.FlipWindingOrder*/ | PostProcessSteps.CalculateTangentSpace | PostProcessSteps.FlipUVs | PostProcessSteps.GenerateUVCoords | PostProcessSteps.OptimizeGraph | PostProcessSteps.OptimizeMeshes);
             }
             catch (Exception E)
             {

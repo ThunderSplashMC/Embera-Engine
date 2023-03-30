@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevoidEngine", "DevoidEngine.csproj", "{E36DD997-2506-4A67-8875-69C9C6F8C911}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevoidEngine", "DevoidEngine\DevoidEngine.csproj", "{E36DD997-2506-4A67-8875-69C9C6F8C911}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elemental", "..\Elemental\Elemental.csproj", "{6395F9C9-95D7-42EE-9554-CCF9B15115E7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elemental", "Elemental\Elemental.csproj", "{6395F9C9-95D7-42EE-9554-CCF9B15115E7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevoidProject", "..\DevoidProject\DevoidProject.csproj", "{07C95298-3ED7-4C7B-8F4E-4464594BED95}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevoidProject", "DevoidProject\DevoidProject.csproj", "{07C95298-3ED7-4C7B-8F4E-4464594BED95}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

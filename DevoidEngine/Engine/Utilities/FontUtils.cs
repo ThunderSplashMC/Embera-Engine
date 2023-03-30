@@ -64,28 +64,42 @@ namespace DevoidEngine.Engine.Utilities
 
             Graphics g = Graphics.FromImage(bitmap);
 
-            SizeF fontGlyphSize = new SizeF(new System.Numerics.Vector2(100, 100));
+            Graphics g1 = Graphics.FromImage(new Bitmap(1, 1));
+
+            //SizeF fontGlyphSize =;//;new SizeF(new System.Numerics.Vector2(100, 100));
 
             g.SmoothingMode = SmoothingMode.HighQuality;
             g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+
+            float totalWidth = 0;
+            float totalHeight = 0;
+
+            float prevH = 0;
 
             for (int p = 0; p < 16; p++)
             {
                 for (int n = 0; n < 16; n++)
                 {
                     char c = (char)(n + p * 16);
-                    
-                    g.DrawString(c.ToString(), font, Brushes.White, n * fontGlyphSize.Width, p * fontGlyphSize.Height);
+
+                    SizeF fontGlyphSize = g1.MeasureString(c.ToString(), font);
+
+                    prevH = fontGlyphSize.Height;
+
+                    g.DrawString(c.ToString(), font, Brushes.White, totalWidth, totalHeight);
 
                     dFont.glyphs.Add(new Glyph()
                     {
-                        X = (int)(n * fontGlyphSize.Width),
-                        Y = (int)(p * fontGlyphSize.Height),
+                        X = (int)(totalWidth),
+                        Y = (int)(totalHeight),
                         W = (int)fontGlyphSize.Width,
                         H = (int)fontGlyphSize.Height,
                         character = c
                     }) ;
+                    totalWidth += fontGlyphSize.Width;
                 }
+                totalHeight += prevH;
+                totalWidth = 0;
             }
 
             bitmap.Save($"fontTex{fontName}.png");

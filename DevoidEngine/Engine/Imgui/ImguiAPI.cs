@@ -67,7 +67,7 @@ namespace DevoidEngine.Engine.Imgui
             LoadIconFont("Engine/EngineContent/Fonts/forkawesome-webfont.ttf", 16, (FontAwesome.ForkAwesome.IconMin, FontAwesome.ForkAwesome.IconMax16));
             LoadIconFont("Engine/EngineContent/Fonts/MaterialIcons-Regular.ttf", 16, (MaterialDesign.IconMin, MaterialDesign.IconMax16));
 
-            //ImGui.LoadIniSettingsFromDisk(AppContext.BaseDirectory + "Engine/Imgui/misc/imgui.ini");
+            ImGui.LoadIniSettingsFromDisk(AppContext.BaseDirectory + "Engine/Imgui/misc/imgui.ini");
 
             RecreateFontDeviceTexture();
 

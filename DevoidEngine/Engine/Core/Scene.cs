@@ -40,18 +40,6 @@ namespace DevoidEngine.Engine.Core
         void UpdateRigidBodies()
         {
             List<Rigidbody> rigidbodies = sceneRegistry.GetRigidBodies();
-            for (int i = 0; i < rigidbodies.Count; i++)
-            {
-                for (int x = 0; x < PhysicsSystem.PhysicsWorld.CollisionObjectArray.Count; x++)
-                {
-
-                    BulletSharp.RigidBody rigidBody = rigidbodies[i].body;
-
-                    BulletSharp.Math.Matrix transform = rigidBody.WorldTransform;
-                    rigidbodies[i].gameObject.transform.position = Physics.GetPosition(transform);
-                    rigidbodies[i].gameObject.transform.rotation = Physics.GetRotation(transform);
-                }
-            }
         }
 
         public void OnRenderEditor()
@@ -156,15 +144,7 @@ namespace DevoidEngine.Engine.Core
             }
             if (component.GetType() == typeof(Rigidbody))
             {
-                Rigidbody rigidbody = (Rigidbody)component;
-                sceneRegistry.AddRigidBody(rigidbody);
-                BulletSharp.RigidBody rb = PhysicsSystem.CreateRigidBody(rigidbody.mass, rigidbody.gameObject.transform.GetPosition(), rigidbody.GetCollisionShape());
-                rigidbody.body = rb;
-            }
-            if (component.GetType() == typeof(ColliderShape3D))
-            {
-                GameObject gameObject = component.gameObject;
-                ((ColliderShape3D)component).OnStart();
+                ((Rigidbody)component).OnStart();
             }
             if (component.GetType() == typeof(Skylight))
             {
@@ -184,8 +164,7 @@ namespace DevoidEngine.Engine.Core
             }
             if (component.GetType() == typeof(Rigidbody))
             {
-                Rigidbody rigidbody = (Rigidbody)component;
-                PhysicsSystem.PhysicsWorld.RemoveRigidBody(rigidbody.body);
+
             }
         }
     }

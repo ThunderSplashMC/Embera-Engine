@@ -9,7 +9,7 @@
       "DevoidEngine/1.0.0": {
         "dependencies": {
           "AssimpNet": "4.1.0",
-          "BulletSharp": "0.11.1",
+          "BepuPhysics": "2.4.0",
           "ImGui.NET": "1.87.3",
           "Newtonsoft.Json": "13.0.3",
           "OpenTK": "4.7.5",
@@ -58,11 +58,22 @@
           }
         }
       },
-      "BulletSharp/0.11.1": {
+      "BepuPhysics/2.4.0": {
+        "dependencies": {
+          "BepuUtilities": "2.4.0"
+        },
         "runtime": {
-          "lib/net40-client/BulletSharp.dll": {
-            "assemblyVersion": "0.11.0.0",
-            "fileVersion": "0.11.0.0"
+          "lib/net6.0/BepuPhysics.dll": {
+            "assemblyVersion": "2.4.0.0",
+            "fileVersion": "2.4.0.0"
+          }
+        }
+      },
+      "BepuUtilities/2.4.0": {
+        "runtime": {
+          "lib/net6.0/BepuUtilities.dll": {
+            "assemblyVersion": "2.4.0.0",
+            "fileVersion": "2.4.0.0"
           }
         }
       },
@@ -1061,12 +1072,19 @@
       "path": "assimpnet/4.1.0",
       "hashPath": "assimpnet.4.1.0.nupkg.sha512"
     },
-    "BulletSharp/0.11.1": {
+    "BepuPhysics/2.4.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-h63YXDBPZV2WZJ5YmP65NTAq0PiNN37lGrX/Ln+Of8ya1kZasIR815dkb/q2xE2HCafIbS9iRf7w7QzLoCTWRw==",
-      "path": "bulletsharp/0.11.1",
-      "hashPath": "bulletsharp.0.11.1.nupkg.sha512"
+      "sha512": "sha512-Ck/BJgSQrBqYrj0T9jGljDdHNILBP5kTPTylc7N/hCzR1XJJc7p6ORzwtjTfjgoYkkdajvLHxEQv6BRC8kaysQ==",
+      "path": "bepuphysics/2.4.0",
+      "hashPath": "bepuphysics.2.4.0.nupkg.sha512"
+    },
+    "BepuUtilities/2.4.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-KNMxkzKLHAvV7jRtErxs3rPv71fHToqo/WN96HlT6iomWuwL97tohEbt0B1WA8A6sO5t6PP+qF08d4T9A8k2uA==",
+      "path": "bepuutilities/2.4.0",
+      "hashPath": "bepuutilities.2.4.0.nupkg.sha512"
     },
     "FreeTypeSharp/1.1.3": {
       "type": "package",

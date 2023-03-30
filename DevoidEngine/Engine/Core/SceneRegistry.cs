@@ -85,8 +85,7 @@ namespace DevoidEngine.Engine.Core
 
         public void AddRigidBody(Rigidbody rigidbody)
         {
-            rigidbody.RigidbodyID = RigidBodies.Count;
-            RigidBodies.Add(rigidbody);
+
         }
 
         public void AddLight(LightComponent light)

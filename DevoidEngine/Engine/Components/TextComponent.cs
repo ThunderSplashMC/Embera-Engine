@@ -34,6 +34,12 @@ namespace DevoidEngine.Engine.Components
         private DevoidFont fontLoaded;
         private Material fontMaterial;
 
+        public enum TextFilterType
+        {
+            Linear,
+            Closest
+        }
+
         public enum TextRenderType
         {
             _3D,
@@ -41,10 +47,13 @@ namespace DevoidEngine.Engine.Components
         }
 
         public TextRenderType renderType = TextRenderType._2D;
+        public TextFilterType textFilterType = TextFilterType.Linear;
+
+        private TextFilterType prevType;
 
         public override void OnStart()
         {
-            fontLoaded = FontUtils.GenerateBitmapFromFile("Elemental/Assets/Fonts/OpenSans.ttf", 48, "Open Sans");
+            fontLoaded = FontUtils.GenerateBitmapFromFile("Editor/Assets/Fonts/OpenSans.ttf", 16, "Open Sans");
             fontMaterial = new Material(new Shader("Engine/EngineContent/shaders/font-shader"));
             fontMaterial.SetTexture("u_Texture", fontLoaded.LoadedTexture);
         }
@@ -56,6 +65,13 @@ namespace DevoidEngine.Engine.Components
             {
                 OnStart();
             }
+            if (prevType != textFilterType)
+            {
+                fontLoaded.LoadedTexture.ChangeFilterType(textFilterType == TextFilterType.Linear ? FilterTypes.Linear : FilterTypes.Nearest);
+
+                prevType = textFilterType;
+            }
+
 
             if (Content != prevContent && Content != "")
             {
@@ -113,6 +129,7 @@ namespace DevoidEngine.Engine.Components
                         {
                             totalHeight += glyphHeight;
                             totalLength = 0;
+                            continue;
                         }
 
 
@@ -151,7 +168,9 @@ namespace DevoidEngine.Engine.Components
             }
 
             mesh = new Mesh();
+
             mesh.SetVertices(vertices.ToArray());
+
             mesh.SetMaterial(fontMaterial);
 
         }
