@@ -109,6 +109,11 @@ namespace DevoidEngine.Engine.Core
             return Window.Size;
         }
 
+        public Window GetWindow()
+        {
+            return Window;
+        }
+
         public void Close()
         {
             Window.Close();

@@ -32,9 +32,7 @@ namespace DevoidEngine.Engine.Windowing
                 Title = windowSpec.title,
                 StartVisible = false,
                 APIVersion = new Version(4,3),
-#if EDITORMODE
                 Flags = ContextFlags.Debug
-#endif
             })
         {
             WindowSpec = windowSpec;

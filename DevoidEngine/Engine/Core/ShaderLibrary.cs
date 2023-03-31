@@ -10,7 +10,14 @@ namespace DevoidEngine.Engine.Core
 
         public static void AddShader(string name, Shader shader)
         {
-            ShaderCache.Add(name, shader);
+            Console.WriteLine(name);
+            if (ShaderCache.ContainsKey(name))
+            {
+                ShaderCache[name] = shader;
+            } else
+            {
+                ShaderCache.Add(name, shader);
+            }
         }
 
         public static Shader GetShader(string name)

@@ -10,7 +10,7 @@ using ImGuiNET;
 
 namespace DevoidEngine.Engine.Imgui
 {
-    class ImguiLayer : Layer
+    public class ImguiLayer : Layer
     {
 
         IntPtr Context;

@@ -26,6 +26,8 @@ namespace Elemental
         public static ConsolePanel ConsoleService;
         public DragDropService DragDropService;
 
+        public string PROJECT_DIRECTORY;
+
         public List<Panel> EditorPanels = new List<Panel>();
 
         public override void OnAttach()
