@@ -55,12 +55,13 @@ namespace DevoidEngine.Engine.Utilities
         public void Draw()
         {
             if (!Renderable) { return; }
-            if (IBO != null)
-            {
-                VAO.RenderWithIndices(IBO);
-            } else
+
+            if (IBO == null)
             {
                 VAO.Render();
+            } else
+            {
+                VAO.Render(IBO);
             }
         }
 

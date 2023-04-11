@@ -39,7 +39,7 @@ namespace Elemental.Editor.Panels
 
         public override void OnGUIRender()
         {
-
+            return;
             List<Material> materials = Editor.EditorScene.GetSceneRegistry().GetAllMaterials();
 
             if (matCount != materials.Count)

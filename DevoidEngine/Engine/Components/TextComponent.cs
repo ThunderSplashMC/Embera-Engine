@@ -89,7 +89,7 @@ namespace DevoidEngine.Engine.Components
                 if (renderType == TextRenderType._2D)
                 {
                     mesh.Material.Set("Do_3D", 0);
-                    Renderer2D.Submit(mesh, fontLoaded.LoadedTexture, gameObject.transform.position, gameObject.transform.rotation, gameObject.transform.scale);
+                    Renderer2D.Submit(gameObject.transform.position.Xy, gameObject.transform.rotation.Xy, gameObject.transform.scale.Xy, mesh, null, mesh.Material);
                 } else
                 {
                     mesh.Material.Set("Do_3D", 1);

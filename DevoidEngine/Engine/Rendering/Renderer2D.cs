@@ -18,10 +18,11 @@ namespace DevoidEngine.Engine.Rendering
         public struct DrawItem
         {
             public Texture Texture;
-            public Vector3 position;
+            public Vector2 position;
             public Vector2 rotation;
+            public Vector2 scale;
             public Mesh mesh;
-            public Vector3 scale;
+            public Material material;
             public float distanceFromCamera;
         }
 
@@ -29,6 +30,7 @@ namespace DevoidEngine.Engine.Rendering
         static List<DrawItem> DrawList = new List<DrawItem>();
         static Shader QuadShader;
         public static Matrix4 OrthoProjection;
+        public static Mesh Quad;
 
         public static void Init(int width, int height)
         {
@@ -37,17 +39,14 @@ namespace DevoidEngine.Engine.Rendering
 
             SetOrthographic();
 
+            Quad = new Mesh();
+            Quad.SetVertexArrayObject(RendererUtils.QuadVAO);
             QuadShader = new Shader("Engine/EngineContent/shaders/2D/2d");
         }
 
         static void SetOrthographic()
         {
             float aspectRatio = (float)RenderGraph.ViewportWidth / RenderGraph.ViewportHeight;
-
-            //-5.0f * aspectRatio * 0.5f,
-            //        5.0f * aspectRatio * 0.5f,
-            //        -5.0f * 0.5f,
-            //        5.0f * 0.5f,
 
             OrthoProjection = Matrix4.CreateOrthographicOffCenter(
                     0,
@@ -91,49 +90,29 @@ namespace DevoidEngine.Engine.Rendering
 
         static void DrawItems(List<DrawItem> DrawList)
         {
-            //QuadShader.Use();
-            //QuadShader.SetIntArray("u_Textures", new int[DrawList.Count]);
             for (int i = 0; i < DrawList.Count; i++)
             {
                 DrawItem drawItem = DrawList[i];
 
-                
-
                 Matrix4 MODELMATRIX = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(drawItem.rotation.X));
 
-                MODELMATRIX *= Matrix4.CreateScale(drawItem.scale);
-                MODELMATRIX *= Matrix4.CreateTranslation(drawItem.position);
+                MODELMATRIX *= Matrix4.CreateScale(drawItem.scale.X, drawItem.scale.Y, 1);
+                MODELMATRIX *= Matrix4.CreateTranslation(drawItem.position.X, drawItem.position.Y, 0);
 
-                QuadShader.Use();
-                QuadShader.SetMatrix4("W_MODEL_MATRIX", MODELMATRIX);
-                QuadShader.SetMatrix4("W_PROJECTION_MATRIX", OrthoProjection);
-
-
-                if (drawItem.Texture != null && drawItem.mesh != null)
+                if (drawItem.material == null)
                 {
-                    Material drawMat = drawItem.mesh.Material;
-                    drawMat.Set("W_MODEL_MATRIX", MODELMATRIX);
-                    drawMat.Set("W_PROJECTION_MATRIX", OrthoProjection);
+                    QuadShader.Use();
+                    QuadShader.SetMatrix4("W_MODEL_MATRIX", MODELMATRIX);
+                    QuadShader.SetMatrix4("W_PROJECTION_MATRIX", OrthoProjection);
 
-                    drawMat.GetShader().Use();
-
-                    drawMat.Apply();
-
-                    drawItem.mesh.Draw();
-                    continue;
-                }
-                else if (drawItem.Texture != null)
-                {
                     QuadShader.SetInt("u_Texture", 0);
                     QuadShader.SetInt("USE_TEX_0", 1);
                     drawItem.Texture.BindTexture();
                     drawItem.Texture.SetActiveUnit(TextureActiveUnit.UNIT0 + i);
                 }
-                else if (drawItem.mesh != null)
+                else
                 {
-                    Material drawMat = drawItem.mesh.Material;
-                    //drawMat.Set("u_Texture", 0);
-                    //drawMat.Set("USE_TEX_0", 1);
+                    Material drawMat = drawItem.material;
                     drawMat.Set("W_MODEL_MATRIX", MODELMATRIX);
                     drawMat.Set("W_PROJECTION_MATRIX", OrthoProjection);
 
@@ -142,75 +121,21 @@ namespace DevoidEngine.Engine.Rendering
                     drawMat.Apply();
 
                     drawItem.mesh.Draw();
-                    continue;
                 }
 
-                RendererUtils.QuadVAO.Render();
+                drawItem.mesh.Draw();
             }
         }
 
-        public static void Submit(Texture texture, Vector2 pos, Vector2 rot, Vector2 scale)
-        {
-            DrawList.Add(new DrawItem()
-            {
-                Texture = texture,
-                position = new Vector3(pos.X, pos.Y, 0),
-                rotation = rot,
-                scale = new Vector3(scale.X, scale.Y, 1),
-            });
-        }
-
-        public static void Submit(Vector2 pos, Vector2 rot, Vector2 scale)
-        {
-            DrawList.Add(new DrawItem()
-            {
-                Texture = null,
-                position = new Vector3(pos.X, pos.Y, 0),
-                rotation = rot,
-                scale = new Vector3(scale.X, scale.Y, 1)
-            });
-        }
-
-        public static void Submit(Vector3 pos, Vector3 rot, Vector3 scale)
-        {
-            DrawList.Add(new DrawItem()
-            {
-                Texture = null,
-                position = pos,
-                rotation = rot.Xy,
-                scale = scale
-            });
-        }
-
-        public static void Submit(Texture texture, Vector3 pos, Vector3 rot, Vector3 scale)
-        {
-            DrawList.Add(new DrawItem()
-            {
-                Texture = texture,
-                position = pos,
-                rotation = rot.Xy,
-                scale = scale
-            });
-        }
-
-        public static void Submit(Mesh mesh, Vector3 pos, Vector3 rot, Vector3 scale)
-        {
-            DrawList.Add(new DrawItem()
-            {
-                mesh = mesh,
-                position = pos,
-                rotation = rot.Xy,
-                scale = scale
-            });
-        }
-        public static void Submit(Mesh mesh, Texture texture, Vector3 pos, Vector3 rot, Vector3 scale)
+        public static void Submit(Vector2 pos, Vector2 rot, Vector2 scale, Mesh mesh, Texture texture, Material material = null)
         {
             DrawList.Add(new DrawItem()
             {
                 mesh = mesh,
                 Texture = texture,
+                material = material,
                 position = pos,
-                rotation = rot.Xy,
+                rotation = rot,
                 scale = scale
             });
         }

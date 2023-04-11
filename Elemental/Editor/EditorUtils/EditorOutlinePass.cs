@@ -72,10 +72,6 @@ namespace Elemental.Editor.EditorUtils
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
-
-            //GL.StencilFunc(StencilFunction.Always, 1, 0x00);
-            //GL.StencilMask(0x00);
-
             List<DrawItem> drawlist = Renderer3D.GetRenderDrawList();
 
             for (int i = 0; i < drawlist.Count; i++)
@@ -124,12 +120,10 @@ namespace Elemental.Editor.EditorUtils
                 edgedetection.SetInt("stencilTexture", 1);
 
                 RendererUtils.QuadVAO.Render();
-                //drawlist[i].mesh.Draw();
             }
 
             RendererUtils.Cull(true);
             RendererUtils.DepthTest(true);
-
 
             frameBuffer2.UnBind();
 

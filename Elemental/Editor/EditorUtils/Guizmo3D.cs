@@ -18,13 +18,19 @@ namespace Elemental.Editor.EditorUtils
     static class Guizmo3D
     {
         static VertexArray GuizmoVAO;
+        static VertexArray SphereGuizmo;
+        static Mesh SphereMesh;
+
         static Shader GuizmoShader;
         static Shader GridShader;
+        static Shader DummyShader;
+
+        static LineRenderer LineRenderer;
 
         static FrameBuffer GuizmoBuffer;
-
+        
         static Camera GuizmoView;
-
+        
         static List<GuizmoIcon> GuizmoIcons = new List<GuizmoIcon>();
 
         public static void Init(int width, int height, FrameBuffer CompositeBuffer)
@@ -38,7 +44,17 @@ namespace Elemental.Editor.EditorUtils
 
             GuizmoShader = new Shader("Editor/Assets/Shaders/guizmo");
             GridShader = new Shader("Editor/Assets/Shaders/grid");
-            
+            DummyShader = new Shader("Editor/Assets/Shaders/dummy/dummy");
+
+            Vertex[] sphereVertices = VERTEX_DEFAULTS.GetSphereVertices();
+            VertexBuffer sphere = new VertexBuffer(Vertex.VertexInfo, sphereVertices.Length);
+            sphere.SetData(sphereVertices, sphereVertices.Length);
+            SphereGuizmo = new VertexArray(sphere);
+
+            SphereMesh = ModelImporter.LoadModel("Engine/EngineContent/model/sphere-lower.fbx")[0].mesh;
+
+            LineRenderer = new LineRenderer();
+
         }
 
         public static void AddGuizmoIcon(string name, Texture texture)
@@ -68,6 +84,8 @@ namespace Elemental.Editor.EditorUtils
             GuizmoVAO.Render();
         }
 
+        // Draws a texture provided as a gizmo icon in the world with the specified position.
+        // it always faces the camera.
         public static void DrawGuizmo(Texture icon, Vector3 position, float scale = 1)
         {
 
@@ -86,6 +104,51 @@ namespace Elemental.Editor.EditorUtils
             icon.BindTexture();
 
             GuizmoVAO.Render();
+        }
+
+        public static void DrawSphere(Vector3 position, float radius)
+        {
+            DummyShader.Use();
+
+            Matrix4 MODELMATRIX = Matrix4.CreateScale(radius);
+            MODELMATRIX *= Matrix4.CreateTranslation(position);
+
+            DummyShader.SetMatrix4("W_MODEL_MATRIX", MODELMATRIX);
+            DummyShader.SetMatrix4("W_PROJECTION_MATRIX", GuizmoView.GetProjectionMatrix());
+            DummyShader.SetMatrix4("W_VIEW_MATRIX", GuizmoView.GetViewMatrix());
+
+            SphereMesh.Draw();
+
+        }
+
+        public static void DrawWireSphere(Vector3 position, float radius)
+        {
+            DummyShader.Use();
+
+            Matrix4 MODELMATRIX = Matrix4.CreateScale(radius);
+            MODELMATRIX *= Matrix4.CreateTranslation(position);
+
+            DummyShader.SetMatrix4("W_MODEL_MATRIX", MODELMATRIX);
+            DummyShader.SetMatrix4("W_PROJECTION_MATRIX", GuizmoView.GetProjectionMatrix());
+            DummyShader.SetMatrix4("W_VIEW_MATRIX", GuizmoView.GetViewMatrix());
+
+            //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+
+            //GL.BindVertexArray(SphereMesh.VAO.VertexArrayObject);
+            //GL.DrawArrays(PrimitiveType.Triangles, 0, SphereMesh.VBO.VertexCount);
+            SphereMesh.Draw();
+            //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+            
+        }
+
+        public static void DrawLine(Vector3 start, Vector3 end, float thickness = 2f)
+        {
+            LineRenderer.Render(GuizmoView, start, end, thickness);  
+        }
+
+        public static void DrawManipulatePosition(ref Vector3 position)
+        {
+
         }
 
         public static int End()

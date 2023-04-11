@@ -7,7 +7,26 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <BaseOutputPath>D:\Programming\Devoid\Outputs</BaseOutputPath>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Launcher\Assets\DevoidEngine-Banner%282%29.png" />
+    <None Remove="Launcher\Assets\DevoidEngine-Banner.png" />
+    <None Remove="Launcher\Assets\project-icn.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Launcher\Assets\DevoidEngine-Banner(2).png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Launcher\Assets\DevoidEngine-Banner.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Launcher\Assets\project-icn.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DevoidEngine\DevoidEngine.csproj" />

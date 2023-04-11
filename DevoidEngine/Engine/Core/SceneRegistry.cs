@@ -135,6 +135,14 @@ namespace DevoidEngine.Engine.Core
             }
         }
 
+        public void StartAllComponentsEditor()
+        {
+            for (int i = 0; i < EditorRunnableComponents.Count; i++)
+            {
+                EditorRunnableComponents[i].OnStart();
+            }
+        }
+
         public void UpdateAllComponentsEditor(float deltaTime)
         {
             for (int i = 0; i < EditorRunnableComponents.Count; i++)
@@ -179,6 +187,7 @@ namespace DevoidEngine.Engine.Core
                         {
                             if (components[x].GetType() == type)
                             {
+                                components[x].OnStart();
                                 EditorRunnableComponents.Add(components[x]);
                             }
                         }

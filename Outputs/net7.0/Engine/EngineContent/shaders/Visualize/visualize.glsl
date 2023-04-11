@@ -11,7 +11,8 @@ layout(binding = 0) uniform sampler3D SamplerVoxelsAlbedo;
 vec3 IndirectLight(vec3 point, vec3 incomming, vec3 normal, float specularChance, float roughness);
 float GetMaterialVariance(float specularChance, float roughness);
 vec4 TraceCone(vec3 start, vec3 direction, vec3 normal, float coneAngle, float stepMultiplier);
-vec3 UniformSampleSphere(float rnd0, float rnd1);
+vec3 UniformSample
+(float rnd0, float rnd1);
 vec3 CosineSampleHemisphere(vec3 normal, float rnd0, float rnd1);
 float InterleavedGradientNoise(vec2 imgCoord, uint index);
 vec3 NDCToWorld(vec3 ndc);

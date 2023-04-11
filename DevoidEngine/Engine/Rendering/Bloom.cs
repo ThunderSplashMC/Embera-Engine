@@ -38,6 +38,10 @@ namespace DevoidEngine.Engine.Rendering
 
                 mipSize *= 0.5f;
                 mipSizeInt /= 2;
+                if (mipSizeInt == new Vector2i(1, 1))
+                {
+                    continue;
+                }
 
                 bloomMip.size = mipSize;
                 bloomMip.sizeInt = mipSizeInt;
@@ -247,13 +251,13 @@ namespace DevoidEngine.Engine.Rendering
             GL.Disable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
 
-            FilterTexture(srcTexture);
+            //FilterTexture(srcTexture);
 
 
             BloomFrameBuffer.Bind();
 
-            //RenderDownSamples(srcTexture);
-            RenderDownSamples(BrightFrameBuffer.GetColorAttachment(0));
+            RenderDownSamples(srcTexture);
+            //RenderDownSamples(BrightFrameBuffer.GetColorAttachment(0));
             RenderUpSamples(filterRadius);
 
             GL.Enable(EnableCap.DepthTest);

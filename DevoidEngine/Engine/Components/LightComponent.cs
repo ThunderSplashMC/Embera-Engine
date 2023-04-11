@@ -12,7 +12,6 @@ namespace DevoidEngine.Engine.Components
     {
         public override string Type { get; } = nameof(LightComponent);
 
-        [NonSerialized]
         public int Intensity = 1;
         public float Attenuation = 1f;
         public LightType Lighttype = LightType.PointLight;

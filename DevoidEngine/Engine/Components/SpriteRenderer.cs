@@ -14,16 +14,18 @@ namespace DevoidEngine.Engine.Components
 
         public Texture Texture;
 
-        public Shader nulLShader = new Shader("Engine/EngineContent/Shaders/NullShader2d/null2d");
+        private Material nullMaterial = new Material(new Shader("Engine/EngineContent/Shaders/NullShader2d/null2d"));
 
-        public Mesh mesh;
+        private UITransform UITransform;
 
         public override void OnStart()
         {
-            mesh = new Mesh();
-            mesh.SetVertexArrayObject(RendererUtils.QuadVAO);
+            if (gameObject.GetComponent<UITransform>() == null)
+            {
+                gameObject.AddComponent<UITransform>();
+            }
 
-            mesh.Material = new Material(nulLShader);
+            UITransform = gameObject.GetComponent<UITransform>();
         }
 
         float time = 0;
@@ -33,7 +35,10 @@ namespace DevoidEngine.Engine.Components
             time += deltaTime;
             if (Texture != null)
             {
-                Renderer2D.Submit(Texture, gameObject.transform.position, gameObject.transform.rotation, gameObject.transform.scale);
+                Renderer2D.Submit(UITransform.Position, gameObject.transform.rotation.Xy, gameObject.transform.scale.Xy, Renderer2D.Quad, Texture);
+            } else
+            {
+                Renderer2D.Submit(UITransform.Position, gameObject.transform.rotation.Xy, gameObject.transform.scale.Xy, Renderer2D.Quad, null, nullMaterial);
             }
         }
     }

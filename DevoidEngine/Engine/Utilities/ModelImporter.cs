@@ -34,6 +34,7 @@ namespace DevoidEngine.Engine.Utilities
                 Console.WriteLine("Model was not found at path: " + path + "\nOr Model file was invalid");
                 return null;
             }
+            if (scene == null || scene.RootNode == null) return null;
             List<ModelData> ModelTotalMeshes = new List<ModelData>();
 
             string[] splitPath = Path.GetFullPath(path).Split("\\");

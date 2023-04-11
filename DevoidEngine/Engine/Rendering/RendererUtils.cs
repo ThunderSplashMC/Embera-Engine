@@ -14,6 +14,7 @@ namespace DevoidEngine.Engine.Rendering
         
         public static VertexArray CubeVAO;
         public static VertexArray QuadVAO;
+        public static VertexArray SphereVAO;
 
         public static Shader SkyboxShader;
         public static Shader HDRShader;

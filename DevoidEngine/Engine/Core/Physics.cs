@@ -35,6 +35,7 @@ namespace DevoidEngine.Engine.Core
 
         public bool AllowContactGeneration(int workerIndex, CollidableReference a, CollidableReference b, ref float speculativeMargin) 
         {
+            Console.Write(a.Mobility == CollidableMobility.Dynamic || b.Mobility == CollidableMobility.Dynamic);
             return a.Mobility == CollidableMobility.Dynamic || b.Mobility == CollidableMobility.Dynamic;
         }
 
@@ -92,7 +93,6 @@ namespace DevoidEngine.Engine.Core
 
         public void Init()
         {
-            Console.WriteLine("Hello World, Physics Instantiated");
             Simulation = new Simulation();
 
             Simulation = Simulation.Create(new BufferPool(), new NarrowPhaseCallback(), new PoseIntegratorCallback(), new SolveDescription(4, 1));

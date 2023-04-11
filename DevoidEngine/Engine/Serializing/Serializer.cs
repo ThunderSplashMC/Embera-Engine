@@ -60,6 +60,7 @@ namespace DevoidEngine.Engine.Serializing
             scale.Add("Z", gameObject.transform.scale.Z);
 
             jObject.Add("Name", gameObject.name);
+            jObject.Add("ID", gameObject.ID);
             jObject.Add("Position", position);
             jObject.Add("Rotation", rotation);
             jObject.Add("Scale", scale);

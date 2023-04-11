@@ -24,6 +24,7 @@ namespace DevoidEngine.Engine.Windowing
     public class Window : GameWindow
     {
         private WindowSpecification WindowSpec;
+        private bool CloseSpecified;
 
         public Window(ref WindowSpecification windowSpec) : base(GameWindowSettings.Default,
             new NativeWindowSettings() {
@@ -73,6 +74,7 @@ namespace DevoidEngine.Engine.Windowing
 
         protected override void OnRenderFrame(FrameEventArgs args)
         {
+            if (CloseSpecified) return;
             SwapBuffers();
             base.OnRenderFrame(args);
         }
@@ -89,6 +91,7 @@ namespace DevoidEngine.Engine.Windowing
 
         public override void Close()
         {
+            CloseSpecified = true;
             base.Close();
         }
 

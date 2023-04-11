@@ -14,6 +14,7 @@ using DevoidEngine.Engine.Utilities;
 using Elemental.Editor.EditorUtils;
 using Elemental.Editor.EditorAttributes;
 using DevoidEngine.Engine.Rendering;
+using Assimp;
 
 namespace Elemental.Editor.Panels
 {
@@ -134,32 +135,6 @@ namespace Elemental.Editor.Panels
             ImGui.PushStyleColor(ImGuiCol.Text, (new System.Numerics.Vector4(0.8f, 0.8f, 0.8f, 1)));
             ImGui.Begin($"{FontAwesome.ForkAwesome.InfoCircle} Properties");
 
-            //ImGui.BeginTable("##hihi", 2);
-            //ImGui.TableSetupColumn("Prop", 0);
-            //ImGui.TableSetupColumn("Val", ImGuiTableColumnFlags.WidthStretch);
-            //ImGui.TableNextColumn();
-
-            //ImGui.Text("Here is a button");
-
-            //ImGui.TableSetColumnIndex(1);
-            //ImGui.Button("Hello World");
-            //ImGui.TableNextRow();
-            //ImGui.TableSetColumnIndex(1);
-            //ImGui.Button("Hello World");
-            //ImGui.TableNextRow();
-            //ImGui.TableSetColumnIndex(0);
-            //ImGui.Dummy(new System.Numerics.Vector2(0,0));
-            //ImGui.TableSetColumnIndex(1);
-            //ImGui.Button("Hello World");
-
-
-            //ImGui.TableNextRow();
-            //ImGui.TableSetColumnIndex(0);
-
-            //ImGui.Text("Here is a button");
-
-            //ImGui.EndTable();
-
 
             if (CurrentSelectedGameObject != null)
             {
@@ -182,10 +157,18 @@ namespace Elemental.Editor.Panels
                 for (int i = 0; i < components.Length; i++)
                 {
                     Component component = components[i];
+
                     ImGui.PushID("##component" + i);
                     if (ImGui.CollapsingHeader(component.GetType().Name))
                     {
+
+                        
                         ImGui.TreePush();
+                        //ImGui.BeginGroup();
+
+                        ImGui.PushStyleColor(ImGuiCol.ChildBg, new System.Numerics.Vector4(0.1f, 0.1f, 0.1f, 1));
+
+                        //ImGui.BeginChild("component" + i);
                         bool found = false;
                         for (int x = 0; x < CustomEditorScriptComponents.Count; x++)
                         {
@@ -193,7 +176,7 @@ namespace Elemental.Editor.Panels
                             {
                                 found = true;
                                 CustomEditorScriptComponents[x].EditorUI.baseComp = component;
-                                if (!CustomEditorScriptComponents[x].EditorUI.OnInspectorGUI()) 
+                                if (!CustomEditorScriptComponents[x].EditorUI.OnInspectorGUI())
                                 {
                                     UI.BeginPropertyGrid("##" + i);
                                     UI.DrawComponentField(component.GetType().GetFields(), (object)component);
@@ -209,7 +192,13 @@ namespace Elemental.Editor.Panels
                             UI.EndPropertyGrid();
                         }
 
+                        //ImGui.EndChild();
+
+                        //ImGui.EndGroup();
+                        //ImGui.GetWindowDrawList().AddRect(new System.Numerics.Vector2(ImGui.GetItemRectMin().X - 10, ImGui.GetItemRectMin().Y), new System.Numerics.Vector2(ImGui.GetItemRectMax().X + (ImGui.GetContentRegionAvail().X), ImGui.GetItemRectMax().Y), UI.ToUIntA(new Vector4(0.1f, 0.1f, 0.1f, 0.5f)), 5f, ImDrawFlags.RoundCornersBottomRight | ImDrawFlags.RoundCornersBottomLeft, 2f);
+                        ImGui.PopStyleColor();
                         ImGui.TreePop();
+
                     }
                     ImGui.PopID();
                 }
@@ -285,13 +274,16 @@ namespace Elemental.Editor.Panels
                     Vector3 albedo = meshHolder.Meshes[i].Material.GetVec3("material.albedo");
                     float metallic = meshHolder.Meshes[i].Material.GetFloat("material.metallic");
                     float roughness = meshHolder.Meshes[i].Material.GetFloat("material.roughness");
+                    float emissionStr = meshHolder.Meshes[i].Material.GetFloat("material.emissionStr");
                     Vector3 emission = meshHolder.Meshes[i].Material.GetVec3("material.emission");
                     TextureAttribute[] TexAttributes = meshHolder.Meshes[i].Material.GetAllTexAttributes();
 
                     UI.BeginProperty("Albedo");
                     if (GetTextureAttribute(TexAttributes, "material.ALBEDO_TEX"))
                     {
-                        UI.PropertyVector3(ref albedo);
+                        Color4 color = new Color4(albedo.X, albedo.Y, albedo.Z, 1);
+                        UI.PropertyColor4(ref color, true);
+                        albedo = new Vector3(color.R, color.G, color.B);
                     }
                     UI.EndProperty();
 
@@ -309,14 +301,23 @@ namespace Elemental.Editor.Panels
                     UI.BeginProperty("Emission");
                     if (GetTextureAttribute(TexAttributes, "material.EMISSION_TEX"))
                     {
-                       UI.PropertyVector3(ref emission);
+                        Color4 color = new Color4(emission.X, emission.Y, emission.Z, 1);
+                        UI.PropertyColor4(ref color);
+                        emission = new Vector3(color.R, color.G, color.B);
                     }
+                    UI.EndProperty();
+
+                    UI.BeginProperty("Emission Strength");
+
+                    UI.PropertyFloat(ref emissionStr, 0);
+
                     UI.EndProperty();
 
                     meshHolder.Meshes[i].Material.Set("material.albedo", albedo);
                     meshHolder.Meshes[i].Material.Set("material.metallic", metallic);
                     meshHolder.Meshes[i].Material.Set("material.roughness", roughness);
                     meshHolder.Meshes[i].Material.Set("material.emission", emission);
+                    meshHolder.Meshes[i].Material.Set("material.emissionStr", emissionStr);
 
                     UI.EndPropertyGrid();
                     ImGui.TreePop();

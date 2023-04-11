@@ -6,5 +6,5 @@ uniform vec3 C_VIEWPOS;
 
 void main()
 {
-	color = vec4(1);
+	color = vec4(0.7, 0.7, 0.7, 1);
 }

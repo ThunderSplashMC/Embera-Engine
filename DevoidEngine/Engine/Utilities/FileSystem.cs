@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
+using System.Drawing.Drawing2D;
 
 namespace DevoidEngine.Engine.Utilities
 {
@@ -22,12 +23,12 @@ namespace DevoidEngine.Engine.Utilities
 
         public static string[] GetDirsFromBase(string path)
         {
-            return Directory.GetDirectories(path);
+            return Directory.GetDirectories(basePath + "/" + path);
         }
 
         public static string[] GetFilesFromBase(string path)
         {
-            return Directory.GetFiles(path);
+            return Directory.GetFiles(basePath + "/" + path);
         }
 
         public static string RemoveBaseFromPath(string path)

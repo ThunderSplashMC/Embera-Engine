@@ -15,13 +15,14 @@ namespace DevoidLauncher.Launcher
         public Window Window;
         public bool EDITOR_STARTED = false;
         public string PROJECT_DIRECTORY = ".";
+        public string PROJECT_FILE_PATH;
 
         public void Initialize()
         {
             WindowSpecification windowSpecification = new WindowSpecification()
             {
                 height = 600,
-                width = 800,
+                width = 900,
                 fullscreen = false,
                 Vsync = true,
                 isCentered = true,
@@ -34,16 +35,23 @@ namespace DevoidLauncher.Launcher
 
             mainLayer.main = this;
 
-            Window.Run();
+            try
+            {
+                Window.Run();
+            } catch (Exception ex) 
+            {
+                Console.WriteLine(ex);
+            }
         }
 
-        static ElementalApp app;
+        ElementalApp app;
 
         public void StartEditor()
         {
             Window.Close();
-            Window.Dispose();
-            app = new ElementalApp(PROJECT_DIRECTORY);
+
+            app = new ElementalApp();
+            app.Init(PROJECT_FILE_PATH);
         }
 
         public void OnInit()

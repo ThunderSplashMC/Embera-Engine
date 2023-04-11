@@ -1413,7 +1413,8 @@ namespace MaterialIconFont
         public const string Panorama_fisheye = "\ue40c";
         public const string Panorama_horizontal = "\ue40d";
         public const string Panorama_horizontal_select = "\uef60";
-        public const string Panorama_photosphere = "\ue9c9";
+        public const string Panorama_photo
+            = "\ue9c9";
         public const string Panorama_photosphere_select = "\ue9ca";
         public const string Panorama_vertical = "\ue40e";
         public const string Panorama_vertical_select = "\uef61";

@@ -78,7 +78,7 @@ namespace DevoidEngine.Engine.Rendering
                         textureFormat = FrameBufferTextureFormat.RGBA16F, textureType = FrameBufferTextureType.Texture2D
                     },
                     new ColorAttachment() {
-                        textureFormat = FrameBufferTextureFormat.RGBA8, textureType = FrameBufferTextureType.Texture2D
+                        textureFormat = FrameBufferTextureFormat.RGBA16F, textureType = FrameBufferTextureType.Texture2D
                     }
                 },
                 DepthAttachment = new DepthAttachment()
@@ -88,7 +88,7 @@ namespace DevoidEngine.Engine.Rendering
                 }
             };
 
-            RenderGraph.LightBuffer = new FrameBuffer(frameBufferSpecification);
+            RenderGraph.LightBuffer = new FrameBuffer(lightBufferSpecification);
         }
 
         public static void AddRenderPass(RenderPass renderpass)
@@ -254,7 +254,7 @@ namespace DevoidEngine.Engine.Rendering
         static void BloomPass()
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            RenderGraph.BloomRenderer.RenderBloomTexture(RenderGraph.LightBuffer.GetColorAttachment(0));
+            RenderGraph.BloomRenderer.RenderBloomTexture(RenderGraph.LightBuffer.GetColorAttachment(1));
             ResetViewport();
         }
 

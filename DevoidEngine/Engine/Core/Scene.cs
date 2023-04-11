@@ -5,6 +5,7 @@ using DevoidEngine.Engine.Rendering;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Assimp;
+using System.Numerics;
 
 namespace DevoidEngine.Engine.Core
 {
@@ -20,6 +21,7 @@ namespace DevoidEngine.Engine.Core
         public string SceneName = "Scene";
         public SceneRegistry sceneRegistry;
         private SceneState sceneState = SceneState.Paused;
+        private Vector2 currentViewportSize;
 
         public Physics PhysicsSystem;
         
@@ -82,7 +84,7 @@ namespace DevoidEngine.Engine.Core
 
         public void OnResize(int width, int height)
         {
-
+            currentViewportSize = new Vector2(width, height);
             CameraComponent[] cameras = sceneRegistry.GetComponentsOfType<CameraComponent>();
             for (int i = 0; i < cameras.Length; i++)
             {
@@ -134,6 +136,7 @@ namespace DevoidEngine.Engine.Core
                 CameraComponent[] cameraComponents = sceneRegistry.GetComponentsOfType<CameraComponent>();
                 if (cameraComponents.Length == 0)
                 {
+                    ((CameraComponent)component).SetViewportSize((int)currentViewportSize.X, (int)currentViewportSize.Y);
                     Renderer.SetCamera(((CameraComponent)component).Camera);
                 }
             }
@@ -153,6 +156,12 @@ namespace DevoidEngine.Engine.Core
 
 
             sceneRegistry.GetAllEditorRuntimeComponents();
+
+            if (sceneState == SceneState.Play)
+            {
+                component.OnStart();
+            }
+
         }
 
         public void OnComponentRemoved(Component component)

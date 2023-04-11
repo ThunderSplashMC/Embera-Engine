@@ -28,6 +28,7 @@ namespace DevoidEngine.Engine.Serializing
             {
                 JsonObject gObject = gObjects[i].AsObject();
                 GameObject gameObject = scene.NewGameObject((string)gObject["Name"]);
+                gameObject.ID = (int)gObject["ID"];
                 gameObject.transform.position = new Vector3((float)gObject["Position"]["X"], (float)gObject["Position"]["Y"], (float)gObject["Position"]["Z"]);
 
                 JsonArray cObjects = gObject["Components"].AsArray();

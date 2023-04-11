@@ -17,6 +17,11 @@ namespace Elemental
 {
     class EditorLayer : Layer
     {
+        public string PROJECT_DIRECTORY;
+        public string PROJECT_NAME;
+        public string PROJECT_ASSET_DIR;
+
+
         public Scene EditorScene;
 
         public Texture EditorLogo = new Texture("Engine/EngineContent/icons/icon512.png");
@@ -24,9 +29,10 @@ namespace Elemental
         public static Application app;
 
         public static ConsolePanel ConsoleService;
+        public static FileSystem FileSystem;
         public DragDropService DragDropService;
 
-        public string PROJECT_DIRECTORY;
+        public AssetManager AssetManager;
 
         public List<Panel> EditorPanels = new List<Panel>();
 
@@ -36,6 +42,10 @@ namespace Elemental
 
             Renderer.ErrorLogging(true);
             EditorScene = new Scene();
+
+            // Load Assets
+            AssetManager = new AssetManager(PROJECT_ASSET_DIR);
+            AssetManager.LoadToResources();
 
             SandBoxSetup();
 
@@ -74,7 +84,23 @@ namespace Elemental
 
         public void SandBoxSetup()
         {
-            //GameObject gObject = EditorScene.NewGameObject("BG");
+            GameObject gObject = EditorScene.NewGameObject("BG");
+
+            MeshHolder mh = gObject.AddComponent<MeshHolder>();
+
+            mh.AddMeshes(ModelImporter.AddMaterialsToScene(EditorScene,ModelImporter.LoadModel("D:/Programming/Devoid Items/ExampleAssets/demo_stage.fbx")));
+
+            gObject.AddComponent<MeshRenderer>();
+
+            GameObject aObject = EditorScene.NewGameObject("BG");
+
+            aObject.transform.position.X = 5;
+
+            MeshHolder ah = aObject.AddComponent<MeshHolder>();
+
+            //ah.AddMeshes(ModelImporter.AddMaterialsToScene(EditorScene, ModelImporter.LoadModel("D:/Programming/Devoid Items/ExampleAssets/Sponza-master/Sponza-master/sponza.obj")));
+
+            aObject.AddComponent<MeshRenderer>();
 
             //SpriteRenderer sr = gObject.AddComponent<SpriteRenderer>();
             //sr.Texture = new Texture("C:\\Users\\maari\\Desktop\\DEngine1.png");

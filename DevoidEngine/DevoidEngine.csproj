@@ -65,6 +65,8 @@
     <None Remove="Engine\EngineContent\icons\icon512.png" />
     <None Remove="Engine\EngineContent\icons\icon64-stroke.png" />
     <None Remove="Engine\EngineContent\model\cube.fbx" />
+    <None Remove="Engine\EngineContent\model\sphere-low.fbx" />
+    <None Remove="Engine\EngineContent\model\sphere-lower.fbx" />
     <None Remove="Engine\EngineContent\model\sphere.fbx" />
     <None Remove="Engine\EngineContent\shaders\2d.frag" />
     <None Remove="Engine\EngineContent\shaders\2d.vert" />
@@ -159,6 +161,12 @@
     </Content>
     <Content Include="Engine\EngineContent\icons\icon512-stroke.ico" />
     <Content Include="Engine\EngineContent\model\cube.fbx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\model\sphere-low.fbx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\EngineContent\model\sphere-lower.fbx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Engine\EngineContent\model\sphere.fbx">

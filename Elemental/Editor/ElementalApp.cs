@@ -2,22 +2,33 @@
 using System.Collections.Generic;
 using DevoidEngine.Engine.Core;
 using System.IO;
+using Elemental.Editor.EditorUtils;
 
 namespace Elemental
 {
     public class ElementalApp
     {
 
-        public ElementalApp(string path)
+        public ElementalApp()
         {
-            Init(path);
+
         }
 
-        public void Init(string Path)
+
+
+
+        public void Init(string PROJECT_FILE_PATH)
         {
+            ProjectUtils projectUtils = new ProjectUtils();
+
+            projectUtils.LoadFile(PROJECT_FILE_PATH);
+
+            string Path = projectUtils.GetProjectBasePath();
+
+
             ApplicationSpecification applicationSpecification = new ApplicationSpecification()
             {
-                AntiAliasingSamples = 4,
+                AntiAliasingSamples = 16,
                 WindowHeight = 1080,
                 WindowWidth = 1920,
                 FramesPerSecond = 60,
@@ -32,7 +43,11 @@ namespace Elemental
             Application Application = new Application();
             Application.Create(ref applicationSpecification);
             EditorLayer layer = new EditorLayer();
+
             layer.PROJECT_DIRECTORY = Path;
+            layer.PROJECT_NAME = projectUtils.GetProjectName();
+            layer.PROJECT_ASSET_DIR = Path + "\\Assets";
+            
             Application.AddLayer(layer);
             Application.Run();
         }

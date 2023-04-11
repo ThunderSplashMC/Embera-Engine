@@ -13,5 +13,5 @@ in vec2 texCoords;
 
 void main() {
   
-    FragColor = vec4(mix(texture(S_SCREEN_TEXTURE, texCoords).rgb, texture(S_SOURCE_TEXTURE, texCoords).rgb, OPACITY_MIX), 1.0);
+    FragColor = vec4(mix(texture(S_SCREEN_TEXTURE, texCoords).rgb, texture(S_SOURCE_TEXTURE, texCoords).rgb, OPACITY_MIX), texture(S_SOURCE_TEXTURE, texCoords).a);
 }

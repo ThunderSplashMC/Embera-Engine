@@ -62,8 +62,7 @@ namespace DevoidEngine.Engine.Utilities
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             SetData(data, data.Length);
 
-            GL.DeleteBuffer(VertexBufferObject);
-            GL.DeleteBuffer(VertexBufferObject);
+            if (isStatic) GL.DeleteBuffer(VertexBufferObject);
             GL.BindVertexArray(0);
         }
 

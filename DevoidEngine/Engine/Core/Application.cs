@@ -117,8 +117,6 @@ namespace DevoidEngine.Engine.Core
         public void Close()
         {
             Window.Close();
-
-            Window.Dispose();
         }
 
         public void OnLoad()

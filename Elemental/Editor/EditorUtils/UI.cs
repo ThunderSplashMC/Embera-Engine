@@ -92,11 +92,23 @@ namespace Elemental.Editor.EditorUtils
 
         }
 
-        public static void PropertyInt(ref int value)
+        public static void PropertyInt(ref int value, int min = int.MinValue, int max = int.MaxValue, int step = 1, int stepfast = 2)
         {
             NextField();
             ImGui.SetNextItemWidth(-1);
-            ImGui.InputInt("##" + propertyCount + propertyLabel, ref value);
+            ImGui.InputInt("##" + propertyCount + propertyLabel, ref value, step, stepfast);
+        }
+
+        public static void PropertyVector2(ref Vector2 value, float speed = 0.2f, float min = float.MinValue, float max = float.MaxValue)
+        {
+            NextField();
+
+            System.Numerics.Vector2 vec2 = new System.Numerics.Vector2(value.X, value.Y);
+
+            ImGui.SetNextItemWidth(-1);
+            ImGui.DragFloat2("##" + propertyCount + propertyLabel, ref vec2, speed, min, max);
+
+            value = new Vector2(vec2.X, vec2.Y);
         }
 
         public static void PropertyVector3(ref Vector3 value, float speed = 0.2f, float min = float.MinValue, float max = float.MaxValue)
@@ -121,14 +133,14 @@ namespace Elemental.Editor.EditorUtils
                 ImGui.InputText("##" + propertyCount + propertyLabel, ref value, 32000);
         }
 
-        public static void PropertyColor4(ref Color4 value)
+        public static void PropertyColor4(ref Color4 value, bool isFloat = false)
         {
             NextField();
 
             System.Numerics.Vector4 color4 = new System.Numerics.Vector4(value.R, value.G, value.B, value.A);
 
             ImGui.SetNextItemWidth(-1);
-            ImGui.ColorEdit4("##" + propertyCount + propertyLabel, ref color4);
+            ImGui.ColorEdit4("##" + propertyCount + propertyLabel, ref color4, isFloat ? ImGuiColorEditFlags.Float : ImGuiColorEditFlags.None);
             value = new Color4(color4.X, color4.Y, color4.Z, color4.W);
         }
 
@@ -209,8 +221,12 @@ namespace Elemental.Editor.EditorUtils
                 }
                 else if (field.FieldType == typeof(string))
                 {
-
                     DrawStringField(field, component);
+                }
+                else if (field.FieldType == typeof(Vector2))
+                {
+
+                    DrawVec2Field(field, component);
                 }
                 else if (field.FieldType == typeof(Vector3))
                 {
@@ -277,6 +293,13 @@ namespace Elemental.Editor.EditorUtils
         public static void DrawTypeField(FieldInfo field, object component)
         {
             PropertyType(field.FieldType);
+        }
+
+        public static void DrawVec2Field(FieldInfo field, object component)
+        {
+            Vector2 val = (Vector2)field.GetValue(component);
+            PropertyVector2(ref val);
+            field.SetValue(component, val);
         }
 
         public static void DrawVec3Field(FieldInfo field, object component)

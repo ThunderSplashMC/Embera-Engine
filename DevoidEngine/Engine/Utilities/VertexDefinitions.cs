@@ -83,6 +83,32 @@ namespace DevoidEngine.Engine.Utilities
                 new Vertex(new Vector3(-1.0f, 1.0f, 0.0f),new Vector3(1.0f, -1.0f, 0.0f),  new Vector2(0.0f, 1.0f))
             };
         }
+
+        public static Vertex[] GetSphereVertices(int segments = 32, double radius = 1.0)
+        {
+            List<Vertex> vertices = new List<Vertex>();
+
+            double phi;
+            double theta;
+            float x;
+            float y;
+            float z;
+            double[] vertex;
+
+            for (int i = 0; i < segments; i++)
+            {
+                phi = Math.PI * i / (segments - 1);
+                for (int j = 0; j < segments; j++)
+                {
+                    theta = 2 * Math.PI * j / (segments - 1);
+                    x = (float)(radius * Math.Sin(phi) * Math.Cos(theta));
+                    y = (float)(radius * Math.Sin(phi) * Math.Sin(theta));
+                    z = (float)(radius * Math.Cos(phi));
+                    vertices.Add(new Vertex( new Vector3(x,y,z), Vector3.One, Vector2.One));
+                }
+            }
+            return vertices.ToArray();
+        }
     }
 
     public readonly struct VertexAttribute

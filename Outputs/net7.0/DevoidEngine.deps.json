@@ -11,6 +11,7 @@
           "AssimpNet": "4.1.0",
           "BepuPhysics": "2.4.0",
           "ImGui.NET": "1.87.3",
+          "Microsoft.WindowsAPICodePack-Shell": "1.1.0",
           "Newtonsoft.Json": "13.0.3",
           "OpenTK": "4.7.5",
           "SharpFont": "4.0.1",
@@ -184,6 +185,29 @@
             "assetType": "runtime",
             "assemblyVersion": "6.0.0.0",
             "fileVersion": "6.0.21.52210"
+          }
+        }
+      },
+      "Microsoft.WindowsAPICodePack-Core/1.1.0": {
+        "runtime": {
+          "lib/Microsoft.WindowsAPICodePack.dll": {
+            "assemblyVersion": "1.1.0.0",
+            "fileVersion": "1.1.0.0"
+          }
+        }
+      },
+      "Microsoft.WindowsAPICodePack-Shell/1.1.0": {
+        "dependencies": {
+          "Microsoft.WindowsAPICodePack-Core": "1.1.0"
+        },
+        "runtime": {
+          "lib/Microsoft.WindowsAPICodePack.Shell.dll": {
+            "assemblyVersion": "1.1.0.0",
+            "fileVersion": "1.1.0.0"
+          },
+          "lib/Microsoft.WindowsAPICodePack.ShellExtensions.dll": {
+            "assemblyVersion": "1.1.0.0",
+            "fileVersion": "1.1.0.0"
           }
         }
       },
@@ -1127,6 +1151,20 @@
       "sha512": "sha512-hqTM5628jSsQiv+HGpiq3WKBl2c8v1KZfby2J6Pr7pEPlK9waPdgEO6b8A/+/xn/yZ9ulv8HuqK71ONy2tg67A==",
       "path": "microsoft.win32.systemevents/6.0.0",
       "hashPath": "microsoft.win32.systemevents.6.0.0.nupkg.sha512"
+    },
+    "Microsoft.WindowsAPICodePack-Core/1.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-jU5Y9fvuC/USod2RCCHhs1PJ/T5ANBIXPhNpew53s5SDfRzvIE97XcIt9U8Wm+DF0bTJAdF9v9PD0cgbTi7uMg==",
+      "path": "microsoft.windowsapicodepack-core/1.1.0",
+      "hashPath": "microsoft.windowsapicodepack-core.1.1.0.nupkg.sha512"
+    },
+    "Microsoft.WindowsAPICodePack-Shell/1.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-8WvLG0TNTylzMB8gnZeZDG68/DsagAF64K35RC2Y/zocHp4e03Uj/kba6egQlq1+0uVv04FpLG+CmENEIN53rg==",
+      "path": "microsoft.windowsapicodepack-shell/1.1.0",
+      "hashPath": "microsoft.windowsapicodepack-shell.1.1.0.nupkg.sha512"
     },
     "NETStandard.Library/1.6.1": {
       "type": "package",

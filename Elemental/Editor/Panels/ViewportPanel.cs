@@ -46,6 +46,8 @@ namespace Elemental.Editor.Panels
             SampleTex = new Texture("Editor/Assets/folder-icn.png");
             SampleTex.ChangeFilterType(FilterTypes.Nearest);
             LightComponentTex = new Texture("Editor/Assets/LightComponentTexture.png");
+
+
             LightComponentTex.ChangeFilterType(FilterTypes.Linear);
             CameraComponentTex = new Texture("Editor/Assets/CameraComponentTexture.png");
             CameraComponentTex.ChangeFilterType(FilterTypes.Linear);
@@ -358,12 +360,6 @@ namespace Elemental.Editor.Panels
 
             //NodeManager.EndNodeEditor();
 
-            ImGui.Begin("S");
-
-            ImGui.Image((IntPtr)(EditorOutlinePass.frameBuffer.GetDepthAttachment()), new System.Numerics.Vector2(1280, 720));
-
-            ImGui.End();            
-
 
 
         }
@@ -427,7 +423,10 @@ namespace Elemental.Editor.Panels
 
             ImGui.PopStyleVar();
             ImGui.PopStyleColor(1);
+
+            
         }
+
 
         void DrawGuizmos()
         {
@@ -444,6 +443,8 @@ namespace Elemental.Editor.Panels
                     if (components[x].GetType() == typeof(LightComponent))
                     {
                         Guizmo3D.DrawGuizmo(LightComponentTex, gameObjects[i].transform.position, 4f);
+                        if (((GameObjectPanel)Editor.EditorPanels[2]).CurrentSelectedGameObject == components[x].gameObject) Guizmo3D.DrawWireSphere(components[x].gameObject.transform.position, ((LightComponent)(components[x])).Attenuation * 4);
+
                     }
                     if (components[x].GetType() == typeof(CameraComponent))
                     {
@@ -451,6 +452,8 @@ namespace Elemental.Editor.Panels
                     }
                 }
             }
+
+            //Guizmo3D.DrawSphere(Vector3.Zero, 2);
 
             Guizmo3D.End();
         }

@@ -3,8 +3,8 @@
 const float PI = 3.14159265359;
 const float GAMMA = 2.2;
 
-out vec4 FragColor;
-out vec4 EmissionColor;
+layout (location = 0) out vec4 FragColor;
+layout (location = 1) out vec4 EmissionColor;
 
 in vec2 texCoords;
 in vec3 Normal;
@@ -43,6 +43,7 @@ struct Material {
     sampler2D NORMAL_TEX;
     vec3  albedo;
     vec3 emission;
+    float emissionStr;
     float metallic;
     float roughness;
     float ao;
@@ -276,14 +277,14 @@ void main() {
     vec3 ambient = vec3(0.03) * GetAlbedo() * material.ao;
     // + ((1 - GetRoughness()) * IBL(material, V, N, vec3(material.metallic)));
 
-    vec3 color = ambient + Lo + GetEmission();
+    vec3 color = ambient + Lo;// + GetEmission();
     
     color = color / (color + vec3(1.0));
     //color = color;
 
 
     FragColor = vec4(color, GetAlbedoAlpha());
-    EmissionColor = vec4(GetEmission(), 1.0);
+    EmissionColor = vec4(GetEmission() * material.emissionStr, 1.0);
 }
 
 float DistributionGGX(vec3 N, vec3 H, float roughness)

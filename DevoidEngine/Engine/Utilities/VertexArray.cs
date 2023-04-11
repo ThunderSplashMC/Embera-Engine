@@ -43,7 +43,7 @@ namespace DevoidEngine.Engine.Utilities
 
             GL.BindVertexArray(0);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            GL.DeleteBuffer(vertexBuffer.VertexBufferObject);
+            if (vertexBuffer.IsStatic) GL.DeleteBuffer(vertexBuffer.VertexBufferObject);
         }
 
         public void Bind()
@@ -60,7 +60,7 @@ namespace DevoidEngine.Engine.Utilities
             GL.DrawArrays(PrimitiveType.Triangles, 0, VertexBuffer.VertexCount);//VertexBuffer.VertexCount);
         }
 
-        public void RenderWithIndices(IndexBuffer IBO)
+        public void Render(IndexBuffer IBO)
         {
             GL.BindVertexArray(VertexArrayObject);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, IBO.IndexBufferObject);
