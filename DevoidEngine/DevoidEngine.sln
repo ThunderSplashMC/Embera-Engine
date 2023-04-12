@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elemental", "..\Elemental\E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevoidProject", "..\DevoidProject\DevoidProject.csproj", "{07C95298-3ED7-4C7B-8F4E-4464594BED95}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevoidLauncher", "..\DevoidLauncher\DevoidLauncher.csproj", "{9E27C8BB-2A30-428B-AEA0-C4FD8E9A745F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevoidLauncher", "..\DevoidLauncher\DevoidLauncher.csproj", "{9E27C8BB-2A30-428B-AEA0-C4FD8E9A745F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevoidPlayer", "..\Outputs\Debug\net7.0-windows\DevoidPlayer\DevoidPlayer.csproj", "{9CE53558-E3C3-4BC4-85FD-3DD4A8862E8E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +71,18 @@ Global
 		{9E27C8BB-2A30-428B-AEA0-C4FD8E9A745F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9E27C8BB-2A30-428B-AEA0-C4FD8E9A745F}.Release|x64.ActiveCfg = Release|Any CPU
 		{9E27C8BB-2A30-428B-AEA0-C4FD8E9A745F}.Release|x64.Build.0 = Release|Any CPU
+		{9CE53558-E3C3-4BC4-85FD-3DD4A8862E8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CE53558-E3C3-4BC4-85FD-3DD4A8862E8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CE53558-E3C3-4BC4-85FD-3DD4A8862E8E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9CE53558-E3C3-4BC4-85FD-3DD4A8862E8E}.Debug|x64.Build.0 = Debug|Any CPU
+		{9CE53558-E3C3-4BC4-85FD-3DD4A8862E8E}.EditorMode|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CE53558-E3C3-4BC4-85FD-3DD4A8862E8E}.EditorMode|Any CPU.Build.0 = Debug|Any CPU
+		{9CE53558-E3C3-4BC4-85FD-3DD4A8862E8E}.EditorMode|x64.ActiveCfg = Debug|Any CPU
+		{9CE53558-E3C3-4BC4-85FD-3DD4A8862E8E}.EditorMode|x64.Build.0 = Debug|Any CPU
+		{9CE53558-E3C3-4BC4-85FD-3DD4A8862E8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CE53558-E3C3-4BC4-85FD-3DD4A8862E8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CE53558-E3C3-4BC4-85FD-3DD4A8862E8E}.Release|x64.ActiveCfg = Release|Any CPU
+		{9CE53558-E3C3-4BC4-85FD-3DD4A8862E8E}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

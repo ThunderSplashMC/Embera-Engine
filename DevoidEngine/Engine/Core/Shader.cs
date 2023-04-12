@@ -17,7 +17,7 @@ namespace DevoidEngine.Engine.Core
         public bool requiresTime;
     }
 
-    public class Shader : IDisposable
+    public class Shader : IDisposable, IResource
     {
 
         public static List<Shader> Shaders = new List<Shader>();

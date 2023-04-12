@@ -10,12 +10,10 @@ uniform mat4 W_MODEL_MATRIX;
 uniform mat4 W_VIEW_MATRIX;
 uniform mat4 W_PROJECTION_MATRIX;
 
-out vec4 v_Color;
 out vec2 v_TexCoord;
 
 void main() {
 
 	gl_Position = vec4(aPosition.x, aPosition.y, -0.1, 1.0) * W_MODEL_MATRIX *  W_PROJECTION_MATRIX;
-	v_Color = vec4(1.0);
 	v_TexCoord = aTexCoord;
 }

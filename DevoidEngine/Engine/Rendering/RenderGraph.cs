@@ -40,6 +40,7 @@ namespace DevoidEngine.Engine.Rendering
         public static FrameBuffer GeometryBuffer;
         public static FrameBuffer CompositeBuffer;
         public static FrameBuffer HDRFrameBuffer;
+        public static FrameBuffer _2DBuffer;
         public static FrameBuffer PreviousFrameBuffer;
 
         public static Bloom BloomRenderer;

@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.JavaScript;
 using System.Text;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace Elemental.Editor.EditorUtils
@@ -26,6 +28,7 @@ namespace Elemental.Editor.EditorUtils
 
             LoadAllAssets(AssetDir);
         }
+
 
         public void LoadAllAssets(string basePath)
         {
@@ -76,6 +79,67 @@ namespace Elemental.Editor.EditorUtils
             }
 
             return assets.ToArray();
+        }
+
+        public static JsonObject CreateResourceTable()
+        {
+            List<Resource> ResourcePool = Resources.GetPool();
+
+            JsonObject jsonObject = new JsonObject();
+
+            string Asset_Dir = "Content";
+
+
+            for (int i = 0; i < ResourcePool.Count; i++)
+            {
+                Resource res = ResourcePool[i];
+
+                JsonObject fileObject = new JsonObject();
+
+                if (!jsonObject.ContainsKey(res.Name))
+                {
+                    jsonObject.Add(res.Name, Asset_Dir + "\\" + res.Name);
+                }
+                continue;
+
+                if (Resources.GetKnownType(res.Ext) != "OTHER")
+                {
+                    jsonObject.Add(res.Name, Asset_Dir + "\\" + Path.GetFileNameWithoutExtension(res.Name) + ".asset");
+                }
+                else
+                {
+                    jsonObject.Add(res.Name, Asset_Dir + "\\" + res.Name);
+                }
+            }
+
+            return jsonObject;
+        }
+
+        public static void SaveAllResourceAsFile(string buildDir)
+        {
+            List<Resource> ResourcePool = Resources.GetPool();
+
+            for (int i = 0; i < ResourcePool.Count; i++)
+            {
+                Resource res = ResourcePool[i];
+
+                JsonObject fileObject = new JsonObject();
+
+                if (File.Exists(buildDir + "\\Content\\" + res.Name)) File.Delete(buildDir + "\\Content\\" + res.Name);
+                File.Copy(res.Path, buildDir + "\\Content\\" + res.Name);
+                continue;
+
+                if (Resources.GetKnownType(res.Ext) != "OTHER" || Resources.GetKnownType(res.Ext) != "Mesh")
+                {
+                    if (File.Exists(buildDir + "\\Content\\" + Path.GetFileNameWithoutExtension(res.Path) + ".asset")) File.Delete(buildDir + "\\Content\\" + Path.GetFileNameWithoutExtension(res.Path) + ".asset");
+                    File.Copy(res.Path, buildDir + "\\Content\\" + Path.GetFileNameWithoutExtension(res.Path) + ".asset");
+                }
+                else
+                {
+                    if (File.Exists(buildDir + "\\Content\\" + res.Name)) File.Delete(buildDir + "\\Content\\" + res.Name);
+                    File.Copy(res.Path, buildDir + "\\Content\\" + res.Name);
+                }
+            }
         }
 
     }

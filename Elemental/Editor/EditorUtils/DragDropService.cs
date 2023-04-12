@@ -13,7 +13,8 @@ namespace Elemental.Editor.EditorUtils
 
         public void AddDragFile(string pathToFile)
         {
-            DragFile = new DragFileItem() { fileextension = Path.GetExtension(pathToFile), path = pathToFile };
+            DragFile = new DragFileItem() { fileextension = Path.GetExtension(pathToFile), path = pathToFile, fileName = Path.GetFileName(pathToFile) };
+            Console.WriteLine(DragFile.fileextension);
         }
 
         public DragFileItem GetDragFile()
@@ -25,6 +26,7 @@ namespace Elemental.Editor.EditorUtils
 
     public struct DragFileItem
     {
+        public string fileName;
         public string path;
         public string fileextension;
     }

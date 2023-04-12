@@ -1,6 +1,7 @@
 ﻿using DevoidEngine.Engine.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using System.IO;
 
 namespace DevoidEngine.Engine.Core
 {
@@ -29,11 +30,12 @@ namespace DevoidEngine.Engine.Core
             this.TextureIndex = TextureIndex;
         }
     }
-    public class Texture
+    public class Texture : IResource
     {
         public FilterTypes FilterType = FilterTypes.Linear;
         private int TextureHandle;
         private Image ImageRef;
+        public string fileID;
 
         public Texture()
         {
@@ -52,6 +54,7 @@ namespace DevoidEngine.Engine.Core
 
         public Texture(string path)
         {
+            fileID = Path.GetFileName(path);
             LoadFile(path);
         }
 

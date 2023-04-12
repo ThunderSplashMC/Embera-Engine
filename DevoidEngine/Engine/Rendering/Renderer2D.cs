@@ -42,6 +42,28 @@ namespace DevoidEngine.Engine.Rendering
             Quad = new Mesh();
             Quad.SetVertexArrayObject(RendererUtils.QuadVAO);
             QuadShader = new Shader("Engine/EngineContent/shaders/2D/2d");
+
+            InitializeRenderFramebuffers(width, height);
+        }
+
+        static void InitializeRenderFramebuffers(int width, int height)
+        {
+            FrameBufferSpecification frameBufferSpecification = new FrameBufferSpecification()
+            {
+                width = width,
+                height = height,
+                ColorAttachments = new ColorAttachment[]
+                {
+                    new ColorAttachment() {textureFormat = FrameBufferTextureFormat.RGBA16F, textureType = FrameBufferTextureType.Texture2D}
+                },
+                DepthAttachment = new DepthAttachment()
+                {
+                    width = width,
+                    height = height
+                }
+            };
+
+            RenderGraph._2DBuffer = new FrameBuffer(frameBufferSpecification);
         }
 
         static void SetOrthographic()
@@ -75,9 +97,13 @@ namespace DevoidEngine.Engine.Rendering
 
         public static void Render()
         {
-            RenderGraph.CompositeBuffer.Bind();
+            RenderGraph._2DBuffer.Bind();
+
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.CullFace);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             DrawItems(DrawList);
             DrawList.Clear();
@@ -85,11 +111,14 @@ namespace DevoidEngine.Engine.Rendering
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.CullFace);
 
-            RenderGraph.CompositeBuffer.UnBind();
+            RenderGraph._2DBuffer.UnBind();
+
+            RendererUtils.BlitFBToScreen(RenderGraph._2DBuffer, RenderGraph.CompositeBuffer, 0.5f, true);
         }
 
         static void DrawItems(List<DrawItem> DrawList)
         {
+            Texture.UnbindTexture();
             for (int i = 0; i < DrawList.Count; i++)
             {
                 DrawItem drawItem = DrawList[i];
@@ -106,9 +135,7 @@ namespace DevoidEngine.Engine.Rendering
                     QuadShader.SetMatrix4("W_PROJECTION_MATRIX", OrthoProjection);
 
                     QuadShader.SetInt("u_Texture", 0);
-                    QuadShader.SetInt("USE_TEX_0", 1);
-                    drawItem.Texture.BindTexture();
-                    drawItem.Texture.SetActiveUnit(TextureActiveUnit.UNIT0 + i);
+                    GL.BindTextureUnit(0, drawItem.Texture.GetTexture());
                 }
                 else
                 {

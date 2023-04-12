@@ -32,6 +32,7 @@ namespace DevoidEngine.Engine.Utilities
             catch (Exception E)
             {
                 Console.WriteLine("Model was not found at path: " + path + "\nOr Model file was invalid");
+                Console.WriteLine("Exception: " + E);
                 return null;
             }
             if (scene == null || scene.RootNode == null) return null;
@@ -59,6 +60,7 @@ namespace DevoidEngine.Engine.Utilities
             for (int i = 0; i < ModelTotalMeshes.Count; i++)
             {
                 ModelTotalMeshes[i].mesh.SetPath(path);
+                ModelTotalMeshes[i].mesh.fileID = Path.GetFileName(path);
             }
 
             return ModelTotalMeshes.ToArray();

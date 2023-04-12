@@ -20,6 +20,9 @@ namespace Elemental
         public string PROJECT_DIRECTORY;
         public string PROJECT_NAME;
         public string PROJECT_ASSET_DIR;
+        public string PROJECT_BUILD_DIR;
+
+        public string CurrentDir = "";
 
 
         public Scene EditorScene;
@@ -47,7 +50,7 @@ namespace Elemental
             AssetManager = new AssetManager(PROJECT_ASSET_DIR);
             AssetManager.LoadToResources();
 
-            SandBoxSetup();
+            //SandBoxSetup();
 
             // DragDrop Functionality
 
@@ -63,6 +66,7 @@ namespace Elemental
             EditorPanels.Add(new ContentBrowserPanel());
             EditorPanels.Add(new GameObjectPanel());
             EditorPanels.Add(new MaterialPanel());
+            EditorPanels.Add(new BuildPanel());
             EditorPanels.Add(ConsoleService);
 
             // On Init
@@ -109,6 +113,7 @@ namespace Elemental
         public void ChangeScenes(Scene scene)
         {
             EditorScene = scene;
+            EditorScene.SetSceneState(Scene.SceneState.EditorPlay);
             scene.Init();
         }
 

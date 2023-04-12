@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Linq;
 using System.Runtime.Serialization.Formatters;
 using System.Collections;
+using DevoidEngine.Engine.Utilities;
 
 namespace DevoidEngine.Engine.Serializing
 {
@@ -107,6 +108,10 @@ namespace DevoidEngine.Engine.Serializing
                 {
                     ComponentJSON.Add(fieldName, (string)fieldValue);
                 }
+                else if (field.FieldType == typeof(Vector2))
+                {
+                    ComponentJSON.Add(fieldName, SerializeField((Vector2)fieldValue));
+                }
                 else if (field.FieldType == typeof(Vector3))
                 {
                     ComponentJSON.Add(fieldName, SerializeField((Vector3)fieldValue));
@@ -125,7 +130,40 @@ namespace DevoidEngine.Engine.Serializing
                 }
                 else if (field.FieldType == typeof(Texture))
                 {
-                    ComponentJSON.Add(fieldName, "Texture");
+                    ComponentJSON.Add(fieldName, ((Texture)fieldValue).fileID);
+                }
+                else if (field.FieldType == typeof(Mesh))
+                {
+                    ComponentJSON.Add(fieldName, ((Mesh)fieldValue).fileID);
+                }
+                else if (field.FieldType == typeof(Mesh[]))
+                {
+                    JsonArray jsonArray = new JsonArray();
+
+                    Mesh[] meshes = (Mesh[])fieldValue;
+
+                    for (int x = 0; x < meshes.Length; x++)
+                    {
+                        jsonArray.Add(((Mesh[])fieldValue)[x].fileID);
+                    }
+
+                    ComponentJSON.Add(fieldName, jsonArray);
+                }
+                else if (field.FieldType == typeof(List<Mesh>))
+                {
+                    JsonArray jsonArray = new JsonArray();
+
+                    List<Mesh> meshes = (List<Mesh>)fieldValue;
+                   
+                    if (meshes.Count > 0)
+                    {
+                        for (int x = 0; x < 1; x++)
+                        {
+                            jsonArray.Add(meshes[x].fileID);
+                        }
+                    }
+
+                    ComponentJSON.Add(fieldName, jsonArray);
                 }
                 else if (field.FieldType.IsGenericType && (field.FieldType.GetGenericTypeDefinition() == typeof(List<>)))
                 {
@@ -165,6 +203,14 @@ namespace DevoidEngine.Engine.Serializing
             vObject.Add("X", value.X);
             vObject.Add("Y", value.Y);
             vObject.Add("Z", value.Z);
+            return vObject;
+
+        }
+        public static JsonObject SerializeField(Vector2 value)
+        {
+            JsonObject vObject = new JsonObject();
+            vObject.Add("X", value.X);
+            vObject.Add("Y", value.Y);
             return vObject;
 
         }

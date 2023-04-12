@@ -8,12 +8,7 @@ namespace DevoidEngine.Engine.Components
     public class MeshHolder : Component
     {
         public override string Type { get; } = nameof(MeshHolder);
-        public List<Mesh> Meshes { get; set; } = new List<Mesh>();
-
-        public List<int> ints = new List<int>()
-        {
-            0,1,2,3
-        };
+        public List<Mesh> Meshes = new List<Mesh>();
 
         public Type HelloWorld;
 

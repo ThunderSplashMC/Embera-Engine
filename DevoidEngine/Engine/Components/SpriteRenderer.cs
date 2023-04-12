@@ -20,10 +20,10 @@ namespace DevoidEngine.Engine.Components
 
         public override void OnStart()
         {
-            if (gameObject.GetComponent<UITransform>() == null)
-            {
-                gameObject.AddComponent<UITransform>();
-            }
+            //if (gameObject.GetComponent<UITransform>() == null)
+            //{
+            //    gameObject.AddComponent<UITransform>();
+            //}
 
             UITransform = gameObject.GetComponent<UITransform>();
         }
@@ -32,6 +32,11 @@ namespace DevoidEngine.Engine.Components
 
         public override void OnUpdate(float deltaTime)
         {
+            if (UITransform == null)
+            {
+                UITransform = gameObject.GetComponent<UITransform>();
+                return;
+            };
             time += deltaTime;
             if (Texture != null)
             {

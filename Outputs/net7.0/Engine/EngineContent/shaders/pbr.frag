@@ -208,7 +208,7 @@ float ShadowCalculation(vec3 fragPos,vec3 lightPos, int index)
     float samples = 20;
     float offset  = 0.1;
     float shadow = 0;
-    float diskRadius = 0.05;
+    float diskRadius = 0.1;
     float bias = 0.05; 
 
 //    for(float x = -offset; x < offset; x += offset / (samples * 0.5))

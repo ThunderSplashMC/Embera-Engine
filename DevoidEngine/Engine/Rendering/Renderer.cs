@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DevoidEngine.Engine.Core;
+using OpenTK.Graphics.OpenGL;
 
 namespace DevoidEngine.Engine.Rendering
 {
@@ -44,7 +45,10 @@ namespace DevoidEngine.Engine.Rendering
 
         public static void BlitToScreen()
         {
-
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            GL.DrawBuffer(DrawBufferMode.Back);
+            GL.BlitNamedFramebuffer(RenderGraph.CompositeBuffer.GetRendererID(), 0, 0, 0, RenderGraph.ViewportWidth, RenderGraph.ViewportHeight, 0, 0, RenderGraph.ViewportWidth, RenderGraph.ViewportHeight, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
         }
 
         public static void ErrorLogging(bool value)

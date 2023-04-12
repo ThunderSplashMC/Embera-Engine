@@ -23,12 +23,12 @@ namespace DevoidEngine.Engine.Utilities
 
         public static string[] GetDirsFromBase(string path)
         {
-            return Directory.GetDirectories(basePath + "/" + path);
+            return Directory.GetDirectories(path);
         }
 
         public static string[] GetFilesFromBase(string path)
         {
-            return Directory.GetFiles(basePath + "/" + path);
+            return Directory.GetFiles( path);
         }
 
         public static string RemoveBaseFromPath(string path)

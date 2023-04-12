@@ -1,9 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Text.Json.Nodes;
+using DevoidEngine.Engine.Utilities;
 
 namespace DevoidEngine.Engine.Core
 {
+    public interface IResource
+    {
+
+    }
+
     public struct Resource
     {
         public string Name;
@@ -26,6 +34,34 @@ namespace DevoidEngine.Engine.Core
             return new Shader(path);
         }
 
+        public static explicit operator Mesh[](Resource x)
+        {
+            if (x.Type != "Mesh") return null;
+
+            string path = System.IO.Path.GetFullPath(x.Path);
+
+            if (path.Split(".")[1] == "asset")
+            {
+                path = path.Split(".")[0] + x.Ext;
+            }
+
+            Console.WriteLine("NEWPATH");
+            Console.WriteLine(path);
+
+            ModelImporter.ModelData[] Data = ModelImporter.LoadModel(path);
+
+            List<Mesh> meshes = new List<Mesh>();
+
+            for (int i = 0; i < Data.Length; i++)
+            {
+                meshes.Add(Data[i].mesh);
+            }
+
+            return meshes.ToArray();
+        }
+
+
+
     }
 
     public class Resources
@@ -39,8 +75,15 @@ namespace DevoidEngine.Engine.Core
             { "dmesh", "Mesh" },
             { "vert", "Shader" },
             { "frag", "Shader" },
-            { "txt", "text" }
+            { "txt", "text" },
+            { "fbx", "Mesh" },
+            { "gltf", "Mesh" }
         };
+
+        public static List<Resource> GetPool()
+        {
+            return ResourcePool;
+        }
 
         public static void AddResourceToPool(string name, string path, string ext)
         {
@@ -74,20 +117,34 @@ namespace DevoidEngine.Engine.Core
 
         public static Resource? Load(string file)
         {
-            for (int i = 0; i < ResourcePool.Count; i++) 
+            for (int i = 0; i < ResourcePool.Count; i++)
             {
                 if (ResourcePool[i].Name == file)
                 {
-                    Console.Write(ResourcePool[i].Type);
                     return ResourcePool[i];
                 }
-            
+
             }
 
             return null;
         }
 
-        static string GetKnownType(string ext)
+        public static bool TryLoad(string value, [NotNullWhen(true)] out Resource? result)
+        {
+            for (int i = 0; i < ResourcePool.Count; i++)
+            {
+                if (ResourcePool[i].Name == value)
+                {
+                    result = ResourcePool[i];
+                    return true;
+                }
+
+            }
+            result = null;
+            return false;
+        }
+
+        public static string GetKnownType(string ext)
         {
             string type;
 
@@ -102,6 +159,7 @@ namespace DevoidEngine.Engine.Core
             return type;
         }
 
+        
 
     }
 }

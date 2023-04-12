@@ -21,7 +21,7 @@ namespace Elemental.Editor.Panels
             FileTypes.AddGenericFileTypes();
         }
 
-        string CurrentDir = "";
+        
 
         float padding = 16.0f;
         float thumbnailSize = 85.0f;
@@ -32,12 +32,12 @@ namespace Elemental.Editor.Panels
 
         public override void OnInit()
         {
-            CurrentDir = Editor.PROJECT_ASSET_DIR;
+            Editor.CurrentDir = Editor.PROJECT_ASSET_DIR;
         }
 
         public override void OnUpdate(float deltaTime)
         {
-            if (CurrentDir.Length < Editor.PROJECT_ASSET_DIR.Length) { CurrentDir = Editor.PROJECT_ASSET_DIR; }
+            if (Editor.CurrentDir.Length < Editor.PROJECT_ASSET_DIR.Length) { Editor.CurrentDir = Editor.PROJECT_ASSET_DIR; }
         }
 
         public override void OnGUIRender()
@@ -70,7 +70,7 @@ namespace Elemental.Editor.Panels
 
                 if (ImGui.ImageButton(FolderTexture, new System.Numerics.Vector2(thumbnailSize, thumbnailSize)))
                 {
-                    CurrentDir = i;
+                    Editor.CurrentDir = i;
                 }
 
                 ImGui.TextWrapped(fileName);
@@ -81,44 +81,26 @@ namespace Elemental.Editor.Panels
             #endregion
 
             #region
-            foreach (string i in GetFiles())
+            foreach (Asset i in GetAssets())
             {
-                ImGui.PushID("file-" + i);
-
-                string[] splitName = i.Split("\\");
-                string fileName = splitName[splitName.Length - 1];
-                string[] splitfileExtension = fileName.Split(".");
-                string fileExtension = "";
-                if (splitfileExtension.Length > 1)
+                ImGui.PushID("file-" + i.name);
+                if (ImGui.ImageButton(FileTypes.GetFileTypeIcon(i.ext.Substring(1)), new System.Numerics.Vector2(thumbnailSize, thumbnailSize)))
                 {
-                    fileExtension = splitfileExtension[1];
-                }
-
-                if (ImGui.ImageButton(FileTypes.GetFileTypeIcon(fileExtension), new System.Numerics.Vector2(thumbnailSize, thumbnailSize)))
-                {
-                    if (fileExtension == "cs" || fileExtension == "txt")
-                    {
-                        //OpenTextFile(Path.Join(FileSystem.GetBasePath(), CurrentDir, fileName));
-                    }
-                    else
-                    {
-                        FileSystem.OpenWithDefaultProgram(i);
-                    }
 
                 }
 
 
                 if (ImGui.BeginDragDropSource())
                 {
-                    Editor.DragDropService.AddDragFile(Path.GetFullPath(Path.Join(FileSystem.GetBasePath(), CurrentDir, fileName)));
+                    Editor.DragDropService.AddDragFile(i.path);
                     ImGui.SetDragDropPayload("file", IntPtr.Zero, 0);
-                    ImGui.Text(fileName);
+                    ImGui.Text(i.name);
                     ImGui.EndDragDropSource();
                 }
 
 
 
-                ImGui.TextWrapped(fileName);
+                ImGui.TextWrapped(i.name);
 
                 ImGui.NextColumn();
 
@@ -136,13 +118,16 @@ namespace Elemental.Editor.Panels
 
             ImGui.PushStyleVar(ImGuiStyleVar.ButtonTextAlign, new System.Numerics.Vector2(0, 0.5f));
 
-            string backPath = Path.GetDirectoryName(CurrentDir);
+            string backPath = Path.GetDirectoryName(Editor.CurrentDir);
 
-            if (CurrentDir.Length > Editor.PROJECT_ASSET_DIR.Length)
+            ImGui.TextDisabled($"{FontAwesome.ForkAwesome.Folder} Assets");
+            //ImGui.TextWrapped($"{FontAwesome.ForkAwesome.Folder} Assets");
+
+            if (Editor.CurrentDir.Length > Editor.PROJECT_ASSET_DIR.Length)
             {
                 if (DevoidGUI.Button($"{FontAwesome.ForkAwesome.FolderOpen} Go Back", new OpenTK.Mathematics.Vector2(ImGui.GetContentRegionMax().X, 22)))
                 {
-                    CurrentDir = backPath;
+                    Editor.CurrentDir = backPath;
                 }
             }
 
@@ -152,7 +137,7 @@ namespace Elemental.Editor.Panels
                 string fileName = splitName[splitName.Length - 1];
                 if (DevoidGUI.Button($"{FontAwesome.ForkAwesome.Folder} {fileName}", new OpenTK.Mathematics.Vector2(ImGui.GetContentRegionMax().X, 22)))
                 {
-                    CurrentDir = i;
+                    Editor.CurrentDir = i;
                 }
             }
 
@@ -165,23 +150,14 @@ namespace Elemental.Editor.Panels
         public string[] GetFolders()
         {
 
-            return Directory.GetDirectories(CurrentDir);
+            return Directory.GetDirectories(Editor.CurrentDir);
         }
 
-        public string[] GetFiles()
+        public Asset[] GetAssets()
         {
-            Console.WriteLine(CurrentDir);
-            Asset[] assets = Editor.AssetManager.GetAssets(CurrentDir);
-            string[] assetPaths = new string[assets.Length];
+            Asset[] assets = Editor.AssetManager.GetAssets(Editor.CurrentDir);
 
-            for (int i = 0; i < assets.Length; i++) 
-            {
-
-                assetPaths[i] = assets[i].path + "\\" + assets[i].name;
-
-            }
-
-            return assetPaths;
+            return assets;
         }
 
 

@@ -6,7 +6,7 @@ using DevoidEngine.Engine.Core;
 
 namespace DevoidEngine.Engine.Utilities
 {
-    public class Mesh : IDisposable
+    public class Mesh : IDisposable, IResource
     {
 
         public static int TotalMeshCount = 0;
@@ -24,6 +24,7 @@ namespace DevoidEngine.Engine.Utilities
         public int VertexCount;
         public string path;
         public string name;
+        public string fileID;
         public bool Renderable = true;
         
 

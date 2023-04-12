@@ -149,14 +149,14 @@ namespace Elemental.Editor.Panels
             if (DevoidGUI.DrawButtonField("Serialize Scene", "Serialize"))
             {
 
-                using (FileStream fs = File.Create(Editor.Application.GetWorkingDirectory() + "/DevoidScene.scene"))
+                using (FileStream fs = File.Create(Editor.CurrentDir + "/DevoidScene.scene"))
                 {
                     string dataasstring = Serializer.Serialize(Editor.EditorScene).ToJsonString(new System.Text.Json.JsonSerializerOptions() { WriteIndented = true }); //your data
                     byte[] info = new UTF8Encoding(true).GetBytes(dataasstring);
                     fs.Write(info, 0, info.Length);
                 }
 
-                using (StreamReader reader = new StreamReader(Editor.Application.GetWorkingDirectory() + "/DevoidScene.scene", Encoding.UTF8))
+                using (StreamReader reader = new StreamReader(Editor.CurrentDir + "/DevoidScene.scene", Encoding.UTF8))
                 {
                     Editor.ChangeScenes(Deserializer.Deserialize(reader.ReadToEnd()));
                 }
@@ -510,19 +510,19 @@ namespace Elemental.Editor.Panels
             switch (item.fileextension)
             {
                 case ".fbx":
-                    HandleDropMeshFile(item.path);
+                    HandleDropMeshFile(item.fileName);
                     break;
                 case ".glb":
-                    HandleDropMeshFile(item.path);
+                    HandleDropMeshFile(item.fileName);
                     break;
                 case ".obj":
-                    HandleDropMeshFile(item.path);
+                    HandleDropMeshFile(item.fileName);
                     break;
                 case ".gltf":
-                    HandleDropMeshFile(item.path);
+                    HandleDropMeshFile(item.fileName);
                     break;
                 case ".dmesh":
-                    HandleDropMeshFile(item.path);
+                    HandleDropMeshFile(item.fileName);
                     break;
                 case ".devoidscene":
                     HandleDropSceneFile(item.path);
@@ -530,17 +530,29 @@ namespace Elemental.Editor.Panels
                 case ".scene":
                     HandleDropSceneFile(item.path);
                     break;
+                case ".png":
+                    HandleDropTextureFile(item.fileName);
+                    break;
             }
         }
 
-        void HandleDropMeshFile(string path)
+        void HandleDropMeshFile(string filename)
         {
-            Mesh[] meshes = ModelImporter.AddMaterialsToScene(Editor.EditorScene, ModelImporter.LoadModel(path));
+            Mesh[] meshes = (Mesh[])Resources.Load(filename);
             if (meshes == null || meshes.Length == 0) { return; }
             GameObject DropObject = Editor.EditorScene.NewGameObject(meshes[0].name);
             MeshHolder MeshHolder = DropObject.AddComponent<MeshHolder>();
             MeshHolder.AddMeshes(meshes);
             DropObject.AddComponent<MeshRenderer>();
+        }
+
+        void HandleDropTextureFile(string filename)
+        {
+            Texture texture = (Texture)Resources.Load(filename);
+            GameObject DropObject = Editor.EditorScene.NewGameObject(filename);
+            SpriteRenderer SpriteRenderer = DropObject.AddComponent<SpriteRenderer>();
+            SpriteRenderer.Texture = texture;
+            
         }
 
         void HandleDropSceneFile(string path)

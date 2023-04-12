@@ -47,6 +47,7 @@ namespace Elemental
             layer.PROJECT_DIRECTORY = Path;
             layer.PROJECT_NAME = projectUtils.GetProjectName();
             layer.PROJECT_ASSET_DIR = Path + "\\Assets";
+            layer.PROJECT_BUILD_DIR = Path + "\\Builds";
             
             Application.AddLayer(layer);
             Application.Run();

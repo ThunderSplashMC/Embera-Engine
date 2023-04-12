@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Collections;
 using System.Linq;
 using System.Runtime.Serialization.Formatters;
+using DevoidEngine.Engine.Utilities;
 
 namespace DevoidEngine.Engine.Serializing
 {
@@ -29,7 +30,9 @@ namespace DevoidEngine.Engine.Serializing
                 JsonObject gObject = gObjects[i].AsObject();
                 GameObject gameObject = scene.NewGameObject((string)gObject["Name"]);
                 gameObject.ID = (int)gObject["ID"];
-                gameObject.transform.position = new Vector3((float)gObject["Position"]["X"], (float)gObject["Position"]["Y"], (float)gObject["Position"]["Z"]);
+                gameObject.transform.position = DeserializeVector3(gObject["Position"]);
+                gameObject.transform.rotation = DeserializeVector3(gObject["Rotation"]);
+                gameObject.transform.scale = DeserializeVector3(gObject["Scale"]);
 
                 JsonArray cObjects = gObject["Components"].AsArray();
 
@@ -37,7 +40,7 @@ namespace DevoidEngine.Engine.Serializing
                 {
                     JsonObject cObject = cObjects[x].AsObject();
 
-                    Type type = Type.GetType("DevoidEngine.Engine.Components." + (string)cObject["Type"]); ;
+                    Type type = Type.GetType("DevoidEngine.Engine.Components." + (string)cObject["Type"]);
 
                     if (type == null) continue;
 
@@ -63,6 +66,10 @@ namespace DevoidEngine.Engine.Serializing
                         {
                             field.SetValue(component, fieldValue.GetValue<string>());
                         }
+                        else if (field.FieldType == typeof(Vector2))
+                        {
+                            field.SetValue(component, DeserializeVector2(fieldValue));
+                        }
                         else if (field.FieldType == typeof(Vector3))
                         {
                             field.SetValue(component, DeserializeVector3(fieldValue));
@@ -75,13 +82,32 @@ namespace DevoidEngine.Engine.Serializing
                         {
                             field.SetValue(component, DeserializeColor4(fieldValue));
                         }
+                        else if (field.FieldType == typeof(List<Mesh>))
+                        {
+                            JsonArray jArray = fieldValue.AsArray();
+
+                            List<Mesh> myList = new List<Mesh>();
+
+                            for (int z = 0; z < jArray.Count; z++)
+                            {
+                                string fileName = (string)jArray[z];
+                                Console.WriteLine(fileName);
+
+                                Mesh[] meshes = (Mesh[])Resources.Load(fileName);
+                                if (meshes.Length > 0)
+                                {
+                                    myList.AddRange(meshes);
+                                }
+                            }
+                            field.SetValue(component, myList);
+                        }
                         else if (field.FieldType.IsEnum)
                         {
 
                         }
                         else if (field.FieldType == typeof(Texture))
                         {
-
+                            field.SetValue(component, (Texture)Resources.Load((string)fieldValue));
                         }
                         else if (field.FieldType.IsGenericType && (field.FieldType.GetGenericTypeDefinition() == typeof(List<>)))
                         {
@@ -117,6 +143,10 @@ namespace DevoidEngine.Engine.Serializing
         static Vector3 DeserializeVector3(JsonNode value)
         {
             return new Vector3((float)value["X"], (float)value["Y"], (float)value["Z"]);
+        }
+        static Vector2 DeserializeVector2(JsonNode value)
+        {
+            return new Vector2((float)value["X"], (float)value["Y"]);
         }
 
         static Color4 DeserializeColor4(JsonNode value)
