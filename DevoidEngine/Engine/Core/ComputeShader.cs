@@ -12,7 +12,7 @@ using DevoidEngine.Engine.Utilities;
 
 namespace DevoidEngine.Engine.Core
 {
-    class ComputeShader : IDisposable
+    public class ComputeShader : IDisposable
     {
         
 

@@ -65,13 +65,15 @@ namespace DevoidEngine.Engine.Core
             Input.KeyboardState = Window.KeyboardState;
             Input.MouseState = Window.MouseState;
 
-            
+            InputSystem.MouseState = Window.MouseState;
+
             Window.Load += OnLoad;
             Window.Unload += OnUnload;
             Window.Resize += OnResize;
             Window.UpdateFrame += OnUpdateFrame;
             Window.RenderFrame += OnRenderFrame;
             Window.KeyDown += OnKeyDown;
+            Window.KeyUp += OnKeyUp;
 
             // ==== BINDING EVENTS END ====
         }
@@ -132,7 +134,8 @@ namespace DevoidEngine.Engine.Core
         public void OnUpdateFrame(FrameEventArgs args)
         {
             float dt = (float)args.Time;
-            LayerManager.UpdateLayers(dt);
+            InputSystem.SetMousePosition(new Vector2(Window.Cursor.X, Window.Cursor.Y));
+            InputSystem.Update();
             if (ApplicationSpecification.enableImGui)
             {
                 ImguiLayer.Begin(dt);
@@ -145,6 +148,8 @@ namespace DevoidEngine.Engine.Core
                 ImguiLayer.GUIRender();
                 ImguiLayer.End();
             }
+            LayerManager.UpdateLayers(dt);
+            InputSystem.Clear();
         }
 
         public void OnRenderFrame(FrameEventArgs args)
@@ -165,6 +170,12 @@ namespace DevoidEngine.Engine.Core
         public void OnKeyDown(KeyboardKeyEventArgs args)
         {
             LayerManager.KeyDownLayers(args);
+            InputSystem.SetKeyDown((int)args.Key);
+        }
+
+        public void OnKeyUp(KeyboardKeyEventArgs args)
+        {
+            InputSystem.SetKeyUp((int)args.Key);
         }
     }
 }

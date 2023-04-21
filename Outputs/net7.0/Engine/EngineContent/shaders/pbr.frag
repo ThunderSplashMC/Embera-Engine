@@ -203,35 +203,11 @@ vec3 sampleOffsetDirections[20] = vec3[]
 
 float ShadowCalculation(vec3 fragPos,vec3 lightPos, int index)
 {
-    
-
-    float samples = 20;
+    float samples = 25;
     float offset  = 0.1;
     float shadow = 0;
-    float diskRadius = 0.1;
-    float bias = 0.05; 
-
-//    for(float x = -offset; x < offset; x += offset / (samples * 0.5))
-//    {
-//        for(float y = -offset; y < offset; y += offset / (samples * 0.5))
-//        {
-//            for(float z = -offset; z < offset; z += offset / (samples * 0.5))
-//            {
-//                vec3 fragToLight = fragPos - lightPos;
-//                // use the light to fragment vector to sample from the depth map    
-//                float closestDepth = texture(W_SHADOW_BUFFERS[0], fragToLight).r;
-//                // it is currently in linear range between [0,1]. Re-transform back to original value
-//                closestDepth *= 300;
-//                // now get current linear depth as the length between the fragment and light position
-//                float currentDepth = length(fragToLight);
-//                // now test for shadows
-//                
-//                shadow = currentDepth -  bias > closestDepth ? 1.0 : 0.0;
-//                if(currentDepth - bias > closestDepth)
-//                    shadow += 1.0;
-//            }
-//        }
-//    }
+    float diskRadius = 0.05;
+    float bias = 0.05;
 
     for(int i = 0; i < samples; i++)
     {
@@ -275,13 +251,10 @@ void main() {
     vec3 R = reflect(I, normalize(Normal));
 
     vec3 ambient = vec3(0.03) * GetAlbedo() * material.ao;
-    // + ((1 - GetRoughness()) * IBL(material, V, N, vec3(material.metallic)));
 
-    vec3 color = ambient + Lo;// + GetEmission();
+    vec3 color = ambient + Lo;
     
     color = color / (color + vec3(1.0));
-    //color = color;
-
 
     FragColor = vec4(color, GetAlbedoAlpha());
     EmissionColor = vec4(GetEmission() * material.emissionStr, 1.0);

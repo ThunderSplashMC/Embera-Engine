@@ -6,10 +6,16 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <BaseOutputPath>D:\Programming\Devoid\Outputs</BaseOutputPath>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DevoidEngine\DevoidEngine.csproj" />
     <ProjectReference Include="..\Elemental\Elemental.csproj" />
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy /e /v /y /r /i &quot;../DevoidEngine/Engine/EngineContent&quot; &quot;$(OutDir)\Engine\EngineContent&quot;&#xD;&#xA;echo RAN XCOPY" />
+  </Target>
 
 </Project>

@@ -1,4 +1,6 @@
-﻿using OpenTK.Mathematics;
+﻿using DevoidEngine.Engine.Core;
+using OpenTK.Mathematics;
+using System;
 
 namespace DevoidEngine.Engine.Components
 {
@@ -38,7 +40,7 @@ namespace DevoidEngine.Engine.Components
 
         public override void OnUpdate(float deltaTime)
         {
-            transformMatrix = Matrix4.CreateTranslation(position);
+            //transformMatrix = Matrix4.CreateTranslation(position);
             base.OnUpdate(deltaTime);
         }
     }

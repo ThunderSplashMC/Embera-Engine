@@ -125,6 +125,7 @@ namespace Elemental.Editor.Panels
                 {
                     Editor.EditorScene.NewGameObject();
                 }
+                PresetObjectMenu();
                 ImGui.EndMenu();
             }
 
@@ -200,6 +201,16 @@ namespace Elemental.Editor.Panels
                         ImGui.TreePop();
 
                     }
+                    else
+                    {
+                        if (ImGui.BeginPopupContextItem())
+                        {
+                            if (ImGui.MenuItem("Remove Component"))
+                            {
+                                CurrentSelectedGameObject.RemoveComponent(component);
+                            }
+                        }
+                    }
                     ImGui.PopID();
                 }
 
@@ -241,9 +252,35 @@ namespace Elemental.Editor.Panels
                     Editor.EditorScene.RemoveGameObject(CurrentSelectedGameObject);
                     CurrentSelectedGameObject = null;
                 }
+                ImGui.EndPopup();
             }
             ImGui.PopStyleColor();
+
+            ImGui.Dummy(new System.Numerics.Vector2(ImGui.GetContentRegionMax().X, ImGui.GetContentRegionMax().Y - 32));
+
+            if (ImGui.BeginDragDropTarget())
+            {
+                if (ImGui.IsMouseReleased(ImGuiMouseButton.Left))
+                {
+                    Type[] types = Editor.PROJECT_ASSEMBLY.GetTypes();
+                    DragFileItem item = Editor.DragDropService.GetDragFile();
+                    for (int i = 0; i < types.Length; i++)
+                    {
+                        if (types[i].Name == item.fileName.Substring(0, item.fileName.Length - 3))
+                        {
+                            if (types[i].BaseType == typeof(DevoidScript))
+                            {
+                                CurrentSelectedGameObject.AddComponent((Component)Activator.CreateInstance(types[i]));
+                            }
+                            
+                        }
+                    }
+                }
+                ImGui.EndDragDropTarget();
+            }
+
             ImGui.End();
+
         }
 
 
@@ -255,6 +292,13 @@ namespace Elemental.Editor.Panels
             foreach (Type type in Assembly.GetAssembly(typeof(Component)).GetTypes().Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(Component))))
             {
                 objects.Add((Component)Activator.CreateInstance(type));
+            }
+            if (Editor.PROJECT_ASSEMBLY != null)
+            {
+                foreach (Type type in Editor.PROJECT_ASSEMBLY.GetTypes().Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(DevoidScript))))
+                {
+                    objects.Add((Component)Activator.CreateInstance(type));
+                }
             }
             return objects;
         }
@@ -352,6 +396,24 @@ namespace Elemental.Editor.Panels
                 }
             }
             return true;
+        }
+
+        void PresetObjectMenu()
+        {
+            if (ImGui.BeginMenu("Presets"))
+            {
+                if (ImGui.MenuItem("Panel"))
+                {
+                    GameObject gObject = Editor.EditorScene.NewGameObject("Panel");
+                    UITransform transform = gObject.AddComponent<UITransform>();
+                    gObject.AddComponent<UIImage>();
+
+                    transform.Position = new Vector2(RenderGraph.ViewportWidth/2, RenderGraph.ViewportHeight/2);
+                    transform.Size = new Vector2(256);
+                    
+                }
+                ImGui.EndMenu();
+            }
         }
 
     }

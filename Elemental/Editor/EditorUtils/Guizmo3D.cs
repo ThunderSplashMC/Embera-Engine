@@ -71,7 +71,7 @@ namespace Elemental.Editor.EditorUtils
             GuizmoView = camera.Camera;
             GuizmoBuffer.Bind();
             GL.Disable(EnableCap.CullFace);
-            GL.Disable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.DepthTest);
         }
 
         public static void DrawGrid()
@@ -80,6 +80,7 @@ namespace Elemental.Editor.EditorUtils
             GuizmoShader.SetMatrix4("W_MODEL_MATRIX", Matrix4.CreateRotationX(MathHelper.DegreesToRadians(90)) * Matrix4.CreateScale(1000));
             GridShader.SetMatrix4("W_PROJECTION_MATRIX", GuizmoView.GetProjectionMatrix());
             GridShader.SetMatrix4("W_VIEW_MATRIX", GuizmoView.GetViewMatrix());
+            GridShader.SetBool("depthBehind", true);
 
             GuizmoVAO.Render();
         }
@@ -104,6 +105,7 @@ namespace Elemental.Editor.EditorUtils
             icon.BindTexture();
 
             GuizmoVAO.Render();
+
         }
 
         public static void DrawSphere(Vector3 position, float radius)

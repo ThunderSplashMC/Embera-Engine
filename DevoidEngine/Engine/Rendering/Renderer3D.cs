@@ -65,10 +65,9 @@ namespace DevoidEngine.Engine.Rendering
 
             RenderGraph.HDRFrameBuffer = new FrameBuffer(frameBufferSpecification);
             RenderGraph.CompositeBuffer = new FrameBuffer(frameBufferSpecification);
-            RenderGraph.GeometryBuffer = new FrameBuffer(frameBufferSpecification);
             RenderGraph.PreviousFrameBuffer = new FrameBuffer(frameBufferSpecification);
 
-            FrameBufferSpecification lightBufferSpecification = new FrameBufferSpecification()
+            FrameBufferSpecification miscBufferSpecification = new FrameBufferSpecification()
             {
                 width = width,
                 height = height,
@@ -88,7 +87,8 @@ namespace DevoidEngine.Engine.Rendering
                 }
             };
 
-            RenderGraph.LightBuffer = new FrameBuffer(lightBufferSpecification);
+            RenderGraph.LightBuffer = new FrameBuffer(miscBufferSpecification);
+            RenderGraph.GeometryBuffer = new FrameBuffer(miscBufferSpecification);
         }
 
         public static void AddRenderPass(RenderPass renderpass)
@@ -103,6 +103,7 @@ namespace DevoidEngine.Engine.Rendering
 
         public static void Submit(Vector3 position, Vector3 rotation, Vector3 scale, Mesh mesh, object associateObject = null)
         {
+            if (mesh == null) { Console.WriteLine("MESH WAS NULL"); }
             DrawList.Add(new DrawItem()
             {
                 position = position,
@@ -212,6 +213,11 @@ namespace DevoidEngine.Engine.Rendering
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Clear(ClearBufferMask.DepthBufferBit);
+
+            for (int i = 0; i < RenderPasses.Count; i++)
+            {
+                RenderPasses[i].LightPassEarly();
+            }
 
             GL.PolygonMode(MaterialFace.FrontAndBack, RenderGraph.RenderMode == RenderMode.Normal ? PolygonMode.Fill : PolygonMode.Line);
 
@@ -351,8 +357,10 @@ namespace DevoidEngine.Engine.Rendering
             {
                 UploadModelData(RendererUtils.GeometryShader, DrawList[i].position, DrawList[i].rotation, DrawList[i].scale);
 
+                DrawList[i].mesh.Material.SetPropertyFloat(RendererUtils.GeometryShader, "material.roughness");
                 DrawList[i].mesh.Draw();
-            
+
+                RenderGraph.Renderer_3D_DrawCalls += 1;
             }
 
             RenderGraph.GeometryBuffer.UnBind();

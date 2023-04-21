@@ -15,7 +15,8 @@ void main()
 //	color = vec4(0.5, 0.5, 0.5, min(alpha.x, alpha.y) * (1 - FragPos));
     if(fract(v_TexCoord.x / 0.001f) < 0.01f || fract(v_TexCoord.y / 0.001f) < 0.01f) {
         float d = distance((v_TexCoord) * 0.5, FragPos.xz) * 0.03;
-        color = vec4(1.0, 1.0, 1.0, 1 - d);
+        if (d > 2) d = 2;
+        color = vec4(vec3(0.1), 2-d);
     } else {
             color = vec4(0);
     }

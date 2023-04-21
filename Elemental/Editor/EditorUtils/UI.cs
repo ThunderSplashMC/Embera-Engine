@@ -280,6 +280,8 @@ namespace Elemental.Editor.EditorUtils
         {
             Texture val = (Texture)field.GetValue(component);
             PropertyTexture((IntPtr)(val == null ? 0 : val.GetTexture()));
+            Texture newVal = HandleDropTexture();
+            val = newVal == null ? val : newVal;
             field.SetValue(component, val);
         }
 
@@ -372,6 +374,28 @@ namespace Elemental.Editor.EditorUtils
 
             return ImGui.ColorConvertFloat4ToU32(new System.Numerics.Vector4(color.X, color.Y, color.Z, color.W));
 
+        }
+
+        public static DragDropService DragDropService;
+
+        public static void SetDragDropReference(DragDropService dragDropService)
+        {
+            DragDropService = dragDropService;
+        }
+
+        public static Texture HandleDropTexture()
+        {
+            if (ImGui.BeginDragDropTarget())
+            {
+                if (ImGui.IsMouseReleased(ImGuiMouseButton.Left))
+                {
+                    DragFileItem item = DragDropService.GetDragFile();
+                    Texture texture = (Texture)Resources.Load(item.fileName);
+                    return texture;
+                }
+                ImGui.EndDragDropTarget();
+            }
+            return null;
         }
 
     }

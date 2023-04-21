@@ -16,18 +16,21 @@ namespace DevoidEngine.Engine.Components
     }
 
     [RunInEditMode]
-    class Collider3D : Component
+    public class Collider3D : Component
     {
         public override string Type { get; } = nameof(Transform);
 
         public ColliderShapes Shape = ColliderShapes.Box;
+        public float SphereRadius = 1f;
+
 
         ColliderShapes prevShape = ColliderShapes.Box;
         TypedIndex ColliderID;
+        IShape ColliderShape;
 
         public override void OnStart()
         {
-
+            SetupBoxCollider();
         }
 
         public override void OnUpdate(float deltaTime)
@@ -45,7 +48,6 @@ namespace DevoidEngine.Engine.Components
                     SetupSphereCollider();
                 }
             }
-
         }
 
         public bool HasShapeChanged()
@@ -68,19 +70,24 @@ namespace DevoidEngine.Engine.Components
             return ColliderID;
         }
 
+        public IShape GetColliderShape()
+        {
+            return ColliderShape;
+        }
+
         public void SetupBoxCollider()
         {
             Box shape = new Box(gameObject.transform.scale.X, gameObject.transform.scale.Y, gameObject.transform.scale.Z);
 
-            Console.WriteLine("Box Collider Set");
-
+            ColliderShape = shape;
             ColliderID = gameObject.scene.PhysicsSystem.AddCollider(shape);
         }
 
         public void SetupSphereCollider()
         {
-            Sphere shape = new Sphere(1f);
+            Sphere shape = new Sphere(SphereRadius);
 
+            ColliderShape = shape;
             ColliderID = gameObject.scene.PhysicsSystem.AddCollider(shape);
         }
 

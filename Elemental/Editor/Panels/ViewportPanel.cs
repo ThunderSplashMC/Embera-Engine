@@ -24,6 +24,8 @@ namespace Elemental.Editor.Panels
         private EditorRendererPass EditorRendererPass;
         private EditorOutlinePass EditorOutlinePass;
         private VoxelTracer VoxelTracer;
+        private ColliderOutlinePass ColliderOutlinePass;
+        private GizmoPass GizmoPass;
 
         private EditorCamera editorCamera;
         public int ViewportTexture;
@@ -37,7 +39,7 @@ namespace Elemental.Editor.Panels
 
         public override void OnInit()
         {
-            ViewportTexture = RenderGraph.CompositeBuffer.GetColorAttachment(0);
+            ViewportTexture = /*((ScreenspaceReflections)RenderGraph.SSRPass).framebuffer.GetColorAttachment(0);*/RenderGraph.CompositeBuffer.GetColorAttachment(0);
             editorCamera = new EditorCamera(MathHelper.DegreesToRadians(45.0f), (int)Editor.Application.GetWindowSize().X, (int)Editor.Application.GetWindowSize().Y, 1000f, 0.1f);
             Renderer.SetCamera(editorCamera.Camera);
 
@@ -55,10 +57,16 @@ namespace Elemental.Editor.Panels
             EditorRendererPass = new EditorRendererPass();
             EditorOutlinePass = new EditorOutlinePass();
             VoxelTracer = new VoxelTracer();
+            ColliderOutlinePass = new ColliderOutlinePass();
+            GizmoPass = new GizmoPass();
+
+            ColliderOutlinePass.Editor = Editor;
 
             Renderer3D.AddRenderPass(EditorRendererPass);
             Renderer3D.AddRenderPass(EditorOutlinePass);
             Renderer3D.AddRenderPass(VoxelTracer);
+            Renderer3D.AddRenderPass(ColliderOutlinePass);
+            Renderer3D.AddRenderPass(GizmoPass);
         }
 
         public void SetContext(EditorLayer editor)
@@ -68,19 +76,19 @@ namespace Elemental.Editor.Panels
 
         public override void OnGUIRender()
         {
-
             if (Editor.EditorScene.GetSceneState() != Scene.SceneState.Play)
             {
                 DrawGuizmos();
             }
 
 
-            // Play Puase Menu
+            // Play Pause Menu
 
             //ImGui.PushStyleColor(ImGuiCol.WindowBg, new System.Numerics.Vector4(0, 0, 0, 1));
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, System.Numerics.Vector2.Zero);
             ImGui.Begin($"{MaterialIconFont.MaterialDesign.Landscape} Game View", ImGuiWindowFlags.NoBackground);
             DevoidGUI.Image((IntPtr)ViewportTexture, new Vector2(ImGui.GetContentRegionMax().X, ImGui.GetContentRegionMax().Y - 32));
+            SetViewportInputLocalCoord();
             HandleObjectSelect();
             HandleDragDrop();
 
@@ -91,7 +99,7 @@ namespace Elemental.Editor.Panels
 
             if (prev_h != DevoidGUI.GetWindowHeight() || prev_w != DevoidGUI.GetWindowWidth())
             {
-                Renderer2D.Resize((int)ImGui.GetWindowWidth(), (int)ImGui.GetWindowHeight());
+                Renderer2D.ResizeOrtho((int)ImGui.GetWindowWidth(), (int)ImGui.GetWindowHeight());
                 editorCamera.SetViewportSize((int)ImGui.GetWindowWidth(), (int)ImGui.GetWindowHeight());
                 Editor.EditorScene.OnResize((int)ImGui.GetWindowWidth(), (int)ImGui.GetWindowHeight());
                 
@@ -162,6 +170,12 @@ namespace Elemental.Editor.Panels
                 }
             }
 
+            if (DevoidGUI.DrawButtonField("Load Assemblies", "Load"))
+            {
+                ProjectUtils.BuildVSProjectEditor(Editor.PROJECT_DIRECTORY);
+                Editor.PROJECT_ASSEMBLY = ProjectUtils.LoadVSProjectEditor(Editor.PROJECT_DIRECTORY);
+            }
+
             ImGui.End();
 
             ImGui.Begin("Engine/Editor Settings");
@@ -215,8 +229,6 @@ namespace Elemental.Editor.Panels
                     DevoidGUI.DrawFloatField("Exposure", ref RenderGraph.BloomRenderer.bloomExposure);
                     DevoidGUI.DrawFloatField("FilterRadius", ref RenderGraph.BloomRenderer.filterRadius);
                     ImGui.TreePop();
-
-                    //Renderer3D.SetBloomSettings(bloomSettings);
                 }
                 ImGui.TreePop();
             }
@@ -310,6 +322,15 @@ namespace Elemental.Editor.Panels
 
                 UI.EndProperty();
 
+                UI.BeginProperty("Recompile");
+
+                if (UI.DrawButton("Compile Vis."))
+                {
+                    VoxelTracer.vizualize_voxel_cs.ReCompile();
+                }
+
+                UI.EndProperty();
+
                 UI.EndPropertyGrid();
             }
 
@@ -337,40 +358,32 @@ namespace Elemental.Editor.Panels
             }
 
             ImGui.End();
-
-
-            //NodeManager.BeginNodeEditor("Node Editor");
-
-            //NodeManager.BeginNode("ash" + 1, "GameObject ", new Vector2(50, 50), new Vector2(300, 300));
-
-            //NodeManager.PropertyText("Position      ", "X: 0 Y: 0 Z: 0", new Vector2(0, 0));
-            //NodeManager.PropertyText("Rotation      ", "X: 0 Y: 0 Z: 0", new Vector2(0, 0));
-            //NodeManager.PropertyText("Components    ", "List<Component>", new Vector2(0, 0));
-            //NodeManager.PropertyText("Current Scene ", "DevoidScene1", new Vector2(0, 0));
-            //NodeManager.PropertyText("Object Index  ", "0", new Vector2(0, 0));
-            //NodeManager.PropertyText("Object Status ", "Hidden", new Vector2(0, 0));
-            //NodeManager.PropertyFloat("SCALE: ", ref val, new Vector2(0, 0));
-
-            //NodeManager.EndNode();
-
-            //NodeManager.BeginNode("ash" + 2, "Value Inspecter ", new Vector2(55, 50), new Vector2(300, 300));
-            //NodeManager.PropertyFloat("Value: ", ref val, new Vector2(0, 0));
-
-            //NodeManager.EndNode();
-
-            //NodeManager.EndNodeEditor();
-
-
-
         }
-        Vector4 rectSize = new Vector4(40, 40, 300, 350);
-        Vector4 clickPoint = Vector4.Zero;
-        bool isDragging = false;
-        float val = 0f;
 
         string GetSceneActionIcon()
         {
             return Editor.EditorScene.GetSceneState() == Scene.SceneState.EditorPlay ? FontAwesome.ForkAwesome.Play : FontAwesome.ForkAwesome.Pause;
+        }
+
+        void SetViewportInputLocalCoord()
+        {
+            float rel_x = ((ImGui.GetContentRegionMax().X - (ImGui.GetMousePos().X - ImGui.GetWindowPos().X)) / ImGui.GetContentRegionMax().X);
+            float rel_y = ((ImGui.GetContentRegionMax().Y - (ImGui.GetMousePos().Y - (ImGui.GetWindowPos().Y))) / (ImGui.GetContentRegionMax().Y - 32));
+
+            float mouseX = (((int)(rel_x * ImGui.GetContentRegionMax().X)));// / Editor.Application.GetWindowSize().X) * RenderGraph.ViewportWidth;
+            float mouseY = (((int)(rel_y * ImGui.GetContentRegionMax().Y)));// / Editor.Application.GetWindowSize().Y) * RenderGraph.ViewportHeight;
+
+            InputSystem.SetMousePosition(new Vector2(mouseX, mouseY));
+            if (ImGui.IsItemHovered())
+            {
+                InputSystem.SetMouseDown(InputSystem.MouseButton.Left, ImGui.IsMouseClicked(ImGuiMouseButton.Left));
+                InputSystem.SetMouseDown(InputSystem.MouseButton.Right, ImGui.IsMouseClicked(ImGuiMouseButton.Right));
+            } else
+            {
+                InputSystem.SetMouseDown(InputSystem.MouseButton.Left, false);
+                InputSystem.SetMouseDown(InputSystem.MouseButton.Right, false);
+
+            }
         }
 
         public void DrawViewportTools()
@@ -406,7 +419,7 @@ namespace Elemental.Editor.Panels
             ImGui.SetCursorPosX((ImGui.GetWindowContentRegionMax().X * 0.5f) - (size * 0.5f));
             ImGui.SetCursorPosY(size + 22);
             ImGui.PushStyleColor(ImGuiCol.Button, new System.Numerics.Vector4(.21f, .21f, .21f, 0.7f));
-            if (DevoidGUI.Button(GetSceneActionIcon(), new Vector2(size + 10, size)))//ImGui.ImageButton(GetSceneActionIcon(), new System.Numerics.Vector2(size, size)))
+            if (DevoidGUI.Button(GetSceneActionIcon(), new Vector2(size + 10, size)))
             {
                 if (Editor.EditorScene.GetSceneState() == Scene.SceneState.Play)
                 {
@@ -431,8 +444,6 @@ namespace Elemental.Editor.Panels
         void DrawGuizmos()
         {
             Guizmo3D.Begin(editorCamera);
-
-            //Guizmo3D.DrawGrid();
 
             GameObject[] gameObjects = Editor.EditorScene.GetSceneRegistry().GetAllGameObjects();
             for (int i = 0; i < gameObjects.Length; i++)
@@ -570,6 +581,7 @@ namespace Elemental.Editor.Panels
 
         public override void OnUpdate(float dt)
         {
+            DrawGuizmos();
             this.deltaTime = dt;
             //Console.WriteLine("FPS: " + 1 / dt);
             editorCamera.Update(dt);
@@ -578,9 +590,9 @@ namespace Elemental.Editor.Panels
 
         Vector2 ROT = Vector2.Zero;
 
-        public override void OnRender() {
-            //DrawGuizmos();
-            //viewportGrid.Render(editorCamera.Camera);
+        public override void OnRender() 
+        {
+
         }
 
         public EditorCamera GetEditorCamera()

@@ -6,21 +6,97 @@ using DevoidEngine.Engine.Core;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text;
+using System.Numerics;
+using System.Runtime.InteropServices;
+using FontAwesome;
 
 namespace Elemental.Editor.Panels
 {
     class BuildPanel : Panel
     {
 
+        Resource[] SceneList;
+
         public override void OnInit()
         {
-
+            SceneList = Resources.GetResourcesOfType("Scene");
         }
+
+        bool isDragging = false;
+        int dragItem = -1;
 
         public override void OnGUIRender()
         {
+            //ImGui.ShowDemoWindow();
             if (ImGui.Begin("Build"))
             {
+                ImGui.Text("Scene Build Hierarchy");
+
+                ImGui.PushStyleColor(ImGuiCol.FrameBg, new System.Numerics.Vector4(0.1f, 0.1f, 0.1f, 0.7f));
+
+                ImGui.BeginListBox("##Scene Hier", new System.Numerics.Vector2(-1, 400));
+             
+
+                ImGui.PushStyleColor(ImGuiCol.FrameBg, new System.Numerics.Vector4(0.2f, 0.2f, 0.2f, 1f));
+
+                for (int i = 0; i < SceneList.Length; i++)
+                {
+                    Vector2 cursorPos = ImGui.GetCursorPos();
+                    ImGui.Button(SceneList[i].Name, new System.Numerics.Vector2(-1, 30));
+
+
+                    if (ImGui.BeginDragDropSource())
+                    {
+                        dragItem = i;
+                        ImGui.SetDragDropPayload("scene-reorder", IntPtr.Zero, 0);
+                        ImGui.Button(SceneList[i].Name, new System.Numerics.Vector2(200, 30));
+                        ImGui.EndDragDropSource();
+                    }
+                    if (ImGui.BeginDragDropTarget())
+                    {
+                        if (ImGui.IsMouseReleased(ImGuiMouseButton.Left))
+                        {
+                            Resource scene = SceneList[i];
+                            SceneList[i] = SceneList[dragItem];
+                            SceneList[dragItem] = scene;
+                            ImGui.AcceptDragDropPayload("scene-reorder");
+                            ImGui.EndDragDropTarget();
+                        }
+                    }
+
+                    if (ImGui.GetWindowWidth() > 200)
+                    {
+                        Vector2 newCursorPos = ImGui.GetCursorPos();
+                        ImGui.SetCursorPos(new Vector2(cursorPos.X + 7, cursorPos.Y + 7));
+                        ImGui.TextDisabled(ForkAwesome.ArrowsV);
+                        ImGui.SetCursorPos(newCursorPos);
+                    }
+                }
+
+                ImGui.PopStyleColor();
+
+                ImGui.EndListBox();
+
+                if (ImGui.BeginDragDropTarget())
+                {
+                    if (ImGui.IsMouseReleased(ImGuiMouseButton.Left))
+                    {
+                        DragFileItem dfi = Editor.DragDropService.GetDragFile();
+                        if (dfi.fileextension == ".scene")
+                        {
+                            Resource? res = Resources.Load(dfi.fileName);
+                            if (res != null)
+                            {
+                                SceneList = SceneList.Concat(new Resource[] { (Resource)res }).ToArray<Resource>();
+                            }
+                        }
+
+                    }
+                    ImGui.EndDragDropTarget();
+                }
+
+                ImGui.PopStyleColor();
+
                 UI.BeginPropertyGrid("##BLD_OPT");
 
                 UI.BeginProperty("Export your Game!");
@@ -38,6 +114,19 @@ namespace Elemental.Editor.Panels
             }
         }
 
+        float timeElapsed = 0f;
+
+        public override void OnUpdate(float deltaTime)
+        {
+            return;
+            if (timeElapsed > 5)
+            {
+                SceneList = Resources.GetResourcesOfType("Scene");
+                timeElapsed = 0;
+            }
+            timeElapsed += deltaTime;
+        }
+
         public void Build()
         {
             JsonObject jObject = AssetManager.CreateResourceTable();
@@ -49,6 +138,27 @@ namespace Elemental.Editor.Panels
             using (FileStream fs = File.Create(Editor.PROJECT_BUILD_DIR + "\\Content\\resourcetable.devoid"))
             {
                 string dataasstring = jObject.ToJsonString(new System.Text.Json.JsonSerializerOptions() { WriteIndented = true }); //your data
+                byte[] info = new UTF8Encoding(true).GetBytes(dataasstring);
+                fs.Write(info, 0, info.Length);
+            }
+
+            using (FileStream fs = File.Create(Editor.PROJECT_BUILD_DIR + "\\Content\\scenetable.devoid"))
+            {
+                JsonObject sceneJson = new JsonObject();
+                JsonArray sceneArray = new JsonArray();
+                for (int i = 0; i < SceneList.Length; i++)
+                {
+                    sceneArray.Add(new JsonObject()
+                    {
+                        { "Order", i },
+                        { "ScenePath", "Content\\" + SceneList[i].Name },
+                        { "SceneName", SceneList[i].Name }
+                    });
+                }
+
+                sceneJson.Add("Scenes", sceneArray);
+
+                string dataasstring = sceneJson.ToJsonString(new System.Text.Json.JsonSerializerOptions() { WriteIndented = true }); //your data
                 byte[] info = new UTF8Encoding(true).GetBytes(dataasstring);
                 fs.Write(info, 0, info.Length);
             }

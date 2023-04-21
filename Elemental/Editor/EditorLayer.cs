@@ -12,6 +12,7 @@ using DevoidEngine.Engine.Serializing.Converters;
 
 using Newtonsoft.Json;
 using OpenTK.Windowing.Common;
+using System.Reflection;
 
 namespace Elemental
 {
@@ -21,6 +22,8 @@ namespace Elemental
         public string PROJECT_NAME;
         public string PROJECT_ASSET_DIR;
         public string PROJECT_BUILD_DIR;
+
+        public Assembly PROJECT_ASSEMBLY;
 
         public string CurrentDir = "";
 
@@ -57,6 +60,8 @@ namespace Elemental
             DragDropService = new DragDropService();
             ConsoleService = new ConsolePanel();
 
+            UI.SetDragDropReference(DragDropService);
+
             // Scene Init
 
             EditorScene.Init();
@@ -88,26 +93,27 @@ namespace Elemental
 
         public void SandBoxSetup()
         {
-            GameObject gObject = EditorScene.NewGameObject("BG");
+            Random rand = new Random();
 
-            MeshHolder mh = gObject.AddComponent<MeshHolder>();
+            for (int i = 0; i < 200; i++)
+            {
+                GameObject gObject = EditorScene.NewGameObject("BG");
 
-            mh.AddMeshes(ModelImporter.AddMaterialsToScene(EditorScene,ModelImporter.LoadModel("D:/Programming/Devoid Items/ExampleAssets/demo_stage.fbx")));
+                gObject.transform.position = new Vector3(rand.NextInt64(0, 100), rand.NextInt64(0, 100), rand.NextInt64(0, 100));
 
-            gObject.AddComponent<MeshRenderer>();
+                MeshHolder mh = gObject.AddComponent<MeshHolder>();
 
-            GameObject aObject = EditorScene.NewGameObject("BG");
+                Mesh mesh = new Mesh();
+                mesh.Material = new Material(new Shader("Engine/EngineContent/shaders/pbr"));
+                mesh.Material.Set("material.albedo", new Vector3(1, 1, 1));
+                mesh.Material.Set("material.emissionStr", 1f);
+                mesh.Material.Set("material.emission", new Vector3((float)rand.NextDouble(), (float)rand.NextDouble(), (float)rand.NextDouble()));
+                mesh.SetVertexArrayObject(RendererUtils.CubeVAO);
 
-            aObject.transform.position.X = 5;
+                mh.AddMesh(mesh);
 
-            MeshHolder ah = aObject.AddComponent<MeshHolder>();
-
-            //ah.AddMeshes(ModelImporter.AddMaterialsToScene(EditorScene, ModelImporter.LoadModel("D:/Programming/Devoid Items/ExampleAssets/Sponza-master/Sponza-master/sponza.obj")));
-
-            aObject.AddComponent<MeshRenderer>();
-
-            //SpriteRenderer sr = gObject.AddComponent<SpriteRenderer>();
-            //sr.Texture = new Texture("C:\\Users\\maari\\Desktop\\DEngine1.png");
+                gObject.AddComponent<MeshRenderer>();
+            }
         }
 
         public void ChangeScenes(Scene scene)
@@ -180,6 +186,7 @@ namespace Elemental
 
             style.Colors[(int)ImGuiCol.FrameBg] = new System.Numerics.Vector4(0.2f, 0.2f, 0.2f, 1);
             style.Colors[(int)ImGuiCol.PopupBg] = new System.Numerics.Vector4(0.1f, 0.1f, 0.1f, 0.9f);
+            style.Colors[(int)ImGuiCol.ChildBg] = new System.Numerics.Vector4(0.1f, 0.1f, 0.1f, 0.7f);
 
 
             style.FramePadding = new System.Numerics.Vector2(10,7);

@@ -209,6 +209,12 @@ namespace DevoidEngine.Engine.Core
             return null;
         }
 
+        public void SetPropertyFloat(Shader shader, string name)
+        {
+            float value = GetFloat(name);
+            shader.SetFloat(name, value);
+        }
+
         public TextureAttribute[] GetAllTexAttributes()
         {
             return textureAttributes.ToArray();

@@ -7,9 +7,13 @@ in vec2 v_TexCoord;
 in float v_TexIndex;
 
 uniform sampler2D u_Texture;
+uniform bool depthBehind = false;
 
 void main()
 {
     vec4 tex = texture(u_Texture, v_TexCoord);
 	color = tex;
+	if (depthBehind) {
+		gl_FragDepth = 1;
+	}
 }

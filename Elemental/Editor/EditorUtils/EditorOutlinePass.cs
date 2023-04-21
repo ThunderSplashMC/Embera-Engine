@@ -81,9 +81,9 @@ namespace Elemental.Editor.EditorUtils
                 GL.StencilFunc(StencilFunction.Always, 1, 0x00);
                 GL.StencilMask(0xFF);
 
-                drawlist[i].mesh.Material.GetShader().Use();
-                Renderer3D.UploadCameraData(drawlist[i].mesh.Material.GetShader());
-                Renderer3D.UploadModelData(drawlist[i].mesh.Material.GetShader(), drawlist[i].position, drawlist[i].rotation, drawlist[i].scale);
+                RendererUtils.BasicShader.Use();
+                Renderer3D.UploadCameraData(RendererUtils.BasicShader);
+                Renderer3D.UploadModelData(RendererUtils.BasicShader, drawlist[i].position, drawlist[i].rotation, drawlist[i].scale);
 
                 drawlist[i].mesh.Draw();
             }
@@ -95,10 +95,13 @@ namespace Elemental.Editor.EditorUtils
 
             frameBuffer2.Bind();
 
+            GL.ClearColor(0, 0, 0, 0);
+
             RendererUtils.Clear();
 
             RendererUtils.Cull(false);
             RendererUtils.DepthTest(false);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             for (int i = 0; i < drawlist.Count; i++)
             {

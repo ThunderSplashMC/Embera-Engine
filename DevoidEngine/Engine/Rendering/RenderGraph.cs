@@ -43,6 +43,8 @@ namespace DevoidEngine.Engine.Rendering
         public static FrameBuffer _2DBuffer;
         public static FrameBuffer PreviousFrameBuffer;
 
+        public static RenderPass SSRPass;
+
         public static Bloom BloomRenderer;
 
         public static void Init()

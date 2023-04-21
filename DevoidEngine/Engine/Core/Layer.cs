@@ -9,6 +9,7 @@
         public virtual void OnInitialize() { }
         public virtual void OnUpdate(float deltaTime) { }
         public virtual void OnResize(int width, int height) { }
+        public virtual void OnEarlyRender() { }
         public virtual void OnRender() { }
         public virtual void OnLateRender() { }
         public virtual void GUIRender() { }

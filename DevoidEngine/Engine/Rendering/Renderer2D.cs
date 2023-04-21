@@ -82,15 +82,13 @@ namespace DevoidEngine.Engine.Rendering
 
         static void SetOrthographic(int width, int height)
         {
-            float aspectRatio = (float)width / height;
-
             OrthoProjection = Matrix4.CreateOrthographicOffCenter(
                     0,
-                    width,
+                    (float)width,
                     0,
-                    height,
-                    0.001f,
-                    1000f
+                    (float)height,
+                    0,
+                    1
             );
         }
 
@@ -135,7 +133,7 @@ namespace DevoidEngine.Engine.Rendering
                     QuadShader.SetMatrix4("W_PROJECTION_MATRIX", OrthoProjection);
 
                     QuadShader.SetInt("u_Texture", 0);
-                    GL.BindTextureUnit(0, drawItem.Texture.GetTexture());
+                    if (drawItem.Texture != null) GL.BindTextureUnit(0, drawItem.Texture.GetTexture());
                 }
                 else
                 {
@@ -167,9 +165,15 @@ namespace DevoidEngine.Engine.Rendering
             });
         }
 
-        public static void Resize(int width, int height)
+        public static void ResizeOrtho(int width, int height)
         {
             SetOrthographic(width, height);
+        }
+
+        public static void Resize(int width, int height)
+        {
+            
+            RenderGraph._2DBuffer.Resize(width, height);
         }
     }
 }

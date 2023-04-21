@@ -100,6 +100,6 @@ void main() {
     if (GammaCorrect) {
         mapped = pow(mapped, vec3(1/gamma));
     }
-  
+
     FragColor = vec4(mapped, 1.0);
 }

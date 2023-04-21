@@ -199,6 +199,8 @@ namespace DevoidEngine.Engine.Imgui
             }
         }
 
+        float elapsedTime = 0f;
+
         /// <summary>
         /// Updates ImGui input and IO configuration state.
         /// </summary>
@@ -217,7 +219,13 @@ namespace DevoidEngine.Engine.Imgui
             
             ImGui.NewFrame();
 
-            
+            elapsedTime += deltaSeconds;
+
+            if (elapsedTime > 10f)
+            {
+                //ImGui.SaveIniSettingsToDisk(AppContext.BaseDirectory + "Engine/Imgui/misc/imgui.ini");
+                elapsedTime = 0;
+            }
 
         }
 

@@ -7,6 +7,7 @@ using OpenTK.Mathematics;
 using System.Linq;
 using SharpFont;
 using System.Text;
+using DevoidEngine.Engine.Core;
 
 namespace DevoidEngine.Engine.Utilities
 {
@@ -116,59 +117,62 @@ namespace DevoidEngine.Engine.Utilities
             material.Set("material.metallic", meshMat.Shininess * 0.01f);
             material.Set("material.roughness", meshMat.Reflectivity);
             material.Set("material.emission", new Vector3(meshMat.ColorEmissive.R, meshMat.ColorEmissive.G, meshMat.ColorEmissive.B));
+            material.Set("material.emissionStr", 1f);
             material.Set("material.ao", 0.1f);
 
-
+            Resource? AlbedoResource;
+            Resource? RoughnessResource;
+            Resource? EmissiveResource;
+            Resource? NormalResource;
             TextureSlot RoughnessMap;
             TextureSlot EmissiveMap;
             TextureSlot tex;
 
-            if (meshMat.HasTextureDiffuse && File.Exists(CorrectFilePath(meshMat.TextureDiffuse.FilePath, path)))
+            if (meshMat.HasTextureDiffuse && Resources.TryLoad(Path.GetFileName(meshMat.TextureDiffuse.FilePath), out AlbedoResource))
             {
-                Core.Texture AlbedoTex = CheckTextureExists(CorrectFilePath(meshMat.TextureDiffuse.FilePath, path));
+                Console.WriteLine(Path.GetFileName(meshMat.TextureDiffuse.FilePath));
+                Core.Texture AlbedoTex = (Texture)AlbedoResource;//CheckTextureExists(CorrectFilePath(meshMat.TextureDiffuse.FilePath, path));
                 if (AlbedoTex == null)
                 {
                     AlbedoTex = new Core.Texture(CorrectFilePath(meshMat.TextureDiffuse.FilePath, path));
                     AddToTextureDict(CorrectFilePath(meshMat.TextureDiffuse.FilePath, path), AlbedoTex);
-                    SetWrapping(meshMat.TextureDiffuse.WrapModeU, meshMat.TextureDiffuse.WrapModeV, AlbedoTex);
+                    
                 }
-
-
+                SetWrapping(meshMat.TextureDiffuse.WrapModeU, meshMat.TextureDiffuse.WrapModeV, AlbedoTex);
                 material.SetTexture("material.ALBEDO_TEX", AlbedoTex);
                 material.Set("USE_TEX_0", 1);
             }
 
-            if (meshMat.GetMaterialTexture(TextureType.Shininess, 0, out RoughnessMap) && File.Exists(CorrectFilePath(RoughnessMap.FilePath, path)))
+            if (meshMat.GetMaterialTexture(TextureType.Shininess, 0, out RoughnessMap) && Resources.TryLoad(Path.GetFileName(RoughnessMap.FilePath), out RoughnessResource))
             {
-                Core.Texture RoughnessTex = CheckTextureExists(CorrectFilePath(RoughnessMap.FilePath, path));
+                Core.Texture RoughnessTex = (Texture)RoughnessResource;
                 if (RoughnessTex == null)
                 {
                     RoughnessTex = new Core.Texture(CorrectFilePath(RoughnessMap.FilePath, path));
                     AddToTextureDict(CorrectFilePath(RoughnessMap.FilePath, path), RoughnessTex);
-                    SetWrapping(RoughnessMap.WrapModeU, RoughnessMap.WrapModeV, RoughnessTex);
                 }
-
+                SetWrapping(RoughnessMap.WrapModeU, RoughnessMap.WrapModeV, RoughnessTex);
                 RoughnessTex.ChangeFilterType(Core.FilterTypes.Linear);
                 material.SetTexture("material.ROUGHNESS_TEX", RoughnessTex, 1);
                 material.Set("USE_TEX_1", 1);
             }
 
-            if (meshMat.GetMaterialTexture(TextureType.Emissive, 0, out EmissiveMap) && File.Exists(CorrectFilePath(EmissiveMap.FilePath, path)))
+            if (meshMat.GetMaterialTexture(TextureType.Emissive, 0, out EmissiveMap) && Resources.TryLoad(Path.GetFileName(EmissiveMap.FilePath), out EmissiveResource))
             {
-                Core.Texture EmissionTex = CheckTextureExists(CorrectFilePath(EmissiveMap.FilePath, path));
+                Core.Texture EmissionTex = (Texture)EmissiveResource;
                 if (EmissionTex == null)
                 {
                     EmissionTex = new Core.Texture(Path.GetFullPath(Path.Join(path, EmissiveMap.FilePath)));
                     AddToTextureDict(Path.GetFullPath(Path.Join(path, EmissiveMap.FilePath)), EmissionTex);
-                    SetWrapping(EmissiveMap.WrapModeU, EmissiveMap.WrapModeV, EmissionTex);
                 }
+                SetWrapping(EmissiveMap.WrapModeU, EmissiveMap.WrapModeV, EmissionTex);
                 material.SetTexture("material.EMISSION_TEX", EmissionTex, 2);
                 material.Set("USE_TEX_2", 1);
             }
 
-            if (meshMat.HasTextureNormal && File.Exists(CorrectFilePath(meshMat.TextureNormal.FilePath, path)))
+            if (meshMat.HasTextureNormal && Resources.TryLoad(Path.GetFileName(meshMat.TextureNormal.FilePath), out NormalResource))
             {
-                Core.Texture normalTexture = new Core.Texture(CorrectFilePath(meshMat.TextureNormal.FilePath, path));
+                Core.Texture normalTexture = (Texture)NormalResource;
                 normalTexture.ChangeFilterType(Core.FilterTypes.Linear);
 
                 SetWrapping(meshMat.TextureNormal.WrapModeU, meshMat.TextureNormal.WrapModeV, normalTexture);

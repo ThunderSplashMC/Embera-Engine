@@ -5,7 +5,10 @@
 layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
 layout(binding = 0) restrict writeonly uniform image2D ImgResult;
+
 layout(binding = 0) uniform sampler3D SamplerVoxelsAlbedo;
+layout(binding = 1) uniform sampler2D gPosition;
+layout(binding = 2) uniform sampler2D gNormal;
 
 
 vec3 IndirectLight(vec3 point, vec3 incomming, vec3 normal, float specularChance, float roughness);
@@ -17,15 +20,13 @@ vec3 CosineSampleHemisphere(vec3 normal, float rnd0, float rnd1);
 float InterleavedGradientNoise(vec2 imgCoord, uint index);
 vec3 NDCToWorld(vec3 ndc);
 
-uniform float NormalRayOffset;
-uniform int MaxSamples;
-uniform float GIBoost;
-uniform float GISkyBoxBoost;
-uniform float StepMultiplier;
-uniform bool IsTemporalAccumulation;
+uniform float NormalRayOffset = 1;
+uniform int MaxSamples = 4;
+uniform float GIBoost = 2.0;
+uniform float GISkyBoxBoost = 0.5;
+uniform float StepMultiplier = 0.16;
+uniform bool IsTemporalAccumulation = false;
 
-layout(binding = 1) uniform sampler2D normalBuffer;
-layout(binding = 2) uniform sampler2D depthBuffer;
 uniform vec3 C_VIEWPOS;
 uniform vec3 GridMax;
 uniform vec3 GridMin;
@@ -38,23 +39,25 @@ void main()
     ivec2 imgCoord = ivec2(gl_GlobalInvocationID.xy);
     vec2 uv = (imgCoord + 0.5) / imageSize(ImgResult);
 
-    float depth = texture(depthBuffer, uv).r;
-    if (depth == 1.0)
-    {
-        imageStore(ImgResult, imgCoord, vec4(0.0));
-        return;
-    }
+    float depth = texture(gPosition, uv).z;
 
-    vec3 fragPos = NDCToWorld(vec3(uv, depth) * 2.0 - 1.0);
-    vec3 normal = texture(normalBuffer, uv).rgb;//texture(gBufferDataUBO.NormalSpecular, uv).rgb;
-    float specular = 0.7f;//texture(gBufferDataUBO.NormalSpecular, uv).a;
-    float roughness = 0.7f;//texture(gBufferDataUBO.EmissiveRoughness, uv).a;
+    vec3 fragPos = ( texture(gPosition, uv) * inverse(W_VIEW_MATRIX)).xyz;
+
+    fragPos = texture(gPosition, uv).xyz;
+
+    vec3 normal = texture(gNormal, uv).xyz;//(texture(gNormal, uv) * inverse(W_VIEW_MATRIX) * W_ORTHOGRAPHIC_MATRIX).xyz;
+
+    // Hardcoded values
+    float specular = 0.2;
+    float roughness = 0.2;
 
     vec3 viewDir = fragPos - C_VIEWPOS;
-    vec3 indirectLight = IndirectLight(fragPos, viewDir, normal, specular, roughness) * GIBoost;
 
-    //float ambientOcclusion = 1.0 - texture(SamplerAO, uv).r;
-    //indirectLight *= ambientOcclusion;
+    vec3 reflectionDir = reflect(viewDir, normal);
+    reflectionDir = normalize(mix(reflectionDir, normal, roughness));
+
+    // TraceCone(fragPos, reflectionDir, normal, 0, 0.16).xyz;
+    vec3 indirectLight = IndirectLight(fragPos, viewDir, normal, specular, roughness);// * GIBoost;
 
     imageStore(ImgResult, imgCoord, vec4(indirectLight, 1.0));
 }
@@ -92,7 +95,6 @@ vec3 IndirectLight(vec3 point, vec3 incomming, vec3 normal, float specularChance
         }
 
         vec4 coneTrace = TraceCone(point, dir, normal, coneAngle, StepMultiplier);
-        coneTrace += (1.0 - coneTrace.a);
         
         irradiance += coneTrace.rgb;
     }
@@ -115,7 +117,7 @@ vec4 TraceCone(vec3 start, vec3 direction, vec3 normal, float coneAngle, float s
     float voxelMaxLength = max(voxelWorldSpaceSize.x, max(voxelWorldSpaceSize.y, voxelWorldSpaceSize.z));
     float voxelMinLength = min(voxelWorldSpaceSize.x, min(voxelWorldSpaceSize.y, voxelWorldSpaceSize.z));
     uint maxLevel = textureQueryLevels(SamplerVoxelsAlbedo) - 1;
-    vec4 accumlatedColor = vec4(1);
+    vec4 accumlatedColor = vec4(0);
 
     start += normal * voxelMaxLength * NormalRayOffset;
 
@@ -134,6 +136,7 @@ vec4 TraceCone(vec3 start, vec3 direction, vec3 normal, float coneAngle, float s
         }
         vec4 sampleColor = textureLod(SamplerVoxelsAlbedo, sampleUVT, sampleLod);
 
+        //(1.0 - accumlatedColor.a) * 
         accumlatedColor += (1.0 - accumlatedColor.a) * sampleColor;
         distFromStart += sampleDiameter * stepMultiplier;
     }
@@ -168,6 +171,6 @@ float InterleavedGradientNoise(vec2 imgCoord, uint index)
 
 vec3 NDCToWorld(vec3 ndc)
 {
-    vec4 viewPos = vec4(ndc, 1.0) * W_VIEW_MATRIX * W_ORTHOGRAPHIC_MATRIX;
+    vec4 viewPos = vec4(ndc, 1.0) * inverse(W_VIEW_MATRIX * W_PROJECTION_MATRIX);
     return viewPos.xyz / viewPos.w;
 }

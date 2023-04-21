@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using YamlDotNet.Core;
 
 namespace Elemental.Editor.EditorUtils
 {
@@ -68,44 +70,34 @@ namespace Elemental.Editor.EditorUtils
 
         public static void CreateVSProject(string directory)
         {
-            Process cmd = new Process();
-            cmd.StartInfo.FileName = "cmd.exe";
-            cmd.StartInfo.RedirectStandardInput = true;
-            cmd.StartInfo.RedirectStandardOutput = true;
-            cmd.StartInfo.CreateNoWindow = true;
-            cmd.StartInfo.UseShellExecute = false;
-            cmd.Start();
+            RunDotNetCommand($"new classlib -o {directory} --name MyProject");
 
-            cmd.StandardInput.WriteLine($"dotnet new classlib -o {directory} --name MyProject");
-            cmd.StandardInput.Flush();
+            RunDotNetCommand($"new sln -o {directory} --name MyProject");
 
-            cmd.StandardInput.WriteLine($"dotnet new sln -o {directory} --name MyProject");
-            cmd.StandardInput.Flush();
+            RunDotNetCommand($"sln {directory}\\MyProject.sln add {directory}\\MyProject.csproj");
+        }
 
-            cmd.StandardInput.WriteLine($"dotnet sln {directory}\\MyProject.sln add {directory}\\MyProject.csproj");
-            cmd.StandardInput.Flush();
+        public static void BuildVSProjectEditor(string directory)
+        {
+            AddPackageProject($"{directory}/MyProject.csproj", "OpenTK");
+            RunDotNetCommand($"dotnet build {directory}/MyProject.csproj --output {directory}//Tool");
+        }
 
-            cmd.StandardInput.Close();
-            cmd.WaitForExit();
-            Console.WriteLine(cmd.StandardOutput.ReadToEnd());
+        public static Assembly LoadVSProjectEditor(string directory)
+        {
+            // Load the assembly file into a byte array
+            byte[] assemblyData = File.ReadAllBytes($"{directory}/Tool/MyProject.dll");
+
+            Console.WriteLine(assemblyData.Length);
+
+            // Load the assembly into the current application domain
+            return AppDomain.CurrentDomain.Load(assemblyData);
         }
 
         public static void BuildVSProject(string directory)
         {
-            Process cmd = new Process();
-            cmd.StartInfo.FileName = "cmd.exe";
-            cmd.StartInfo.RedirectStandardInput = true;
-            cmd.StartInfo.RedirectStandardOutput = true;
-            cmd.StartInfo.CreateNoWindow = true;
-            cmd.StartInfo.UseShellExecute = false;
-            cmd.Start();
-
-            cmd.StandardInput.WriteLine($"dotnet build {directory}/MyProject.csproj --output {directory}//Builds");
-            cmd.StandardInput.Flush();
-
-            cmd.StandardInput.Close();
-            cmd.WaitForExit();
-            Console.WriteLine(cmd.StandardOutput.ReadToEnd());
+            
+            RunDotNetCommand($"dotnet build {directory}/MyProject.csproj --output {directory}//Builds");
         }
 
         public static void AddEngineRef(string userlib)
@@ -115,23 +107,49 @@ namespace Elemental.Editor.EditorUtils
 
         public static void BuildRunnerProject(string runnerProj, string outputDir)
         {
-            AddPackageProject(runnerProj, "OpenTK");
-            AddPackageProject(runnerProj, "ImGui.NET", "1.87.3");
+            //if (!File.Exists(Path.Combine(outputDir, "OpenTK.Core.dll")))
+                AddPackageProject(runnerProj, "OpenTK");
+            if (!File.Exists(Path.Combine(outputDir, "ImGui.NET.dll")))
+                AddPackageProject(runnerProj, "ImGui.NET", "1.87.3");
 
-            Process cmd = new Process();
-            cmd.StartInfo.FileName = "cmd.exe";
-            cmd.StartInfo.RedirectStandardInput = true;
-            cmd.StartInfo.RedirectStandardOutput = true;
-            cmd.StartInfo.CreateNoWindow = true;
-            cmd.StartInfo.UseShellExecute = false;
-            cmd.Start();
+            RunDotNetCommand($"build {runnerProj} --output {outputDir}");
+        }
 
-            cmd.StandardInput.WriteLine($"dotnet build {runnerProj} --output {outputDir}");
-            cmd.StandardInput.Flush();
+        public static void RunDotNetCommand(string arguments)
+        {
+            // Set up the process start info
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                FileName = "dotnet",
+                Arguments = arguments,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
 
-            cmd.StandardInput.Close();
-            cmd.WaitForExit();
-            Console.WriteLine(cmd.StandardOutput.ReadToEnd());
+            // Start the process
+            using (Process process = new Process())
+            {
+                process.StartInfo = startInfo;
+                process.Start();
+
+                // Capture the output and error messages
+                string output = process.StandardOutput.ReadToEnd();
+                string error = process.StandardError.ReadToEnd();
+
+                process.WaitForExit();
+
+                // Check for any errors
+                if (process.ExitCode != 0)
+                {
+                    Console.WriteLine($"Error running command: {error}");
+                }
+                else
+                {
+                    Console.WriteLine($"Command output: {output}");
+                }
+            }
         }
 
         public static void AddPackageProject(string project, string package,string version = null)

@@ -13,6 +13,7 @@ uniform mat4 W_PROJECTION_MATRIX;
 out vec3 Normal;
 out vec2 texCoords;
 out vec3 FragPos;
+out vec4 VertexPosition;
 
 void main()
 {
@@ -20,4 +21,6 @@ void main()
     texCoords = aTexCoord;
     FragPos = vec3(vec4(aPosition, 1.0) * W_MODEL_MATRIX);
     gl_Position = vec4(aPosition, 1.0) * W_MODEL_MATRIX * W_VIEW_MATRIX * W_PROJECTION_MATRIX;
+
+    VertexPosition = vec4(aPosition, 1.0) * W_MODEL_MATRIX * W_VIEW_MATRIX;
 }

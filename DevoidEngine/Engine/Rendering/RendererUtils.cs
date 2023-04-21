@@ -65,16 +65,12 @@ namespace DevoidEngine.Engine.Rendering
 
             //GL.BlitNamedFramebuffer(srcFB.GetRendererID(), destFB.GetRendererID(), 0, 0, RenderGraph.ViewportWidth, RenderGraph.ViewportHeight, 0, 0, RenderGraph.ViewportWidth, RenderGraph.ViewportHeight, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Linear);
 
+            destFB.Bind();
+
             if (opacity == 1.0f)
             {
-                destFB.Bind();
-
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-                destFB.UnBind();
             }
-
-            destFB.Bind();
 
             FrameBufferCombineShader.Use();
 
@@ -82,6 +78,8 @@ namespace DevoidEngine.Engine.Rendering
             FrameBufferCombineShader.SetInt("S_SCREEN_TEXTURE", 1);
             FrameBufferCombineShader.SetFloat("OPACITY_MIX", opacity);
             FrameBufferCombineShader.SetBool("ADDITIVE_BLEND", additive);
+
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, srcFB.GetColorAttachment(0));

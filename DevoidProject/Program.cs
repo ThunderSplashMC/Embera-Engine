@@ -7,7 +7,7 @@
         {
             Elemental.ElementalApp elemental = new Elemental.ElementalApp();
 
-            elemental.Init("D:/Programming/DPROJ/Project.dprj");
+            elemental.Init("D:\\Programming\\DevoidProjectTests\\test#4\\Project.dprj");
         }
     }
 }

@@ -90,10 +90,12 @@ namespace DevoidEngine.Engine.Core
 
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, ImageFile.Width, ImageFile.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, ImageFile.Pixels);
 
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (float)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (float)TextureMinFilter.LinearMipmapLinear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (float)TextureMagFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (float)TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (float)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxAnisotropy, 8f);
+            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
             GL.BindTexture(TextureTarget.Texture2D, 0);
         }
@@ -195,7 +197,8 @@ namespace DevoidEngine.Engine.Core
     public enum FilterTypes
     {
         Linear = 9729,
-        Nearest = 9728
+        Nearest = 9728,
+        LinearMipmapLinear = 9987,
     }
 
     public enum WrapSide

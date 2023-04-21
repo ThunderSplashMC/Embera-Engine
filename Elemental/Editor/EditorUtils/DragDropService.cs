@@ -7,14 +7,13 @@ using System.IO;
 
 namespace Elemental.Editor.EditorUtils
 {
-    class DragDropService
+    public class DragDropService
     {
         public DragFileItem DragFile;
 
         public void AddDragFile(string pathToFile)
         {
             DragFile = new DragFileItem() { fileextension = Path.GetExtension(pathToFile), path = pathToFile, fileName = Path.GetFileName(pathToFile) };
-            Console.WriteLine(DragFile.fileextension);
         }
 
         public DragFileItem GetDragFile()

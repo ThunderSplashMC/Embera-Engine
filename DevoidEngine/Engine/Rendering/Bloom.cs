@@ -298,7 +298,6 @@ namespace DevoidEngine.Engine.Rendering
             //viewportSize = new Vector2(width, height);
             //viewportSizeInt = new Vector2i(width, height);
             //BloomFrameBuffer = new BloomFrameBuffer();
-            //BloomFrameBuffer.Init(width, height, 6);
         }
     }
 }

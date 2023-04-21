@@ -77,7 +77,10 @@ namespace DevoidEngine.Engine.Core
             { "frag", "Shader" },
             { "txt", "text" },
             { "fbx", "Mesh" },
-            { "gltf", "Mesh" }
+            { "gltf", "Mesh" },
+            { "obj", "Mesh" },
+            { "scene", "Scene" },
+            { "cs", "Script" }
         };
 
         public static List<Resource> GetPool()
@@ -127,6 +130,22 @@ namespace DevoidEngine.Engine.Core
             }
 
             return null;
+        }
+
+        public static Resource[] GetResourcesOfType(string type)
+        {
+            List<Resource> resources = new List<Resource>();
+
+            for (int i = 0; i < ResourcePool.Count; i++)
+            {
+                if (ResourcePool[i].Type == type)
+                {
+                    resources.Add(ResourcePool[i]);
+                }
+
+            }
+
+            return resources.ToArray();
         }
 
         public static bool TryLoad(string value, [NotNullWhen(true)] out Resource? result)

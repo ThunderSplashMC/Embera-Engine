@@ -38,8 +38,6 @@ namespace Elemental.Editor.EditorUtils
         {
             frameBuffer.Bind();
 
-            //RenderGraph.CompositeBuffer.Bind();
-
             RendererUtils.Clear();
 
             RendererUtils.Cull(true);
@@ -54,24 +52,15 @@ namespace Elemental.Editor.EditorUtils
                 Renderer3D.UploadCameraData(viewportSelectShader);
                 Renderer3D.UploadModelData(viewportSelectShader, drawlist[i].position, drawlist[i].rotation, drawlist[i].scale);
 
-                viewportSelectShader.SetInt("UUID", (int)drawlist[i].associateObject /*((GameObject)drawlist[i].associateObject).ID*/);
-
-                //Console.WriteLine((float)((GameObject)drawlist[i].associateObject).ID);
-
-                //RendererUtils.QuadVAO.Render();
+                viewportSelectShader.SetInt("UUID", (int)drawlist[i].associateObject);
 
                 drawlist[i].mesh.Draw();
             }
-
-            //RenderGraph.CompositeBuffer.UnBind();
 
             frameBuffer.UnBind();
 
             RendererUtils.Cull(false);
             RendererUtils.DepthTest(false);
-
-            RendererUtils.BlitFBToScreen(frameBuffer, RenderGraph.CompositeBuffer);
-
             base.DoRenderPass();
         }
 

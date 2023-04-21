@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 
 namespace DevoidEngine.Engine.Components
 {
-    class UITransform : Component
+    public class UITransform : Component
     {
         public override string Type { get; } = nameof(UITransform);
 
         public Vector2 Position;
         public Vector2 Rotation;
+        public Vector2 Size;
 
         public float Top;
         public float Bottom;

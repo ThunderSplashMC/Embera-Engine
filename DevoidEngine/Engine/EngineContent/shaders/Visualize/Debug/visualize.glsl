@@ -29,7 +29,7 @@ vec4 TraceCone(vec3 start, vec3 direction, float coneAngle, float stepMultiplier
 bool RayCuboidIntersect(Ray ray, vec3 min, vec3 max, out float t1, out float t2);
 vec3 GetWorldSpaceDirection(mat4 inverseProj, mat4 inverseView, vec2 normalizedDeviceCoords);
 
-layout(location = 0) uniform float StepMultiplier = 0.2;
+layout(location = 0) uniform float StepMultiplier = 0.3;
 layout(location = 1) uniform float ConeAngle = 0.0;
 
 void main()
@@ -45,7 +45,7 @@ void main()
     float t1, t2;
     if (!(RayCuboidIntersect(worldRay, GridMin, GridMax, t1, t2) && t2 > 0.0))
     {
-        imageStore(ImgResult, imgCoord, vec4(SkyColor,1.0));
+        imageStore(ImgResult, imgCoord, vec4(SkyColor, 1));
         return;
     }
 
@@ -103,8 +103,8 @@ bool RayCuboidIntersect(Ray ray, vec3 aabbMin, vec3 aabbMax, out float t1, out f
     t1 = FLOAT_MIN;
     t2 = FLOAT_MAX;
 
-    vec3 t0s = (aabbMin - ray.Origin) / ray.Direction;
-    vec3 t1s = (aabbMax - ray.Origin) / ray.Direction;
+    vec3 t0s = (ivec3(aabbMin) - ray.Origin) / ray.Direction;
+    vec3 t1s = (ivec3(aabbMax) - ray.Origin) / ray.Direction;
 
     vec3 tsmaller = min(t0s, t1s);
     vec3 tbigger = max(t0s, t1s);

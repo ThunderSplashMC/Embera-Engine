@@ -83,8 +83,9 @@ namespace Elemental.Editor.Panels
             #region
             foreach (Asset i in GetAssets())
             {
+
                 ImGui.PushID("file-" + i.name);
-                if (ImGui.ImageButton(FileTypes.GetFileTypeIcon(i.ext.Substring(1)), new System.Numerics.Vector2(thumbnailSize, thumbnailSize)))
+                if (ImGui.ImageButton(FileTypes.GetFileTypeIcon(i.ext.Substring(1)), new System.Numerics.Vector2(thumbnailSize - 20)))
                 {
 
                 }

@@ -130,7 +130,10 @@ namespace DevoidEngine.Engine.Serializing
                 }
                 else if (field.FieldType == typeof(Texture))
                 {
-                    ComponentJSON.Add(fieldName, ((Texture)fieldValue).fileID);
+                    if (fieldValue != null)
+                    {
+                        ComponentJSON.Add(fieldName, ((Texture)fieldValue).fileID);
+                    }
                 }
                 else if (field.FieldType == typeof(Mesh))
                 {
