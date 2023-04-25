@@ -9,11 +9,14 @@ layout(binding = 0) restrict writeonly uniform image2D ImgResult;
 layout(binding = 0) uniform sampler3D SamplerVoxelsAlbedo;
 layout(binding = 1) uniform sampler2D gPosition;
 layout(binding = 2) uniform sampler2D gNormal;
+layout(binding = 3) uniform sampler2D gDepth;
+layout(binding = 4) uniform sampler2D gSpecRough;
 
 
 vec3 IndirectLight(vec3 point, vec3 incomming, vec3 normal, float specularChance, float roughness);
 float GetMaterialVariance(float specularChance, float roughness);
 vec4 TraceCone(vec3 start, vec3 direction, vec3 normal, float coneAngle, float stepMultiplier);
+vec3 GetWorldSpaceDirection(mat4 inverseProj, mat4 inverseView, vec2 normalizedDeviceCoords);
 vec3 UniformSample
 (float rnd0, float rnd1);
 vec3 CosineSampleHemisphere(vec3 normal, float rnd0, float rnd1);
@@ -21,11 +24,13 @@ float InterleavedGradientNoise(vec2 imgCoord, uint index);
 vec3 NDCToWorld(vec3 ndc);
 
 uniform float NormalRayOffset = 1;
-uniform int MaxSamples = 4;
+uniform int MaxSamples = 6;
 uniform float GIBoost = 2.0;
 uniform float GISkyBoxBoost = 0.5;
 uniform float StepMultiplier = 0.16;
 uniform bool IsTemporalAccumulation = false;
+uniform float maxConeAngle = 0.32;
+uniform float minConeAngle = 0.005;
 
 uniform vec3 C_VIEWPOS;
 uniform vec3 GridMax;
@@ -39,37 +44,40 @@ void main()
     ivec2 imgCoord = ivec2(gl_GlobalInvocationID.xy);
     vec2 uv = (imgCoord + 0.5) / imageSize(ImgResult);
 
-    float depth = texture(gPosition, uv).z;
+    float depth = texture(gDepth, uv).r;
+    if (depth == 1.0)
+    {
+        imageStore(ImgResult, imgCoord, vec4(0.0));
+        return;
+    }
 
-    vec3 fragPos = ( texture(gPosition, uv) * inverse(W_VIEW_MATRIX)).xyz;
+    vec3 fragPos = (texture2D(gPosition, uv) * inverse(W_VIEW_MATRIX)).xyz;// * 2.0) - 1.0;//(texture2D(gPosition, uv) * inverse(W_VIEW_MATRIX)).xyz;
+    //(texture2D(gPosition, uv) * inverse(W_VIEW_MATRIX)).xyz;//(NDCToWorld(vec3(uv, depth)) * 2.0) - 1.0;
 
-    fragPos = texture(gPosition, uv).xyz;
-
-    vec3 normal = texture(gNormal, uv).xyz;//(texture(gNormal, uv) * inverse(W_VIEW_MATRIX) * W_ORTHOGRAPHIC_MATRIX).xyz;
+    vec3 normal = (texture(gNormal, uv)).xyz;
 
     // Hardcoded values
-    float specular = 0.2;
-    float roughness = 0.2;
+    float specular = texture2D(gSpecRough, uv).r;
+    float roughness = texture2D(gSpecRough, uv).g;
 
     vec3 viewDir = fragPos - C_VIEWPOS;
 
     vec3 reflectionDir = reflect(viewDir, normal);
     reflectionDir = normalize(mix(reflectionDir, normal, roughness));
 
-    // TraceCone(fragPos, reflectionDir, normal, 0, 0.16).xyz;
-    vec3 indirectLight = IndirectLight(fragPos, viewDir, normal, specular, roughness);// * GIBoost;
+    vec3 indirectLight = IndirectLight(fragPos, viewDir, normal, specular, roughness);
 
     imageStore(ImgResult, imgCoord, vec4(indirectLight, 1.0));
 }
 
 vec3 IndirectLight(vec3 point, vec3 incomming, vec3 normal, float specularChance, float roughness)
 {
-    vec3 irradiance = vec3(0.2);
+    vec3 irradiance = vec3(0.0);
     float materialVariance = GetMaterialVariance(specularChance, roughness);
     uint samples = uint(mix(1.0, float(MaxSamples), materialVariance));
 
     uint noiseIndex = 0u;// IsTemporalAccumulation ? (taaDataUBO.Frame % taaDataUBO.Samples) * MaxSamples : 0u;
-    for (uint i = 0; i < 10; i++)
+    for (uint i = 0; i < samples; i++)
     {
         float rnd0 = InterleavedGradientNoise(vec2(gl_GlobalInvocationID.xy), noiseIndex + 0);
         float rnd1 = InterleavedGradientNoise(vec2(gl_GlobalInvocationID.xy), noiseIndex + 1);
@@ -78,8 +86,6 @@ vec3 IndirectLight(vec3 point, vec3 incomming, vec3 normal, float specularChance
         
         vec3 dir = CosineSampleHemisphere(normal, rnd0, rnd1);
 
-        const float maxConeAngle = 0.32;
-        const float minConeAngle = 0.005;
         float coneAngle;
         if (specularChance > rnd2)
         {
@@ -136,7 +142,6 @@ vec4 TraceCone(vec3 start, vec3 direction, vec3 normal, float coneAngle, float s
         }
         vec4 sampleColor = textureLod(SamplerVoxelsAlbedo, sampleUVT, sampleLod);
 
-        //(1.0 - accumlatedColor.a) * 
         accumlatedColor += (1.0 - accumlatedColor.a) * sampleColor;
         distFromStart += sampleDiameter * stepMultiplier;
     }
@@ -171,6 +176,13 @@ float InterleavedGradientNoise(vec2 imgCoord, uint index)
 
 vec3 NDCToWorld(vec3 ndc)
 {
-    vec4 viewPos = vec4(ndc, 1.0) * inverse(W_VIEW_MATRIX * W_PROJECTION_MATRIX);
+    vec4 viewPos = vec4(ndc, 1.0) * inverse(W_VIEW_MATRIX);
     return viewPos.xyz / viewPos.w;
+}
+
+vec3 GetWorldSpaceDirection(mat4 inverseProj, mat4 inverseView, vec2 normalizedDeviceCoords)
+{
+    vec4 rayEye = inverseProj * vec4(normalizedDeviceCoords, -1.0, 0.0);
+    rayEye.zw = vec2(-1.0, 0.0);
+    return normalize((inverseView * rayEye).xyz);
 }

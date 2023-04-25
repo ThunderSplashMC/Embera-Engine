@@ -274,18 +274,6 @@ namespace Elemental.Editor.Panels
 
                 UI.EndProperty();
 
-                UI.BeginProperty("VXGI Debug View Opacity");
-
-                UI.PropertyFloat(ref VoxelTracer.DebugViewOpacity, 0, 1, 0.1f);
-
-                UI.EndProperty();
-
-                UI.BeginProperty("SkyColor");
-
-                UI.PropertyColor4(ref VoxelTracer.SkyColor);
-
-                UI.EndProperty();
-
                 UI.BeginProperty("GridMin");
 
                 UI.PropertyVector3(ref VoxelTracer.GridMin, 0.2f, float.MinValue, -0.1f);
@@ -310,15 +298,40 @@ namespace Elemental.Editor.Panels
 
                 UI.EndProperty();
 
-                UI.BeginProperty("Cone Angle");
-
-                UI.PropertyFloat(ref VoxelTracer.ConeAngle);
-
-                UI.EndProperty();
-
                 UI.BeginProperty("Step Multiplier");
 
                 UI.PropertyFloat(ref VoxelTracer.StepMultiplier, 0.1f);
+
+                UI.EndProperty();
+
+                UI.BeginProperty("Normal Ray Offet");
+
+                UI.PropertyFloat(ref VoxelTracer.NormalRayOffset, 0.1f);
+
+                UI.EndProperty();
+
+
+                UI.BeginProperty("GI Boost");
+
+                UI.PropertyFloat(ref VoxelTracer.GIBoost, 0.1f);
+
+                UI.EndProperty();
+
+                UI.BeginProperty("Min Cone Angle");
+
+                UI.PropertyFloat(ref VoxelTracer.MinConeAngle, 0.1f);
+
+                UI.EndProperty();
+
+                UI.BeginProperty("Max Cone Angle");
+
+                UI.PropertyFloat(ref VoxelTracer.MaxConeAngle, 0.1f);
+
+                UI.EndProperty();
+
+                UI.BeginProperty("MaxSamples");
+
+                UI.PropertyInt(ref VoxelTracer.MaxSamples);
 
                 UI.EndProperty();
 

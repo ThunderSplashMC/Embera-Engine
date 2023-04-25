@@ -11,7 +11,7 @@ namespace Elemental.Editor.EditorUtils
     {
         public override void LightPassEarly()
         {
-            Guizmo3D.DrawGrid();
+            //Guizmo3D.DrawGrid();
         }
 
     }

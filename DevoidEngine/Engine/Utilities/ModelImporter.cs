@@ -173,12 +173,15 @@ namespace DevoidEngine.Engine.Utilities
             if (meshMat.HasTextureNormal && Resources.TryLoad(Path.GetFileName(meshMat.TextureNormal.FilePath), out NormalResource))
             {
                 Core.Texture normalTexture = (Texture)NormalResource;
-                normalTexture.ChangeFilterType(Core.FilterTypes.Linear);
+                if (normalTexture != null)
+                {
+                    normalTexture.ChangeFilterType(Core.FilterTypes.Linear);
 
-                SetWrapping(meshMat.TextureNormal.WrapModeU, meshMat.TextureNormal.WrapModeV, normalTexture);
+                    SetWrapping(meshMat.TextureNormal.WrapModeU, meshMat.TextureNormal.WrapModeV, normalTexture);
 
-                material.SetTexture("material.NORMAL_TEX", normalTexture, 3);
-                material.Set("USE_TEX_3", 1);
+                    material.SetTexture("material.NORMAL_TEX", normalTexture, 3);
+                    material.Set("USE_TEX_3", 1);
+                }
             }
 
             mesh1.SetMaterial(material);
@@ -201,7 +204,10 @@ namespace DevoidEngine.Engine.Utilities
 
         static void AddToTextureDict(string path, Core.Texture texture)
         {
-            Textures.Add(path, texture);
+            if (!Textures.ContainsKey(path))
+            {
+                Textures.Add(path, texture);
+            }
         }
 
         static void SetWrapping(TextureWrapMode modeU, TextureWrapMode modeV, Core.Texture texture)

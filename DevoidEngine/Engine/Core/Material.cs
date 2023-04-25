@@ -215,6 +215,24 @@ namespace DevoidEngine.Engine.Core
             shader.SetFloat(name, value);
         }
 
+        public void SetPropertyVector3(Shader shader, string name)
+        {
+            Vector3 value = GetVec3(name);
+            shader.SetVector3(name, value);
+        }
+
+        public void SetPropertyInt(Shader shader, string name)
+        {
+            int value = GetInt(name);
+            shader.SetInt(name, value);
+        }
+
+        public void SetPropertyTexture(Shader shader, string name, int unit)
+        {
+            Texture value = GetTexture(name);
+            value?.SetActiveUnit((TextureActiveUnit)unit);
+        }
+
         public TextureAttribute[] GetAllTexAttributes()
         {
             return textureAttributes.ToArray();

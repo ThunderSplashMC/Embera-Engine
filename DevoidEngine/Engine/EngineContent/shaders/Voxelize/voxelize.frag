@@ -5,6 +5,7 @@ const float PI = 3.14159265359;
 const float GAMMA = 2.2;
 
 layout (binding = 0, rgba8) uniform image3D gTexture3D;
+layout (binding = 0) uniform sampler2D gEmissive;
 
 uniform vec3 C_VIEWPOS;
 
@@ -105,6 +106,11 @@ float GetAlbedoAlpha() {
     return (1 - USE_TEX_0) * 1 + USE_TEX_0 * texture(material.ALBEDO_TEX, texCoords).a;
 }
 
+vec3 GetEmission() {
+
+    return (1.0 - USE_TEX_2) * material.emission + USE_TEX_2 * GammaCorrectTexture(material.EMISSION_TEX, texCoords);
+
+}
 
 vec3 CalcPointLight(PointLight light, vec3 N, vec3 F0, vec3 V) {
     vec3 L = normalize(light.position - WorldPos);
@@ -147,7 +153,7 @@ void main()
         Lo += CalcPointLight(L_POINTLIGHTS[i], WorldNormal, F0, V);
     }
 
-
+    Lo += GetEmission();
 
     vec3 position = (vec4(WorldPos, 1.0) * W_ORTHOGRAPHIC_MATRIX).xyz;
 

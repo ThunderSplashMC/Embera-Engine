@@ -88,7 +88,34 @@ namespace DevoidEngine.Engine.Rendering
             };
 
             RenderGraph.LightBuffer = new FrameBuffer(miscBufferSpecification);
-            RenderGraph.GeometryBuffer = new FrameBuffer(miscBufferSpecification);
+
+            FrameBufferSpecification geometryBufferSpecification = new FrameBufferSpecification()
+            {
+                width = width,
+                height = height,
+                ColorAttachments = new ColorAttachment[]
+    {
+                    new ColorAttachment() {
+                        textureFormat = FrameBufferTextureFormat.RGBA16F, textureType = FrameBufferTextureType.Texture2D
+                    },
+                    new ColorAttachment() {
+                        textureFormat = FrameBufferTextureFormat.RGBA16F, textureType = FrameBufferTextureType.Texture2D
+                    },
+                    new ColorAttachment() {
+                        textureFormat = FrameBufferTextureFormat.RGBA16F, textureType = FrameBufferTextureType.Texture2D
+                    },
+                    new ColorAttachment() {
+                        textureFormat = FrameBufferTextureFormat.RGBA16F, textureType = FrameBufferTextureType.Texture2D
+                    }
+    },
+                DepthAttachment = new DepthAttachment()
+                {
+                    width = width,
+                    height = height
+                }
+            };
+
+            RenderGraph.GeometryBuffer = new FrameBuffer(geometryBufferSpecification);
         }
 
         public static void AddRenderPass(RenderPass renderpass)
@@ -357,8 +384,20 @@ namespace DevoidEngine.Engine.Rendering
             {
                 UploadModelData(RendererUtils.GeometryShader, DrawList[i].position, DrawList[i].rotation, DrawList[i].scale);
 
+                DrawList[i].mesh.Material.SetPropertyVector3(RendererUtils.GeometryShader, "material.albedo");
                 DrawList[i].mesh.Material.SetPropertyFloat(RendererUtils.GeometryShader, "material.roughness");
+                DrawList[i].mesh.Material.SetPropertyFloat(RendererUtils.GeometryShader, "material.metallic");
+                DrawList[i].mesh.Material.SetPropertyInt(RendererUtils.GeometryShader, "USE_TEX_0");
+                DrawList[i].mesh.Material.SetPropertyInt(RendererUtils.GeometryShader, "USE_TEX_1");
+                DrawList[i].mesh.Material.SetPropertyInt(RendererUtils.GeometryShader, "USE_TEX_2");
+                DrawList[i].mesh.Material.SetPropertyInt(RendererUtils.GeometryShader, "USE_TEX_3");
+                DrawList[i].mesh.Material.SetPropertyInt(RendererUtils.GeometryShader, "USE_TEX_4");
+                DrawList[i].mesh.Material.SetPropertyTexture(RendererUtils.GeometryShader, "material.ROUGHNESS_TEX", 0);
+                DrawList[i].mesh.Material.SetPropertyTexture(RendererUtils.GeometryShader, "material.ALBEDO_TEX", 1);
+
                 DrawList[i].mesh.Draw();
+
+                Console.WriteLine(DrawList[i].mesh.Material.GetFloat("material.roughness"));
 
                 RenderGraph.Renderer_3D_DrawCalls += 1;
             }

@@ -19,8 +19,10 @@ namespace DevoidEngine.Engine.Rendering
         public ComputeShader vizualize_voxel_cs = new ComputeShader("Engine/EngineContent/shaders/Visualize/Debug/visualize.glsl", new Vector3i(64,64,64));
 
         public ComputeShader ConeTracer = new ComputeShader("Engine/EngineContent/shaders/Visualize/visualize.glsl");
+        public ComputeShader MergeLightingShader = new ComputeShader("Engine/EngineContent/shaders/Visualize/mergeLighting.glsl");
 
         FrameBuffer framebuffer;
+        FrameBuffer Finalframebuffer;
 
         public bool Enabled;
         public bool Debug = false;
@@ -35,8 +37,15 @@ namespace DevoidEngine.Engine.Rendering
         public float NearPlane = 0.1f;
         public float FarPlane = 1000f;
 
-        public float StepMultiplier = 0.2f;
-        public float ConeAngle = 0.0f;
+        public float MinConeAngle = 0.005f;
+        public float MaxConeAngle = 0.32f;
+
+        public float NormalRayOffset = 1;
+        public int MaxSamples = 12;
+        public float GIBoost = 2.0f;
+        public float GISkyBoxBoost = 0.5f;
+        public float StepMultiplier = 0.16f;
+        public bool IsTemporalAccumulation = false;
 
         Matrix4 orthographicMatrix;
 
@@ -84,6 +93,7 @@ namespace DevoidEngine.Engine.Rendering
             };
 
             framebuffer = new FrameBuffer(specs);
+            Finalframebuffer = new FrameBuffer(specs);
 
             orthographicMatrix = Matrix4.CreateOrthographicOffCenter(
                 GridMin.X, GridMax.X, GridMin.Y, GridMax.Y, GridMax.Z, GridMin.Z
@@ -108,6 +118,7 @@ namespace DevoidEngine.Engine.Rendering
         public override void Resize(int width, int height)
         {
             framebuffer.Resize(width, height);
+            Finalframebuffer.Resize(width, height);
 
             base.Resize(width, height);
         }
@@ -145,6 +156,7 @@ namespace DevoidEngine.Engine.Rendering
             voxelize_shader.Use();
 
             GL.BindImageTexture(0, voxel_texture, 0, true, 0, TextureAccess.ReadWrite, SizedInternalFormat.Rgba8);
+            GL.BindTextureUnit(0, RenderGraph.LightBuffer.GetColorAttachment(1));
 
             Renderer3D.UploadLightingData(voxelize_shader);
 
@@ -161,6 +173,7 @@ namespace DevoidEngine.Engine.Rendering
                 Material material = drawList[i].mesh.Material;
 
                 voxelize_shader.SetVector3("material.albedo", material.GetVec3("material.albedo"));
+                voxelize_shader.SetVector3("material.emission", material.GetVec3("material.emission"));
 
                 if (material.GetInt("USE_TEX_0") == 1)
                 {
@@ -171,6 +184,17 @@ namespace DevoidEngine.Engine.Rendering
                 else
                 {
                     voxelize_shader.SetInt("USE_TEX_0", 0);
+                }
+
+                if (material.GetInt("USE_TEX_2") == 1)
+                {
+                    voxelize_shader.SetInt("USE_TEX_2", 1);
+                    voxelize_shader.SetInt("material.EMISSION_TEX", 1);
+                    material.GetTexture("material.EMISSION_TEX").SetActiveUnit(TextureActiveUnit.UNIT1);
+                }
+                else
+                {
+                    voxelize_shader.SetInt("USE_TEX_2", 0);
                 }
 
                 drawList[i].mesh.Draw();
@@ -197,6 +221,8 @@ namespace DevoidEngine.Engine.Rendering
             GL.BindTextureUnit(0, voxel_texture);
             GL.BindTextureUnit(1, RenderGraph.GeometryBuffer.GetColorAttachment(0));
             GL.BindTextureUnit(2, RenderGraph.GeometryBuffer.GetColorAttachment(1));
+            GL.BindTextureUnit(3, RenderGraph.GeometryBuffer.GetDepthAttachment());
+            GL.BindTextureUnit(4, RenderGraph.GeometryBuffer.GetColorAttachment(2));
 
             ConeTracer.SetMatrix4("W_PROJECTION_MATRIX", RenderGraph.Camera.GetProjectionMatrix());
             ConeTracer.SetMatrix4("W_VIEW_MATRIX", RenderGraph.Camera.GetViewMatrix());
@@ -207,13 +233,36 @@ namespace DevoidEngine.Engine.Rendering
             ConeTracer.SetVector3("GridMin", GridMin);
             ConeTracer.SetVector3("GridMax", GridMax);
 
+            ConeTracer.SetFloat("NormalRayOffset", NormalRayOffset);
+            ConeTracer.SetFloat("GIBoost", GIBoost);
+            ConeTracer.SetFloat("StepMultiplier", StepMultiplier);
+            ConeTracer.SetFloat("minConeAngle", MinConeAngle);
+            ConeTracer.SetFloat("maxConeAngle", MaxConeAngle);
+            ConeTracer.SetInt("MaxSamples", MaxSamples);
+            ConeTracer.SetBool("IsTemporalAccumulation", IsTemporalAccumulation);
+
+
             ConeTracer.Dispatch((int)(RenderGraph.CompositeBuffer.GetSize().X / 8), (int)(RenderGraph.CompositeBuffer.GetSize().Y / 8), 1);
 
             ConeTracer.Wait();
 
             Texture.UnbindTexture();
 
-            RendererUtils.BlitFBToScreen(framebuffer, RenderGraph.CompositeBuffer, 1.0f);
+
+            MergeLightingShader.Use();
+
+            GL.BindImageTexture(0, Finalframebuffer.GetColorAttachment(0), 0, false, 0, TextureAccess.WriteOnly, SizedInternalFormat.Rgba16f);
+
+            GL.BindTextureUnit(0, RenderGraph.CompositeBuffer.GetColorAttachment(0));
+            GL.BindTextureUnit(1, framebuffer.GetColorAttachment(0));
+            GL.BindTextureUnit(2, RenderGraph.GeometryBuffer.GetColorAttachment(3));
+
+            MergeLightingShader.Dispatch((int)(RenderGraph.CompositeBuffer.GetSize().X / 8), (int)(RenderGraph.CompositeBuffer.GetSize().Y / 8), 1);
+            MergeLightingShader.Wait();
+
+            Texture.UnbindTexture();
+
+            RendererUtils.BlitFBToScreen(Finalframebuffer, RenderGraph.CompositeBuffer, 1.0f);
         }
 
         public void VisualizeDebug()
@@ -238,7 +287,7 @@ namespace DevoidEngine.Engine.Rendering
             vizualize_voxel_cs.SetVector3("GridMax", GridMax);
             vizualize_voxel_cs.SetFloat("NearPlane", NearPlane);
             vizualize_voxel_cs.SetFloat("FarPlane", FarPlane);
-            vizualize_voxel_cs.SetFloat("ConeAngle", ConeAngle);
+            vizualize_voxel_cs.SetFloat("ConeAngle", MinConeAngle);
             vizualize_voxel_cs.SetFloat("StepMultiplier", StepMultiplier);
             vizualize_voxel_cs.SetVector3("SkyColor", new Vector3(SkyColor.R, SkyColor.G, SkyColor.B));
 
@@ -246,7 +295,6 @@ namespace DevoidEngine.Engine.Rendering
             vizualize_voxel_cs.Dispatch((int)(RenderGraph.CompositeBuffer.GetSize().X / 8), (int)(RenderGraph.CompositeBuffer.GetSize().Y / 8), 1);
 
             vizualize_voxel_cs.Wait();
-            //GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit | MemoryBarrierFlags.TextureFetchBarrierBit);
 
             Texture.UnbindTexture();
 
