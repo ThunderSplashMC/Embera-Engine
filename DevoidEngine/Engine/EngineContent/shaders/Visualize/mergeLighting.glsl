@@ -15,8 +15,9 @@ void main()
     ivec2 imgCoord = ivec2(gl_GlobalInvocationID.xy);
     vec2 uv = (imgCoord + 0.5) / imageSize(ImgResult);
 
+    vec4 sceneAlbedo = texture(gSceneAlbedo, uv);
     vec4 finalColor = texture(gFinalColor, uv);
     vec4 indirectLighting = texture(gVXGI, uv);
 
-    imageStore(ImgResult, imgCoord, vec4(finalColor.xyz +  (indirectLighting.xyz * texture(gSceneAlbedo, uv).xyz), 1.0));
+    imageStore(ImgResult, imgCoord, vec4(finalColor.xyz + (indirectLighting.xyz * sceneAlbedo.xyz), 1.0));
 }

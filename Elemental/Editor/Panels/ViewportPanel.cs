@@ -325,7 +325,7 @@ namespace Elemental.Editor.Panels
 
                 UI.BeginProperty("Max Cone Angle");
 
-                UI.PropertyFloat(ref VoxelTracer.MaxConeAngle, 0.1f);
+                UI.PropertyFloat(ref VoxelTracer.MaxConeAngle, 0.001f, 360, 0.01f);
 
                 UI.EndProperty();
 
@@ -335,11 +335,31 @@ namespace Elemental.Editor.Panels
 
                 UI.EndProperty();
 
+                UI.BeginProperty("SampleLOD");
+
+                UI.PropertyFloat(ref VoxelTracer.SampleLOD);
+
+                UI.EndProperty();
+
+
+                UI.BeginProperty("Max Distance");
+
+                UI.PropertyFloat(ref VoxelTracer.MaxDistance);
+
+                UI.EndProperty();
+
+
+                UI.BeginProperty("Cone Factor");
+
+                UI.PropertyFloat(ref VoxelTracer.ConeFactor);
+
+                UI.EndProperty();
+
                 UI.BeginProperty("Recompile");
 
                 if (UI.DrawButton("Compile Vis."))
                 {
-                    VoxelTracer.vizualize_voxel_cs.ReCompile();
+                    VoxelTracer.ConeTracer.ReCompile();
                 }
 
                 UI.EndProperty();
@@ -478,6 +498,7 @@ namespace Elemental.Editor.Panels
             }
 
             //Guizmo3D.DrawSphere(Vector3.Zero, 2);
+
 
             Guizmo3D.End();
         }

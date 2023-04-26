@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 using DevoidEngine.Engine.Core;
-
+using DevoidEngine.Engine.Rendering;
 
 namespace DevoidEngine.Engine.Utilities
 {
@@ -35,7 +35,7 @@ namespace DevoidEngine.Engine.Utilities
         public Mesh()
         {
             TotalMeshCount += 1;
-            MeshID = TotalMeshCount;
+            MeshID = UtilRandom.Next(RenderGraph.MAX_MESH_COUNT);
         }
 
         ~Mesh()

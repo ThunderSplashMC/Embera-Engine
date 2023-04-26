@@ -80,11 +80,11 @@ namespace DevoidEngine.Engine.Utilities
             for (int i = 0; i < mesh.VertexCount; i++)
             {
                 Vertex vertex;
+                Vector3 modifiedVertex = (Vector4.TransformColumn(ToOpenTKMatrix(transform), new Vector4(mesh.Vertices[i].X, mesh.Vertices[i].Y, mesh.Vertices[i].Z, 1)) * Matrix4.CreateScale(0.02f)).Xyz;
+                Vector3 modifiedNormals = (Vector4.TransformColumn(ToOpenTKMatrix(transform), new Vector4((mesh.Normals[i].X, mesh.Normals[i].Y, mesh.Normals[i].Z, 1))) * Matrix4.CreateScale(0.02f)).Xyz;
                 if (mesh.TextureCoordinateChannels[0].Count != 0)
                 {
                     // (Matrix4.Mult( * new Vector4(mesh.Vertices[i].X, mesh.Vertices[i].Y, mesh.Vertices[i].Z, 1)).xyz;
-                    Vector3 modifiedVertex = (Vector4.TransformColumn(ToOpenTKMatrix(transform), new Vector4(mesh.Vertices[i].X, mesh.Vertices[i].Y, mesh.Vertices[i].Z, 1)) * Matrix4.CreateScale(0.02f)).Xyz;
-                    Vector3 modifiedNormals = (Vector4.TransformColumn(ToOpenTKMatrix(transform), new Vector4((mesh.Normals[i].X, mesh.Normals[i].Y, mesh.Normals[i].Z, 1))) * Matrix4.CreateScale(0.02f)).Xyz;
                     modifiedNormals.Normalize();
                     if (mesh.Tangents.Count > 0 && mesh.BiTangents.Count > 0)
                     {
@@ -96,7 +96,7 @@ namespace DevoidEngine.Engine.Utilities
                 }
                 else
                 {
-                    vertex = new Vertex(new Vector3(mesh.Vertices[i].X, mesh.Vertices[i].Y, mesh.Vertices[i].Z), new Vector3(mesh.Normals[i].X, mesh.Normals[i].Y, mesh.Normals[i].Z), Vector2.Zero);//, new Vector2(mesh.TextureCoordinateChannels[0][i].X, mesh.TextureCoordinateChannels[0][i].Y));
+                    vertex = new Vertex(modifiedVertex, modifiedNormals, Vector2.Zero);//, new Vector2(mesh.TextureCoordinateChannels[0][i].X, mesh.TextureCoordinateChannels[0][i].Y));
                 }
                 // process vertex positions, normals and texture coordinates
                 vertices.Add(vertex);
@@ -112,7 +112,7 @@ namespace DevoidEngine.Engine.Utilities
 
             Vector3 Albedo = new Vector3(meshMat.ColorDiffuse.R, meshMat.ColorDiffuse.G, meshMat.ColorDiffuse.B);
 
-            Engine.Core.Material material = new Engine.Core.Material(new Core.Shader("Engine/EngineContent/shaders/pbr"));
+            Core.Material material = new Core.Material(new Core.Shader("Engine/EngineContent/shaders/pbr"));
             material.Set("material.albedo", Albedo);
             material.Set("material.metallic", meshMat.Shininess * 0.01f);
             material.Set("material.roughness", meshMat.Reflectivity);

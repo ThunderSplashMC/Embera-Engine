@@ -24,6 +24,7 @@ uniform vec3 GridMin;
 uniform vec3 GridMax;
 uniform mat4 W_ORTHOGRAPHIC_MATRIX;
 uniform vec3 SkyColor;
+uniform float SampleLOD = 0;
 
 vec4 TraceCone(vec3 start, vec3 direction, float coneAngle, float stepMultiplier);
 bool RayCuboidIntersect(Ray ray, vec3 min, vec3 max, out float t1, out float t2);
@@ -72,7 +73,7 @@ vec4 TraceCone(vec3 start, vec3 direction, float coneAngle, float stepMultiplier
     vec3 voxelWorldSpaceSize = voxelGridWorldSpaceSize / textureSize(SamplerVoxelsAlbedo, 0);
     float voxelMaxLength = max(voxelWorldSpaceSize.x, max(voxelWorldSpaceSize.y, voxelWorldSpaceSize.z));
     float voxelMinLength = min(voxelWorldSpaceSize.x, min(voxelWorldSpaceSize.y, voxelWorldSpaceSize.z));
-    uint maxLevel = textureQueryLevels(SamplerVoxelsAlbedo) - 1;
+    uint maxLevel = 9;//textureQueryLevels(SamplerVoxelsAlbedo) - 1;
     vec4 accumlatedColor = vec4(0.0);
 
     float distFromStart = voxelMaxLength;
@@ -80,7 +81,7 @@ vec4 TraceCone(vec3 start, vec3 direction, float coneAngle, float stepMultiplier
     {
         float coneDiameter = 2.0 * tan(coneAngle) * distFromStart;
         float sampleDiameter = max(voxelMinLength, coneDiameter);
-        float sampleLod = log2(sampleDiameter / voxelMinLength);
+        float sampleLod = SampleLOD;//log2(sampleDiameter / voxelMinLength);
         
         vec3 worldPos = start + direction * distFromStart;
         vec3 sampleUVT = (vec4(worldPos, 1.0) * W_ORTHOGRAPHIC_MATRIX).xyz * 0.5 + 0.5;

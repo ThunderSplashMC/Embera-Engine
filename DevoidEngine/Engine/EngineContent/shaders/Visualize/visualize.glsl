@@ -7,7 +7,6 @@ layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 layout(binding = 0) restrict writeonly uniform image2D ImgResult;
 
 layout(binding = 0) uniform sampler3D SamplerVoxelsAlbedo;
-layout(binding = 1) uniform sampler2D gPosition;
 layout(binding = 2) uniform sampler2D gNormal;
 layout(binding = 3) uniform sampler2D gDepth;
 layout(binding = 4) uniform sampler2D gSpecRough;
@@ -24,13 +23,14 @@ float InterleavedGradientNoise(vec2 imgCoord, uint index);
 vec3 NDCToWorld(vec3 ndc);
 
 uniform float NormalRayOffset = 1;
-uniform int MaxSamples = 6;
+uniform int MaxSamples = 4;
 uniform float GIBoost = 2.0;
 uniform float GISkyBoxBoost = 0.5;
 uniform float StepMultiplier = 0.16;
 uniform bool IsTemporalAccumulation = false;
 uniform float maxConeAngle = 0.32;
 uniform float minConeAngle = 0.005;
+uniform float coneFactor = 1.0f;
 
 uniform vec3 C_VIEWPOS;
 uniform vec3 GridMax;
@@ -51,21 +51,15 @@ void main()
         return;
     }
 
-    vec3 fragPos = (texture2D(gPosition, uv) * inverse(W_VIEW_MATRIX)).xyz;// * 2.0) - 1.0;//(texture2D(gPosition, uv) * inverse(W_VIEW_MATRIX)).xyz;
-    //(texture2D(gPosition, uv) * inverse(W_VIEW_MATRIX)).xyz;//(NDCToWorld(vec3(uv, depth)) * 2.0) - 1.0;
+    vec3 fragPos = NDCToWorld(vec3(uv, depth) * 2.0 - 1.0);
 
     vec3 normal = (texture(gNormal, uv)).xyz;
-
-    // Hardcoded values
     float specular = texture2D(gSpecRough, uv).r;
     float roughness = texture2D(gSpecRough, uv).g;
 
     vec3 viewDir = fragPos - C_VIEWPOS;
-
-    vec3 reflectionDir = reflect(viewDir, normal);
-    reflectionDir = normalize(mix(reflectionDir, normal, roughness));
-
-    vec3 indirectLight = IndirectLight(fragPos, viewDir, normal, specular, roughness);
+    
+    vec3 indirectLight = IndirectLight(fragPos, viewDir, normal, specular, roughness) * GIBoost;
 
     imageStore(ImgResult, imgCoord, vec4(indirectLight, 1.0));
 }
@@ -76,7 +70,7 @@ vec3 IndirectLight(vec3 point, vec3 incomming, vec3 normal, float specularChance
     float materialVariance = GetMaterialVariance(specularChance, roughness);
     uint samples = uint(mix(1.0, float(MaxSamples), materialVariance));
 
-    uint noiseIndex = 0u;// IsTemporalAccumulation ? (taaDataUBO.Frame % taaDataUBO.Samples) * MaxSamples : 0u;
+    uint noiseIndex = 0u;
     for (uint i = 0; i < samples; i++)
     {
         float rnd0 = InterleavedGradientNoise(vec2(gl_GlobalInvocationID.xy), noiseIndex + 0);
@@ -85,7 +79,6 @@ vec3 IndirectLight(vec3 point, vec3 incomming, vec3 normal, float specularChance
         noiseIndex++;
         
         vec3 dir = CosineSampleHemisphere(normal, rnd0, rnd1);
-
         float coneAngle;
         if (specularChance > rnd2)
         {
@@ -123,14 +116,14 @@ vec4 TraceCone(vec3 start, vec3 direction, vec3 normal, float coneAngle, float s
     float voxelMaxLength = max(voxelWorldSpaceSize.x, max(voxelWorldSpaceSize.y, voxelWorldSpaceSize.z));
     float voxelMinLength = min(voxelWorldSpaceSize.x, min(voxelWorldSpaceSize.y, voxelWorldSpaceSize.z));
     uint maxLevel = textureQueryLevels(SamplerVoxelsAlbedo) - 1;
-    vec4 accumlatedColor = vec4(0);
+    vec4 accumlatedColor = vec4(0.0);
 
-    start += normal * voxelMaxLength * NormalRayOffset;
+    start += normal * NormalRayOffset;
 
     float distFromStart = voxelMaxLength;
     while (accumlatedColor.a < 0.99)
     {
-        float coneDiameter = 2.0 * tan(coneAngle) * distFromStart;
+        float coneDiameter = 2.0 * tan(coneAngle) * distFromStart * coneFactor;
         float sampleDiameter = max(voxelMinLength, coneDiameter);
         float sampleLod = log2(sampleDiameter / voxelMinLength);
         
@@ -176,13 +169,6 @@ float InterleavedGradientNoise(vec2 imgCoord, uint index)
 
 vec3 NDCToWorld(vec3 ndc)
 {
-    vec4 viewPos = vec4(ndc, 1.0) * inverse(W_VIEW_MATRIX);
+    vec4 viewPos =  vec4(ndc, 1.0) * (inverse(W_PROJECTION_MATRIX) * inverse(W_VIEW_MATRIX));
     return viewPos.xyz / viewPos.w;
-}
-
-vec3 GetWorldSpaceDirection(mat4 inverseProj, mat4 inverseView, vec2 normalizedDeviceCoords)
-{
-    vec4 rayEye = inverseProj * vec4(normalizedDeviceCoords, -1.0, 0.0);
-    rayEye.zw = vec2(-1.0, 0.0);
-    return normalize((inverseView * rayEye).xyz);
 }

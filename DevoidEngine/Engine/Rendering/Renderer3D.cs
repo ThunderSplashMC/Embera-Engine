@@ -326,6 +326,7 @@ namespace DevoidEngine.Engine.Rendering
 
         public static void ShadowPass()
         {
+            GL.CullFace(CullFaceMode.Front);
             for (int i = 0; i < PointLights.Count; i++)
             {
 
@@ -367,6 +368,7 @@ namespace DevoidEngine.Engine.Rendering
                 ResetViewport();
                 ShadowDepthAttachments.Add(light.depthTexture);
             }
+            GL.CullFace(CullFaceMode.Back);
         }
 
         public static void GeometryPass()
@@ -396,8 +398,6 @@ namespace DevoidEngine.Engine.Rendering
                 DrawList[i].mesh.Material.SetPropertyTexture(RendererUtils.GeometryShader, "material.ALBEDO_TEX", 1);
 
                 DrawList[i].mesh.Draw();
-
-                Console.WriteLine(DrawList[i].mesh.Material.GetFloat("material.roughness"));
 
                 RenderGraph.Renderer_3D_DrawCalls += 1;
             }

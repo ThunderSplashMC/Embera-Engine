@@ -37,15 +37,19 @@ namespace DevoidEngine.Engine.Rendering
         public float NearPlane = 0.1f;
         public float FarPlane = 1000f;
 
+        public float SampleLOD = 0;
+
         public float MinConeAngle = 0.005f;
         public float MaxConeAngle = 0.32f;
 
         public float NormalRayOffset = 1;
-        public int MaxSamples = 12;
+        public int MaxSamples = 4;
         public float GIBoost = 2.0f;
         public float GISkyBoxBoost = 0.5f;
         public float StepMultiplier = 0.16f;
         public bool IsTemporalAccumulation = false;
+        public float MaxDistance = 1f;
+        public float ConeFactor = 1f;
 
         Matrix4 orthographicMatrix;
 
@@ -61,23 +65,11 @@ namespace DevoidEngine.Engine.Rendering
             GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureWrapR, (float)TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureWrapS, (float)TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureWrapT, (float)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureMaxLevel, 1);
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture3D);
-            GL.TexStorage3D(TextureTarget3d.Texture3D, 1, SizedInternalFormat.Rgba8, textureRes, textureRes, textureRes);
+            GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureMaxLevel, Texture.GetMaxMipmapLevel(textureRes, textureRes, textureRes));
+            GL.TexStorage3D(TextureTarget3d.Texture3D, Texture.GetMaxMipmapLevel(textureRes, textureRes, textureRes), SizedInternalFormat.Rgba8, textureRes, textureRes, textureRes);
             GL.BindTexture(TextureTarget.Texture3D, 0);
 
-            int w = textureRes, h = textureRes, d = textureRes;
-            Vector4[] voxels = new Vector4[w * h * d];
-            Random rng = new Random();
-            for (int i = 0; i < voxels.Length; i++)
-            {
-                if (rng.Next(0, 1000) < 1) // 0.1% chance of setting a voxel
-                {
-                    Vector4 rnd = new Vector4(rng.NextSingle(), rng.NextSingle(), rng.NextSingle(), 1.0f);
-                    voxels[i] = rnd;
-                }
-            }
-            GL.TextureSubImage3D(voxel_texture, 0, 0, 0, 0, w, h, d, PixelFormat.Rgba, PixelType.Float, voxels);
+            Console.WriteLine(Texture.GetMaxMipmapLevel(textureRes, textureRes, textureRes));
 
             FrameBufferSpecification specs = new FrameBufferSpecification()
             {
@@ -123,9 +115,9 @@ namespace DevoidEngine.Engine.Rendering
             base.Resize(width, height);
         }
 
-        public Vector3 GridMin = new Vector3(-50,-50,-50);
+        public Vector3 GridMin = new Vector3(-28,-3,-17);
 
-        public Vector3 GridMax = new Vector3(50,50,50);
+        public Vector3 GridMax = new Vector3(28,20,17);
 
         private Vector3 prevGridMin;
         private Vector3 prevGridMax;
@@ -172,8 +164,9 @@ namespace DevoidEngine.Engine.Rendering
 
                 Material material = drawList[i].mesh.Material;
 
-                voxelize_shader.SetVector3("material.albedo", material.GetVec3("material.albedo"));
-                voxelize_shader.SetVector3("material.emission", material.GetVec3("material.emission"));
+                material.SetPropertyVector3(voxelize_shader, "material.albedo");
+                material.SetPropertyVector3(voxelize_shader, "material.emission");
+                material.SetPropertyFloat(voxelize_shader, "material.emissionStr");
 
                 if (material.GetInt("USE_TEX_0") == 1)
                 {
@@ -202,13 +195,13 @@ namespace DevoidEngine.Engine.Rendering
 
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit | MemoryBarrierFlags.TextureFetchBarrierBit);
 
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture3D);
-
             Renderer3D.ResetViewport();
 
             GL.ColorMask(true, true, true, true);
 
             framebuffer.UnBind();
+
+            GL.GenerateTextureMipmap(voxel_texture);
         }
 
         public void Visualize()
@@ -236,10 +229,12 @@ namespace DevoidEngine.Engine.Rendering
             ConeTracer.SetFloat("NormalRayOffset", NormalRayOffset);
             ConeTracer.SetFloat("GIBoost", GIBoost);
             ConeTracer.SetFloat("StepMultiplier", StepMultiplier);
-            ConeTracer.SetFloat("minConeAngle", MinConeAngle);
-            ConeTracer.SetFloat("maxConeAngle", MaxConeAngle);
             ConeTracer.SetInt("MaxSamples", MaxSamples);
             ConeTracer.SetBool("IsTemporalAccumulation", IsTemporalAccumulation);
+            ConeTracer.SetFloat("MaxDistance", MaxDistance);
+            ConeTracer.SetFloat("maxConeAngle", MaxConeAngle);
+            ConeTracer.SetFloat("minConeAngle", MinConeAngle);
+            ConeTracer.SetFloat("coneFactor", ConeFactor);
 
 
             ConeTracer.Dispatch((int)(RenderGraph.CompositeBuffer.GetSize().X / 8), (int)(RenderGraph.CompositeBuffer.GetSize().Y / 8), 1);
@@ -290,6 +285,8 @@ namespace DevoidEngine.Engine.Rendering
             vizualize_voxel_cs.SetFloat("ConeAngle", MinConeAngle);
             vizualize_voxel_cs.SetFloat("StepMultiplier", StepMultiplier);
             vizualize_voxel_cs.SetVector3("SkyColor", new Vector3(SkyColor.R, SkyColor.G, SkyColor.B));
+
+            vizualize_voxel_cs.SetFloat("SampleLOD", SampleLOD);
 
 
             vizualize_voxel_cs.Dispatch((int)(RenderGraph.CompositeBuffer.GetSize().X / 8), (int)(RenderGraph.CompositeBuffer.GetSize().Y / 8), 1);

@@ -22,6 +22,7 @@ struct Material {
     sampler2D NORMAL_TEX;
     vec3  albedo;
     vec3 emission;
+    float emissionStr;
     float metallic;
     float roughness;
     float ao;
@@ -153,7 +154,7 @@ void main()
         Lo += CalcPointLight(L_POINTLIGHTS[i], WorldNormal, F0, V);
     }
 
-    Lo += GetEmission();
+    Lo += GetEmission() * material.emissionStr;
 
     vec3 position = (vec4(WorldPos, 1.0) * W_ORTHOGRAPHIC_MATRIX).xyz;
 
@@ -163,5 +164,5 @@ void main()
 
     vec3 normalizedPos = vec3(normalizedX, normalizedY, normalizedZ);
 
-    imageStore(gTexture3D, ivec3(imageSize(gTexture3D) * normalizedPos), vec4(Lo + vec3(0.03), 1.0f));
+    imageStore(gTexture3D, ivec3(imageSize(gTexture3D) * normalizedPos), vec4(Lo, 1.0f));
 }

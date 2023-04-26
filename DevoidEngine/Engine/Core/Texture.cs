@@ -1,6 +1,7 @@
 ﻿using DevoidEngine.Engine.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using System;
 using System.IO;
 
 namespace DevoidEngine.Engine.Core
@@ -149,6 +150,11 @@ namespace DevoidEngine.Engine.Core
                 GL.ActiveTexture((TextureUnit)((int)unit));
                 GL.BindTexture(textureTarget, TextureHandle);
             }
+        }
+
+        public static int GetMaxMipmapLevel(int width, int height, int depth)
+        {
+            return MathF.ILogB(Math.Max(width, Math.Max(height, depth))) + 1;
         }
 
         public int GetTexture()

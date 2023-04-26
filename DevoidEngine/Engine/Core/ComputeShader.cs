@@ -121,9 +121,6 @@ namespace DevoidEngine.Engine.Core
 
         public void ReCompile()
         {
-
-            int computeShader;
-
             string ComputeShaderSource;
 
             using (StreamReader reader = new StreamReader(Cpath, Encoding.UTF8))
@@ -131,9 +128,9 @@ namespace DevoidEngine.Engine.Core
                 ComputeShaderSource = reader.ReadToEnd();
             }
 
-            computeShader = GL.CreateShader(ShaderType.ComputeShader);
-            GL.ShaderSource(computeShader, ComputeShaderSource);
-            CompileSource(computeShader);
+            Handle = GL.CreateShader(ShaderType.ComputeShader);
+            GL.ShaderSource(Handle, ComputeShaderSource);
+            CompileSource(Handle);
         }
 
         public void SetFloatArray(float[] values)

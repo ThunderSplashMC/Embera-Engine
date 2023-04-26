@@ -28,9 +28,9 @@ namespace Elemental.Editor.EditorUtils
         static LineRenderer LineRenderer;
 
         static FrameBuffer GuizmoBuffer;
-        
+
         static Camera GuizmoView;
-        
+
         static List<GuizmoIcon> GuizmoIcons = new List<GuizmoIcon>();
 
         public static void Init(int width, int height, FrameBuffer CompositeBuffer)
@@ -121,6 +121,19 @@ namespace Elemental.Editor.EditorUtils
 
             SphereMesh.Draw();
 
+        }
+
+        public static void DrawCube(Vector3 pos, Vector3 rot, Vector3 scale)
+        {
+            Matrix4 MODELMATRIX = Matrix4.CreateRotationX(rot.X) * Matrix4.CreateRotationY(rot.Y) * Matrix4.CreateRotationZ(rot.Z);
+            MODELMATRIX *= Matrix4.CreateScale(scale);
+            MODELMATRIX *= Matrix4.CreateTranslation(pos);
+
+            DummyShader.Use();
+            DummyShader.SetMatrix4("W_MODEL_MATRIX", MODELMATRIX);
+            DummyShader.SetMatrix4("W_PROJECTION_MATRIX", RenderGraph.Camera.GetProjectionMatrix());
+            DummyShader.SetMatrix4("W_VIEW_MATRIX", RenderGraph.Camera.GetViewMatrix());
+            RendererUtils.CubeVAO.Render();
         }
 
         public static void DrawWireSphere(Vector3 position, float radius)

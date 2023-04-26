@@ -65,8 +65,8 @@ namespace DevoidEngine.Engine.Utilities
 
         static int CreateRandomNum()
         {
-            Random rnd = new Random();
-            return rnd.Next();
+            int rnd = UtilRandom.Next();
+            return rnd;
         }
     }
 }

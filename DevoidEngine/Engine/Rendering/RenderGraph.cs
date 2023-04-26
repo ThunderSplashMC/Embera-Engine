@@ -8,6 +8,8 @@ namespace DevoidEngine.Engine.Rendering
 {
     public class RenderGraph
     {
+        public static int MAX_MESH_COUNT = 100000;
+
         public static int MAX_POINT_LIGHTS = 8;
         public static int MAX_SPOT_LIGHTS = 8;
         public static int MAX_POINT_SHADOW_BUFFERS = 8;
@@ -46,6 +48,8 @@ namespace DevoidEngine.Engine.Rendering
         public static RenderPass SSRPass;
 
         public static Bloom BloomRenderer;
+
+        public static MeshSystem MeshSystem;
 
         public static void Init()
         {

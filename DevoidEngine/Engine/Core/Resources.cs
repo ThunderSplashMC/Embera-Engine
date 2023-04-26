@@ -50,6 +50,8 @@ namespace DevoidEngine.Engine.Core
 
             ModelImporter.ModelData[] Data = ModelImporter.LoadModel(path);
 
+            if (Data == null) return null;
+
             List<Mesh> meshes = new List<Mesh>();
 
             for (int i = 0; i < Data.Length; i++)
