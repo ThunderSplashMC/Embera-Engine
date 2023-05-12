@@ -15,8 +15,8 @@ using DevoidEngine.Engine.Core;
 using DevoidEngine.Engine.Utilities;
 using System.Runtime.InteropServices;
 using OIconFont;
-using imnodesNET;
 using MaterialIconFont;
+using ImGuizmoNET;
 
 namespace DevoidEngine.Engine.Imgui
 {
@@ -62,7 +62,7 @@ namespace DevoidEngine.Engine.Imgui
             io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset;
             io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
 
-            _CurrentFont = io.Fonts.AddFontFromFileTTF("Engine/EngineContent/Fonts/JetBrainsMono-Bold.ttf", 16f);
+            _CurrentFont = io.Fonts.AddFontFromFileTTF("Engine/EngineContent/Fonts/JetBrainsMono-Regular.ttf", 16f);
 
             LoadIconFont("Engine/EngineContent/Fonts/forkawesome-webfont.ttf", 16, (FontAwesome.ForkAwesome.IconMin, FontAwesome.ForkAwesome.IconMax16));
             LoadIconFont("Engine/EngineContent/Fonts/MaterialIcons-Regular.ttf", 16, (MaterialDesign.IconMin, MaterialDesign.IconMax16));
@@ -218,6 +218,7 @@ namespace DevoidEngine.Engine.Imgui
             _frameBegun = true;
             
             ImGui.NewFrame();
+            ImGuizmo.BeginFrame();
 
             elapsedTime += deltaSeconds;
 
@@ -387,7 +388,7 @@ namespace DevoidEngine.Engine.Imgui
             io.KeyMap[(int)ImGuiKey.Backspace] = (int)Keys.Backspace;
             io.KeyMap[(int)ImGuiKey.Enter] = (int)Keys.Enter;
             io.KeyMap[(int)ImGuiKey.Escape] = (int)Keys.Escape;
-            io.KeyMap[(int)ImGuiKey.CapsLock] = (int)Keys.CapsLock;
+            //io.KeyMap[(int)ImGuiKey.CapsLock] = (int)Keys.CapsLock;
 
         }
 
@@ -510,7 +511,7 @@ namespace DevoidEngine.Engine.Imgui
             GL.Disable(EnableCap.ScissorTest);
         }
 
-        ImGuiWindowFlags windowFlags = /*ImGuiWindowFlags.MenuBar |*/ ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoNavFocus | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.DockNodeHost;
+        ImGuiWindowFlags windowFlags = /*ImGuiWindowFlags.MenuBar |*/ ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoNavFocus /*| ImGuiWindowFlags.NoBackground*/ | ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.DockNodeHost;
         bool firstFrame = true;
 
         public void SetUpDockspace()

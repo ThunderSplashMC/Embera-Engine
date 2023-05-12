@@ -1,9 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,10 +31,13 @@
     <None Remove="Editor\Assets\script-icn.png" />
     <None Remove="Editor\Assets\Shaders\dummy\dummy.frag" />
     <None Remove="Editor\Assets\Shaders\dummy\dummy.vert" />
+    <None Remove="Editor\Assets\Shaders\Experimental\grid.frag" />
+    <None Remove="Editor\Assets\Shaders\Experimental\grid.vert" />
     <None Remove="Editor\Assets\Shaders\grid.frag" />
     <None Remove="Editor\Assets\Shaders\grid.vert" />
     <None Remove="Editor\Assets\Shaders\guizmo.frag" />
     <None Remove="Editor\Assets\Shaders\guizmo.vert" />
+    <None Remove="Editor\Assets\Shaders\ObjectSelect\objectselect.glsl" />
     <None Remove="Editor\Assets\Shaders\outline\edgedetection.frag" />
     <None Remove="Editor\Assets\Shaders\outline\edgedetection.vert" />
     <None Remove="Editor\Assets\Shaders\outline\outline.frag" />
@@ -113,6 +117,12 @@
     <Content Include="Editor\Assets\Shaders\dummy\dummy.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Editor\Assets\Shaders\Experimental\grid.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\Shaders\Experimental\grid.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Editor\Assets\Shaders\grid.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -123,6 +133,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Editor\Assets\Shaders\guizmo.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Editor\Assets\Shaders\ObjectSelect\objectselect.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Editor\Assets\Shaders\outline\edgedetection.frag">
@@ -149,7 +162,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="ImTool" Version="1.4.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\DevoidEngine\DevoidEngine.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ImGui.NET">
+      <HintPath>..\DevoidEngine\Engine\Imgui\imnodes\ImGui.NET.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

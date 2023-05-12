@@ -123,7 +123,7 @@ vec4 TraceCone(vec3 start, vec3 direction, vec3 normal, float coneAngle, float s
     float distFromStart = voxelMaxLength;
     while (accumlatedColor.a < 0.99)
     {
-        float coneDiameter = 2.0 * tan(coneAngle) * distFromStart * coneFactor;
+        float coneDiameter = 2.0 * tan(coneAngle * coneFactor) * distFromStart;
         float sampleDiameter = max(voxelMinLength, coneDiameter);
         float sampleLod = log2(sampleDiameter / voxelMinLength);
         

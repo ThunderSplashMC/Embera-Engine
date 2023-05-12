@@ -6,7 +6,10 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Mathematics;
 
+using imnodesNET;
+
 using ImGuiNET;
+using ImGuizmoNET;
 
 namespace DevoidEngine.Engine.Imgui
 {
@@ -22,6 +25,9 @@ namespace DevoidEngine.Engine.Imgui
 
             Context = ImGui.CreateContext();
             ImGui.SetCurrentContext(Context);
+            imnodes.Initialize();
+            imnodes.SetImGuiContext(Context);
+            ImGuizmo.SetImGuiContext(Context);
 
             imguiAPI = new ImguiAPI(window);
         }

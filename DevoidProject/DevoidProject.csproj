@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -10,8 +10,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ImTool" Version="1.4.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\DevoidEngine\DevoidEngine.csproj" />
     <ProjectReference Include="..\Elemental\Elemental.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ImGui.NET">
+      <HintPath>..\Outputs\Debug\net7.0\ImGui.NET.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

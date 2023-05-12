@@ -95,7 +95,7 @@ namespace Elemental.Editor.EditorUtils
 
             frameBuffer2.Bind();
 
-            GL.ClearColor(0, 0, 0, 0);
+            GL.ClearColor(RenderGraph.Camera.ClearColor.X, RenderGraph.Camera.ClearColor.Y, RenderGraph.Camera.ClearColor.Z, 0);
 
             RendererUtils.Clear();
 
@@ -130,7 +130,7 @@ namespace Elemental.Editor.EditorUtils
 
             frameBuffer2.UnBind();
 
-            RendererUtils.BlitFBToScreen(frameBuffer2, RenderGraph.CompositeBuffer);
+            RendererUtils.BlitFBToScreen(frameBuffer2, RenderGraph.CompositeBuffer, 0.5f, true);
 
         }
 

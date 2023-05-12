@@ -272,10 +272,19 @@ namespace DevoidEngine.Engine.GUI
         }
 
 
-        public static bool Button(string label, Vector2 size)
+        public static bool Button(string label, Vector2 size, Vector4? color = null)
         {
+            if (color != null)
+            {
+                ImGui.PushStyleColor(ImGuiCol.Button, new System.Numerics.Vector4(color.Value.X, color.Value.Y, color.Value.Z, color.Value.W));
+            }
             System.Numerics.Vector2 framepadding = ImGui.GetStyle().FramePadding;
-            return ImGui.Button(label, new System.Numerics.Vector2(size.X + framepadding.X, size.Y + framepadding.Y));
+            bool value = ImGui.Button(label, new System.Numerics.Vector2(size.X + framepadding.X, size.Y + framepadding.Y));
+            if (color != null)
+            {
+                ImGui.PopStyleColor();
+            }
+            return value;
         }
 
         public static float GetWindowHeight()

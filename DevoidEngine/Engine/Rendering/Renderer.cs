@@ -8,20 +8,20 @@ namespace DevoidEngine.Engine.Rendering
     public class Renderer
     {
         public static bool isInitialized = false;
+        public static DeviceInformation DeviceInformation;
 
         public static void Init(int width, int height)
         {
+            SystemInfo.Validate();
+            if (!SystemInfo.GetDeviceInfo().isComputeShaderSupported)
+                throw new Exception("Compute shaders are not supported on this device");
+
             RenderGraph.ViewportHeight = height;
             RenderGraph.ViewportWidth = width;
             RendererUtils.Init();
             Renderer2D.Init(width, height);
             Renderer3D.Init(width, height);
             isInitialized = true;
-
-            //
-            RenderGraph.SSRPass = new ScreenspaceReflections();
-            Renderer3D.AddRenderPass(RenderGraph.SSRPass);
-            //
         }
 
         public static void Render()

@@ -5,7 +5,6 @@ using Assimp;
 using ImGuiNET;
 using Microsoft.VisualBasic;
 using OpenTK.Mathematics;
-using YamlDotNet.Core.Tokens;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace Elemental.Editor.EditorUtils

@@ -8,7 +8,7 @@ namespace DevoidEngine.Engine.Core
 {
     public enum TextureFormat
     {
-        RGB,
+        RGB = 6487,
         RGBA8,
         RGBA16F,
         RGBA32F,
@@ -123,11 +123,6 @@ namespace DevoidEngine.Engine.Core
             }
         }
 
-        public void BindTexture()
-        {
-            GL.BindTexture(TextureTarget.Texture2D, TextureHandle);
-        }
-
         public static void UnbindTexture()
         {
             GL.BindTexture(TextureTarget.Texture2D, 0);
@@ -140,16 +135,9 @@ namespace DevoidEngine.Engine.Core
             GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
-        public void SetActiveUnit(TextureActiveUnit unit, TextureTarget textureTarget = TextureTarget.Texture2D)
+        public void BindUnit(int unit)
         {
-            if (textureTarget == TextureTarget.Texture2D)
-            {
-                GL.BindTextureUnit((int)unit, TextureHandle);
-            } else
-            {
-                GL.ActiveTexture((TextureUnit)((int)unit));
-                GL.BindTexture(textureTarget, TextureHandle);
-            }
+            GL.BindTextureUnit(unit, TextureHandle);
         }
 
         public static int GetMaxMipmapLevel(int width, int height, int depth)

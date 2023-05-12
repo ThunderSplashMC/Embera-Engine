@@ -106,6 +106,10 @@ namespace DevoidEngine.Engine.Rendering
                     },
                     new ColorAttachment() {
                         textureFormat = FrameBufferTextureFormat.RGBA16F, textureType = FrameBufferTextureType.Texture2D
+                    },
+                    new ColorAttachment()
+                    {
+                        textureFormat = FrameBufferTextureFormat.R32I, textureType = FrameBufferTextureType.Texture2D
                     }
     },
                 DepthAttachment = new DepthAttachment()
@@ -189,10 +193,11 @@ namespace DevoidEngine.Engine.Rendering
 
             ShadowPass();
             GeometryPass();
+            DepthPrePass();
             LightingPass();
             BloomPass();
             CompositePass();
-            StorePass();
+            //StorePass();
 
             for (int i = 0; i < RenderPasses.Count; i++)
             {
@@ -228,18 +233,43 @@ namespace DevoidEngine.Engine.Rendering
             RendererUtils.SkyboxShader.SetFloat("Intensity", RenderGraph.SkyboxIntensity);
             RendererUtils.SkyboxShader.SetInt("skybox", 0);
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.TextureCubeMap, RenderGraph.SkyboxCubemap.CubeMapTex);
+            GL.BindTexture(TextureTarget.TextureCubeMap, RenderGraph.SkyboxCubemap.GetRendererID());
             RendererUtils.CubeVAO.Render();
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.CullFace);
+        }
+
+        static void DepthPrePass()
+        {
+            RenderGraph.LightBuffer.Bind();
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+            GL.Disable(EnableCap.CullFace);
+            GL.Enable(EnableCap.DepthTest);
+
+            GL.ColorMask(false, false, false, false);
+
+            //GL.DepthFunc(DepthFunction.Less);
+
+            RendererUtils.DepthPrePassShader.Use();
+            GL.BindTextureUnit(0, RenderGraph.GeometryBuffer.GetDepthAttachment());
+            RendererUtils.QuadVAO.Render();
+
+            GL.ColorMask(true, true, true, true);
+
+            RenderGraph.LightBuffer.UnBind();
         }
 
         static void LightingPass()
         {
             RenderGraph.LightBuffer.Bind();
 
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.Clear(ClearBufferMask.DepthBufferBit);
+            GL.Enable(EnableCap.CullFace);
+            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
+            GL.DepthFunc(DepthFunction.Equal);
 
             for (int i = 0; i < RenderPasses.Count; i++)
             {
@@ -260,8 +290,6 @@ namespace DevoidEngine.Engine.Rendering
                 UploadModelData(DrawList[i].mesh.Material.GetShader(), DrawList[i].position, DrawList[i].rotation, DrawList[i].scale);
 
                 DrawList[i].mesh.Material.Apply();
-
-                int texCount = DrawList[i].mesh.Material.GetAllTexAttributes().Length;
 
                 for (int x = 0; x < RenderGraph.MAX_POINT_SHADOW_BUFFERS; x++)
                 {
@@ -377,6 +405,9 @@ namespace DevoidEngine.Engine.Rendering
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Less);
+
             RendererUtils.GeometryShader.Use();
 
             UploadCameraData(RendererUtils.GeometryShader);
@@ -396,6 +427,8 @@ namespace DevoidEngine.Engine.Rendering
                 DrawList[i].mesh.Material.SetPropertyInt(RendererUtils.GeometryShader, "USE_TEX_4");
                 DrawList[i].mesh.Material.SetPropertyTexture(RendererUtils.GeometryShader, "material.ROUGHNESS_TEX", 0);
                 DrawList[i].mesh.Material.SetPropertyTexture(RendererUtils.GeometryShader, "material.ALBEDO_TEX", 1);
+
+                RendererUtils.GeometryShader.SetInt("OBJECT_UUID", (int)DrawList[i].associateObject);
 
                 DrawList[i].mesh.Draw();
 

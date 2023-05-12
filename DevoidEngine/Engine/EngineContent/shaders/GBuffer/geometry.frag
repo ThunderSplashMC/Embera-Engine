@@ -7,6 +7,7 @@ layout (location = 0) out vec4 gPosition;
 layout (location = 1) out vec4 gNormal;
 layout (location = 2) out vec4 gSpecRough;
 layout (location = 3) out vec4 gSceneAlbedo;
+layout (location = 4) out int gObjectUUID;
 
 in vec3 Normal;
 in vec2 texCoords;
@@ -36,6 +37,8 @@ uniform int USE_TEX_4;
 
 
 uniform Material material;
+
+uniform int OBJECT_UUID;
 
 vec3 GammaCorrectTexture(sampler2D tex, vec2 uv)
 {
@@ -80,4 +83,6 @@ void main()
     gNormal = vec4(normalize(Normal), 1);
     gSpecRough = vec4(material.metallic, GetRoughness(), 0, 1);
     gSceneAlbedo = vec4(GetAlbedo(), GetAlbedoAlpha());
+
+    gObjectUUID = OBJECT_UUID;
 }  

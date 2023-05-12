@@ -61,6 +61,7 @@ namespace Elemental.Editor.Panels
                             SceneList[dragItem] = scene;
                             ImGui.AcceptDragDropPayload("scene-reorder");
                             ImGui.EndDragDropTarget();
+                            dragItem = -1;
                         }
                     }
 

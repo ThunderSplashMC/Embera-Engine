@@ -37,6 +37,8 @@ namespace Elemental
         public static ConsolePanel ConsoleService;
         public static FileSystem FileSystem;
         public DragDropService DragDropService;
+        public GameObjectPanel GameObjectPanel;
+        public ViewportPanel ViewportPanel;
 
         public AssetManager AssetManager;
 
@@ -66,13 +68,19 @@ namespace Elemental
 
             EditorScene.Init();
 
+            // Store Panels
+
+            ViewportPanel = new ViewportPanel();
+            GameObjectPanel = new GameObjectPanel();
+
             // Create Panels
-            EditorPanels.Add(new ViewportPanel());
+            EditorPanels.Add(ViewportPanel);
             EditorPanels.Add(new ContentBrowserPanel());
-            EditorPanels.Add(new GameObjectPanel());
+            EditorPanels.Add(GameObjectPanel);
             EditorPanels.Add(new MaterialPanel());
             EditorPanels.Add(new BuildPanel());
             EditorPanels.Add(ConsoleService);
+            EditorPanels.Add(new StatisticsPanel());
 
             // On Init
             OnInitPanels();
@@ -171,6 +179,7 @@ namespace Elemental
             style.Colors[(int)ImGuiCol.ButtonHovered] = new System.Numerics.Vector4(0.4f, 0.4f, 0.4f, 1f);
             style.Colors[(int)ImGuiCol.ButtonActive] = new System.Numerics.Vector4(0.6f, 0.6f, 0.6f, 1f);
             style.Colors[(int)ImGuiCol.Separator] = new System.Numerics.Vector4(0.2f, 0.2f, 0.2f, 1f);
+            style.Colors[(int)ImGuiCol.Separator] = new System.Numerics.Vector4(0.1f, 0.1f, 0.1f, 1f);
             style.Colors[(int)ImGuiCol.TitleBgActive] = new System.Numerics.Vector4(0.1f, 0.1f, 0.1f, 1);
             style.Colors[(int)ImGuiCol.TitleBg] = new System.Numerics.Vector4(0.1f, 0.1f, 0.1f,1);
             style.Colors[((int)ImGuiCol.WindowBg)] = new System.Numerics.Vector4(0.14f, 0.14f, 0.14f, 1);
@@ -194,8 +203,6 @@ namespace Elemental
             style.FrameRounding = 3f;
             style.TabRounding = 3f;
             style.PopupRounding = 5f;
-
-
         }
 
         public void OnGUIRenderPanels()

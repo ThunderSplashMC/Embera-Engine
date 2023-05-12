@@ -18,6 +18,7 @@ namespace DevoidEngine.Engine.Rendering
         Shader voxelize_shader = new Shader("Engine/EngineContent/shaders/Voxelize/voxelize.vert", "Engine/EngineContent/shaders/Voxelize/voxelize.frag", "Engine/EngineContent/shaders/Voxelize/voxelize.geom");
         public ComputeShader vizualize_voxel_cs = new ComputeShader("Engine/EngineContent/shaders/Visualize/Debug/visualize.glsl", new Vector3i(64,64,64));
 
+        public ComputeShader ConeTracerExp = new ComputeShader("Engine/EngineContent/shaders/Visualize/Experimental/ConeTrace.glsl");
         public ComputeShader ConeTracer = new ComputeShader("Engine/EngineContent/shaders/Visualize/visualize.glsl");
         public ComputeShader MergeLightingShader = new ComputeShader("Engine/EngineContent/shaders/Visualize/mergeLighting.glsl");
 
@@ -32,7 +33,7 @@ namespace DevoidEngine.Engine.Rendering
 
         int voxel_texture;
 
-        int textureRes = 256;
+        int textureRes = 128;
 
         public float NearPlane = 0.1f;
         public float FarPlane = 1000f;
@@ -99,7 +100,8 @@ namespace DevoidEngine.Engine.Rendering
                 Voxelize();
                 if (Debug)
                 {
-                    VisualizeDebug();
+                    //VisualizeDebug();
+                    VisualizeExp();
                 } else
                 {
                     Visualize();
@@ -172,7 +174,7 @@ namespace DevoidEngine.Engine.Rendering
                 {
                     voxelize_shader.SetInt("USE_TEX_0", 1);
                     voxelize_shader.SetInt("material.ALBEDO_TEX", 0);
-                    material.GetTexture("material.ALBEDO_TEX").SetActiveUnit(TextureActiveUnit.UNIT0);
+                    material.GetTexture("material.ALBEDO_TEX").BindUnit(0);
                 }
                 else
                 {
@@ -183,7 +185,7 @@ namespace DevoidEngine.Engine.Rendering
                 {
                     voxelize_shader.SetInt("USE_TEX_2", 1);
                     voxelize_shader.SetInt("material.EMISSION_TEX", 1);
-                    material.GetTexture("material.EMISSION_TEX").SetActiveUnit(TextureActiveUnit.UNIT1);
+                    material.GetTexture("material.EMISSION_TEX").BindUnit(1);
                 }
                 else
                 {
@@ -297,6 +299,52 @@ namespace DevoidEngine.Engine.Rendering
 
             RendererUtils.BlitFBToScreen(framebuffer, RenderGraph.CompositeBuffer, DebugViewOpacity);
 
+        }
+
+        public void VisualizeExp()
+        {
+
+            ConeTracerExp.Use();
+
+            GL.BindImageTexture(0, framebuffer.GetColorAttachment(0), 0, false, 0, TextureAccess.WriteOnly, SizedInternalFormat.Rgba16f);
+
+            GL.BindTextureUnit(0, voxel_texture);
+            GL.BindTextureUnit(1, RenderGraph.GeometryBuffer.GetColorAttachment(1));
+            GL.BindTextureUnit(2, RenderGraph.GeometryBuffer.GetDepthAttachment());
+            GL.BindTextureUnit(3, RenderGraph.GeometryBuffer.GetColorAttachment(2));
+            GL.BindTextureUnit(4, RenderGraph.GeometryBuffer.GetColorAttachment(3));
+
+            ConeTracerExp.SetMatrix4("W_PROJECTION_MATRIX", RenderGraph.Camera.GetProjectionMatrix());
+            ConeTracerExp.SetMatrix4("W_VIEW_MATRIX", RenderGraph.Camera.GetViewMatrix());
+            ConeTracerExp.SetVector3("C_VIEWPOS", RenderGraph.Camera.position);
+
+            //ConeTracer.SetMatrix4("W_ORTHOGRAPHIC_MATRIX", orthographicMatrix);
+
+            ConeTracerExp.SetVector3("GridMin", GridMin);
+            ConeTracerExp.SetVector3("GridMax", GridMax);
+
+
+            ConeTracerExp.Dispatch((int)(RenderGraph.CompositeBuffer.GetSize().X / 8), (int)(RenderGraph.CompositeBuffer.GetSize().Y / 8), 1);
+
+            ConeTracerExp.Wait();
+
+            Texture.UnbindTexture();
+
+
+            MergeLightingShader.Use();
+
+            GL.BindImageTexture(0, Finalframebuffer.GetColorAttachment(0), 0, false, 0, TextureAccess.WriteOnly, SizedInternalFormat.Rgba16f);
+
+            GL.BindTextureUnit(0, RenderGraph.CompositeBuffer.GetColorAttachment(0));
+            GL.BindTextureUnit(1, framebuffer.GetColorAttachment(0));
+            GL.BindTextureUnit(2, RenderGraph.GeometryBuffer.GetColorAttachment(3));
+
+            MergeLightingShader.Dispatch((int)(RenderGraph.CompositeBuffer.GetSize().X / 8), (int)(RenderGraph.CompositeBuffer.GetSize().Y / 8), 1);
+            MergeLightingShader.Wait();
+
+            Texture.UnbindTexture();
+
+            RendererUtils.BlitFBToScreen(Finalframebuffer, RenderGraph.CompositeBuffer, 1.0f);
         }
 
     }

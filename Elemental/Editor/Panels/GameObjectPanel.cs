@@ -92,6 +92,7 @@ namespace Elemental.Editor.Panels
             SceneRegistry sceneRegistry = Editor.EditorScene.GetSceneRegistry();
             GameObject[] gameObjects = sceneRegistry.GetAllGameObjects();
 
+            ImGui.PushStyleColor(ImGuiCol.TableHeaderBg, new System.Numerics.Vector4(0.3f, 0.3f, 0.3f, 1));
             if (ImGui.BeginTable("#game_obj_hier_panel", 2, ImGuiTableFlags.Resizable))
             {
                 ImGui.TableSetupColumn("Name");
@@ -111,7 +112,7 @@ namespace Elemental.Editor.Panels
             }
 
             ImGui.PopStyleVar(5);
-            ImGui.PopStyleColor();
+            ImGui.PopStyleColor(2);
 
             ImGui.PushStyleColor(ImGuiCol.Text, (new System.Numerics.Vector4(0.8f, 0.8f, 0.8f, 1)));
 
@@ -260,7 +261,7 @@ namespace Elemental.Editor.Panels
 
             if (ImGui.BeginDragDropTarget())
             {
-                if (ImGui.IsMouseReleased(ImGuiMouseButton.Left))
+                if (ImGui.IsMouseReleased(ImGuiMouseButton.Left) && Editor.PROJECT_ASSEMBLY != null)
                 {
                     Type[] types = Editor.PROJECT_ASSEMBLY.GetTypes();
                     DragFileItem item = Editor.DragDropService.GetDragFile();

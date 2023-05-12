@@ -6,67 +6,86 @@ using DevoidEngine.Engine.Rendering;
 using DevoidEngine.Engine.Utilities;
 using OpenTK.Mathematics;
 using OpenTK.Platform.Windows;
+using OpenTK.Graphics.OpenGL;
 
 namespace Elemental.Editor.EditorUtils
 {
     class EditorRendererPass : RenderPass
     {
-        public FrameBuffer frameBuffer;
-
-        Shader viewportSelectShader = new Shader("Editor/Assets/Shaders/viewportID");
+        ComputeShader SelectShader = new ComputeShader("Editor/Assets/Shaders/ObjectSelect/objectselect.glsl"); // Shader that outputs the selected UUID based on cursor position
+        public int texture; // The Select texture. Value = SelectedObject UUID
+        public FrameBuffer ReadBuffer;
 
         public override void Initialize(int width, int height)
         {
-            frameBuffer = new FrameBuffer(new FrameBufferSpecification()
+            texture = GL.GenTexture();
+
+            GL.BindTexture(TextureTarget.Texture2D, texture);
+
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.R32i, 1, 1, 0, PixelFormat.RedInteger, PixelType.UnsignedInt, IntPtr.Zero);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (float)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (float)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (float)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (float)TextureWrapMode.ClampToEdge);
+
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+
+            ReadBuffer = new FrameBuffer(new FrameBufferSpecification()
             {
-                width = width,
-                height = height,
+                width = 1,
+                height = 1,
                 ColorAttachments = new ColorAttachment[]
                 {
-                    new ColorAttachment() {textureFormat = FrameBufferTextureFormat.R32I, textureType = FrameBufferTextureType.Texture2D}
-                },
-                DepthAttachment = new DepthAttachment()
-                {
-                    width = width,
-                    height = height
+                    new ColorAttachment()
+                    {
+                        textureFormat = FrameBufferTextureFormat.R32I,
+                        textureType = FrameBufferTextureType.Texture2D
+                    }
                 }
             });
-            frameBuffer.Resize(width, height);
+
+            //GL.BindTexture(TextureTarget.Texture2D, texture);
+            //ReadBuffer.AttachColorTexture(texture, PixelInternalFormat.R32i, PixelFormat.RedInteger, 1, 1, 0, TextureTarget.Texture2D);
         }
 
         public override void DoRenderPass()
         {
-            frameBuffer.Bind();
 
-            RendererUtils.Clear();
+        }
 
-            RendererUtils.Cull(true);
-            RendererUtils.DepthTest(true);
+        public int GetClickUUID(Vector2 ClickPosition)
+        {
+            // ALTERNATE METHOD (SLOW BUT NEGLIGIBLE);
 
-            List<DrawItem> drawlist = Renderer3D.GetRenderDrawList();
+            int[] readpixels = new int[1];
 
-            for (int i = 0; i < drawlist.Count; i++)
-            {
-                if (drawlist[i].associateObject == null) { return; }
-                viewportSelectShader.Use();
-                Renderer3D.UploadCameraData(viewportSelectShader);
-                Renderer3D.UploadModelData(viewportSelectShader, drawlist[i].position, drawlist[i].rotation, drawlist[i].scale);
+            GL.GetTextureSubImage(RenderGraph.GeometryBuffer.GetColorAttachment(4), 0, (int)ClickPosition.X, (int)ClickPosition.Y, 0, 1, 1, 1, PixelFormat.RedInteger, PixelType.Int, sizeof(int), readpixels);
 
-                viewportSelectShader.SetInt("UUID", (int)drawlist[i].associateObject);
+            return readpixels[0];
 
-                drawlist[i].mesh.Draw();
-            }
+            // FAST APPROACH (I THINK)
 
-            frameBuffer.UnBind();
+            SelectShader.Use();
 
-            RendererUtils.Cull(false);
-            RendererUtils.DepthTest(false);
-            base.DoRenderPass();
+            SelectShader.SetVector2("ClickPosition", ClickPosition);
+
+            GL.BindImageTexture(0, texture, 0, false, 0, TextureAccess.WriteOnly, SizedInternalFormat.R32i);
+            GL.BindTextureUnit(0, RenderGraph.GeometryBuffer.GetColorAttachment(4));
+
+            SelectShader.Dispatch(1, 1, 1);
+            SelectShader.Wait();
+
+            int[] pixels = new int[1];
+
+            GL.GetTextureSubImage(texture, 0, 0, 0, 0, 1, 1, 1, PixelFormat.RedInteger, PixelType.Int, sizeof(int), pixels);
+
+            return pixels[0];
         }
 
         public override void Resize(int width, int height)
         {
-            frameBuffer.Resize(width, height);
+
         }
 
     }

@@ -175,12 +175,12 @@ namespace DevoidEngine.Engine.Core
                 if (textureAttributes[i].AttrName == "W_SKYBOX")
                 {
                     shader.SetInt(textureAttributes[i].AttrName, textureAttributes.Count + textureAttributes[i].TextureIndex);
-                    textureAttributes[i].Tex.SetActiveUnit(TextureActiveUnit.UNIT0 + textureAttributes.Count + textureAttributes[i].TextureIndex, OpenTK.Graphics.OpenGL.TextureTarget.TextureCubeMap);
+                    textureAttributes[i].Tex.BindUnit(textureAttributes.Count + textureAttributes[i].TextureIndex);
                     continue;
                 }
                 shader.SetInt("USE_TEX_" + textureAttributes[i].TextureIndex, 1);
                 shader.SetInt(textureAttributes[i].AttrName, textureAttributes[i].TextureIndex);
-                textureAttributes[i].Tex.SetActiveUnit((TextureActiveUnit)textureAttributes[i].TextureIndex);
+                textureAttributes[i].Tex.BindUnit(textureAttributes[i].TextureIndex);
             }
         }
 
@@ -230,7 +230,7 @@ namespace DevoidEngine.Engine.Core
         public void SetPropertyTexture(Shader shader, string name, int unit)
         {
             Texture value = GetTexture(name);
-            value?.SetActiveUnit((TextureActiveUnit)unit);
+            value?.BindUnit(unit);
         }
 
         public TextureAttribute[] GetAllTexAttributes()

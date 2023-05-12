@@ -138,7 +138,7 @@ namespace DevoidEngine.Engine.Rendering
         Vector2 viewportSize;
         Vector2i viewportSizeInt;
         BloomFrameBuffer BloomFrameBuffer;
-        Shader DownsampleShader, UpsampleShader, BloomFinal, BrightnessFilter;
+        Shader DownsampleShader, UpsampleShader, BrightnessFilter;
         bool KarisOnDownsample = true;
         FrameBuffer BrightFrameBuffer;
 
@@ -158,10 +158,10 @@ namespace DevoidEngine.Engine.Rendering
                 },
                 DepthAttachment = new DepthAttachment() { width = width, height = height }
             });
-            DownsampleShader = new Shader("Engine/EngineContent/shaders/downsample");
-            UpsampleShader = new Shader("Engine/EngineContent/shaders/upsample");
-            BloomFinal = new Shader("Engine/EngineContent/shaders/bloomFinal");
-            BrightnessFilter = new Shader("Engine/EngineContent/shaders/brightfilter");
+
+            DownsampleShader = new Shader("Engine/EngineContent/shaders/Bloom/downsample");
+            UpsampleShader = new Shader("Engine/EngineContent/shaders/Bloom/upsample");
+            BrightnessFilter = new Shader("Engine/EngineContent/shaders/Bloom/brightfilter");
 
             DownsampleShader.Use();
             DownsampleShader.SetInt("srcTexture", 0);
@@ -266,26 +266,6 @@ namespace DevoidEngine.Engine.Rendering
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             GL.Viewport(0, 0, viewportSizeInt.X, viewportSizeInt.Y);
-        }
-
-        public void RenderToScreen(int hdrTexture, float bloomExposure, float bloomStr)
-        {
-            BloomFinal.Use();
-            BloomFinal.SetFloat("exposure", bloomExposure);
-            BloomFinal.SetFloat("bloomStrength", bloomStr);
-
-            BloomFinal.SetInt("scene", 0);
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, hdrTexture);
-
-            BloomFinal.SetInt("bloomBlur", 1);
-            GL.ActiveTexture(TextureUnit.Texture1);
-            GL.BindTexture(TextureTarget.Texture2D, GetBloomTexture());
-            GL.Disable(EnableCap.DepthTest);
-            GL.Disable(EnableCap.CullFace);
-            RendererUtils.QuadVAO.Render();
-            GL.Enable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.CullFace);
         }
 
         public bool enabled = true;

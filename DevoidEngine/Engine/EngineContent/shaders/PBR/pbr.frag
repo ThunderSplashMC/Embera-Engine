@@ -15,7 +15,6 @@ in vec3 WorldPos;
 
 uniform vec4 COLOR;
 uniform vec3 C_VIEWPOS;
-uniform samplerCube W_SKYBOX;
 
 struct PointLight {
     vec3 position;
@@ -52,10 +51,16 @@ struct Material {
 #define NR_POINT_LIGHTS 8
 uniform PointLight L_POINTLIGHTS[NR_POINT_LIGHTS];
 
-uniform samplerCube W_SHADOW_BUFFERS[NR_POINT_LIGHTS];
-
 #define NR_SPOT_LIGHTS 8
 uniform SpotLight L_SPOTLIGHTS[NR_SPOT_LIGHTS];
+
+uniform samplerCube W_SHADOW_BUFFERS[NR_POINT_LIGHTS];
+
+// IMAGE BASED LIGHTING
+
+uniform samplerCube W_IRRADIANCE_MAP;
+uniform samplerCube W_PREFILTER_MAP;
+uniform sampler2D W_BRDF_LUT_MAP;
 
 uniform Material material;
 uniform int USE_TEX_0;
@@ -68,6 +73,8 @@ float DistributionGGX(vec3 N, vec3 H, float roughness);
 float GeometrySchlickGGX(float NdotV, float roughness);
 float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness);
 vec3 fresnelSchlick(float cosTheta, vec3 F0);
+vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness);
+vec3 IBL(Material material, vec3 N, vec3 V, vec3 F0, vec3 R);
 
 vec3 GammaCorrectTexture(sampler2D tex, vec2 uv)
 {
@@ -114,27 +121,29 @@ vec3 GetNormal(vec3 N) {
 
 }
 
-vec3 RadianceIBLIntegration(float NdotV, float roughness, vec3 specular)
+vec3 IBL(vec3 N, vec3 V, vec3 F0, vec3 R)
 {
-	vec2 preintegratedFG = texture(material.ROUGHNESS_TEX, vec2(roughness, 1.0 - NdotV)).rg;
-	return specular * (preintegratedFG.r + preintegratedFG.g);
-}
 
-vec3 IBL(Material material, vec3 eye, vec3 normal, vec3 specular)
-{
-	float NdotV = max(dot(normal, -eye), 0.0);
+    float roughness = GetRoughness();
 
-    vec3 R = reflect(-eye, normalize(Normal));
+    // ambient lighting (we now use IBL as the ambient term)
+    vec3 F = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
+    
+    vec3 kS = F;
+    vec3 kD = 1.0 - kS;
+    kD *= 1.0 - material.metallic;	  
+    
+    vec3 irradiance = texture(W_IRRADIANCE_MAP, N).rgb;
+    vec3 diffuse      = irradiance * GetAlbedo();
+    
+    // sample both the pre-filter map and the BRDF lut and combine them together as per the Split-Sum approximation to get the IBL specular part.
+    const float MAX_REFLECTION_LOD = 4.0;
+    vec3 prefilteredColor = textureLod(W_PREFILTER_MAP, R,  roughness * MAX_REFLECTION_LOD).rgb;    
+    vec2 brdf  = texture(W_BRDF_LUT_MAP, vec2(max(dot(N, V), 0.0), roughness)).rg;
+    vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
-	vec4 cs = texture(W_SKYBOX, R);
-	vec3 result = pow(cs.xyz, vec3(GAMMA)) * RadianceIBLIntegration(NdotV, GetRoughness(), vec3(material.metallic));
+    return (kD * diffuse + specular) * material.ao;
 
-	vec3 diffuseDominantDirection = normal;
-	float diffuseLowMip = 9.6;
-	vec3 diffuseImageLighting = textureLod(W_SKYBOX, diffuseDominantDirection, diffuseLowMip).rgb;
-	diffuseImageLighting = pow(diffuseImageLighting, vec3(GAMMA));
-
-	return result + diffuseImageLighting * GetAlbedo();
 }
 
 vec3 CalcPointLight(PointLight light, vec3 N, vec3 F0, vec3 V) {
@@ -239,7 +248,10 @@ void main() {
 
     for (int i = 0; i < NR_POINT_LIGHTS; i++) {
         float shadow = ShadowCalculation(FragPos, L_POINTLIGHTS[i].position, i);
-        Lo += (max(0, 1 - (shadow)) * (L_POINTLIGHTS[i].shadows)) * CalcPointLight(L_POINTLIGHTS[i], GetNormal(N), F0, V);
+
+        if (max(0, 1 - (shadow)) == 1) {
+            Lo += (max(0, 1 - (shadow)) * (L_POINTLIGHTS[i].shadows)) * CalcPointLight(L_POINTLIGHTS[i], GetNormal(N), F0, V);
+        }
     }
 
     for (int i = 0; i < NR_SPOT_LIGHTS; i++) {
@@ -250,7 +262,7 @@ void main() {
     vec3 I = normalize(WorldPos - C_VIEWPOS);
     vec3 R = reflect(I, normalize(Normal));
 
-    vec3 ambient = vec3(0.03) * GetAlbedo() * material.ao;
+    vec3 ambient = IBL(N, V, F0, R);
 
     vec3 color = ambient + Lo;
     
@@ -298,4 +310,10 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
 vec3 fresnelSchlick(float cosTheta, vec3 F0)
 {
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+}
+
+// ----------------------------------------------------------------------------
+vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
+{
+    return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }

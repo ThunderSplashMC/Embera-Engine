@@ -19,19 +19,19 @@ namespace DevoidEngine.Engine.Components
         public override void OnStart()
         {
             if (loaded) { return; }
-            Cubemap = new Cubemap();
-            Cubemap.LoadCubeMap(new string[] {
-                "Engine/EngineContent/cubemaps/right.jpg",
-                "Engine/EngineContent/cubemaps/left.jpg",
-                "Engine/EngineContent/cubemaps/top.jpg",
-                "Engine/EngineContent/cubemaps/bottom.jpg",
-                "Engine/EngineContent/cubemaps/front.jpg",
-                "Engine/EngineContent/cubemaps/back.jpg"
-            });
+            //Cubemap = new Cubemap();
+            //Cubemap.LoadCubeMap(new string[] {
+            //    "Engine/EngineContent/cubemaps/right.jpg",
+            //    "Engine/EngineContent/cubemaps/left.jpg",
+            //    "Engine/EngineContent/cubemaps/top.jpg",
+            //    "Engine/EngineContent/cubemaps/bottom.jpg",
+            //    "Engine/EngineContent/cubemaps/front.jpg",
+            //    "Engine/EngineContent/cubemaps/back.jpg"
+            //});
             //Renderer3D.GetSkybox().SetSkyboxCubemap(Cubemap);
-            loaded = true;
+            //loaded = true;
 
-            RendererUtils.SetSkybox(Cubemap);
+            //RendererUtils.SetSkybox(Cubemap);
 
             base.OnStart();
         }

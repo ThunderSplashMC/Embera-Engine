@@ -15,6 +15,12 @@ using System.Drawing.Imaging;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
+using imnodesNET;
+using ImGuizmoNET;
+using System.Runtime.CompilerServices;
+using OIconFont;
+using FontAwesome;
+using ImPlotNET;
 
 namespace Elemental.Editor.Panels
 {
@@ -30,7 +36,8 @@ namespace Elemental.Editor.Panels
         private EditorCamera editorCamera;
         public int ViewportTexture;
         private float prev_h, prev_w;
-        //private PostEffectSettings.BloomSettings bloomSettings;
+        private float viewport_x, viewport_y;
+        private int manipulateMode = 0; // 0 - Translation, 1 - Rotation, 3 - Scale
 
         private Texture SampleTex;
         private Texture LightComponentTex;
@@ -87,7 +94,8 @@ namespace Elemental.Editor.Panels
             //ImGui.PushStyleColor(ImGuiCol.WindowBg, new System.Numerics.Vector4(0, 0, 0, 1));
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, System.Numerics.Vector2.Zero);
             ImGui.Begin($"{MaterialIconFont.MaterialDesign.Landscape} Game View", ImGuiWindowFlags.NoBackground);
-            DevoidGUI.Image((IntPtr)ViewportTexture, new Vector2(ImGui.GetContentRegionMax().X, ImGui.GetContentRegionMax().Y - 32));
+            //DevoidGUI.Image((IntPtr)ViewportTexture, new Vector2(ImGui.GetContentRegionMax().X, ImGui.GetContentRegionMax().Y - 32));
+            ImGui.Image((IntPtr)ViewportTexture, new System.Numerics.Vector2(ImGui.GetContentRegionMax().X, ImGui.GetContentRegionMax().Y - 32), new System.Numerics.Vector2(1,1), new System.Numerics.Vector2(0,0));
             SetViewportInputLocalCoord();
             HandleObjectSelect();
             HandleDragDrop();
@@ -96,6 +104,8 @@ namespace Elemental.Editor.Panels
             ImGui.SetItemAllowOverlap();
             DrawViewportTools();
 
+            viewport_x = ImGui.GetWindowPos().X;
+            viewport_y = ImGui.GetWindowPos().Y;
 
             if (prev_h != DevoidGUI.GetWindowHeight() || prev_w != DevoidGUI.GetWindowWidth())
             {
@@ -126,22 +136,7 @@ namespace Elemental.Editor.Panels
 
             ImGui.PopStyleVar();
 
-            ImGui.Begin($"{FontAwesome.ForkAwesome.InfoCircle} Engine Details");
-
-            if (ImGui.CollapsingHeader("Engine Performance"))
-            {
-                ImGui.TreePush();
-                ImGui.Text("FPS: " + 1 / deltaTime);
-                ImGui.Text("FrameTime: " + deltaTime + " s");
-                ImGui.Text("Mesh Count: " + Mesh.TotalMeshCount);
-                ImGui.Text("DrawCalls: " + RenderGraph.Renderer_3D_DrawCalls);
-                ImGui.Text("Render Passes: " + Renderer3D.GetPassCount());
-                ImGui.TreePop();
-            }
-
-            ImGui.End();
-
-            ImGui.Begin($"{FontAwesome.ForkAwesome.InfoCircle} Scene Details");
+            ImGui.Begin($"Scene");
 
             DevoidGUI.DrawTextField("GameObjects", Editor.EditorScene.GetSceneRegistry().GetGameObjectCount().ToString());
             if (DevoidGUI.DrawButtonField("ReCompile All Shaders", "ReCompile"))
@@ -178,7 +173,7 @@ namespace Elemental.Editor.Panels
 
             ImGui.End();
 
-            ImGui.Begin("Engine/Editor Settings");
+            ImGui.Begin("Settings");
 
             if (ImGui.CollapsingHeader("EditorCamera"))
             {
@@ -351,7 +346,7 @@ namespace Elemental.Editor.Panels
 
                 UI.BeginProperty("Cone Factor");
 
-                UI.PropertyFloat(ref VoxelTracer.ConeFactor);
+                UI.PropertyFloat(ref VoxelTracer.ConeFactor, 0.01f, float.MaxValue, 0.001f);
 
                 UI.EndProperty();
 
@@ -401,10 +396,10 @@ namespace Elemental.Editor.Panels
         void SetViewportInputLocalCoord()
         {
             float rel_x = ((ImGui.GetContentRegionMax().X - (ImGui.GetMousePos().X - ImGui.GetWindowPos().X)) / ImGui.GetContentRegionMax().X);
-            float rel_y = ((ImGui.GetContentRegionMax().Y - (ImGui.GetMousePos().Y - (ImGui.GetWindowPos().Y))) / (ImGui.GetContentRegionMax().Y - 32));
+            float rel_y = ((ImGui.GetContentRegionMax().Y - (ImGui.GetMousePos().Y - (ImGui.GetWindowPos().Y))) / (ImGui.GetContentRegionMax().Y));
 
             float mouseX = (((int)(rel_x * ImGui.GetContentRegionMax().X)));// / Editor.Application.GetWindowSize().X) * RenderGraph.ViewportWidth;
-            float mouseY = (((int)(rel_y * ImGui.GetContentRegionMax().Y)));// / Editor.Application.GetWindowSize().Y) * RenderGraph.ViewportHeight;
+            float mouseY = (((int)(rel_y * ImGui.GetContentRegionMax().Y))) + 32;// / Editor.Application.GetWindowSize().Y) * RenderGraph.ViewportHeight;
 
             InputSystem.SetMousePosition(new Vector2(mouseX, mouseY));
             if (ImGui.IsItemHovered())
@@ -424,30 +419,30 @@ namespace Elemental.Editor.Panels
             ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding, 5f);
             float size = 25;
 
-            ImGui.SetCursorPosX(size);
-            ImGui.SetCursorPosY(size + 22);
+            ImGui.SetCursorPosX(10);
+            ImGui.SetCursorPosY(size + 15);
 
-            if (DevoidGUI.Button(MaterialIconFont.MaterialDesign.Camera, new Vector2(size, size)))
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new System.Numerics.Vector2(7,7));
+            ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 5);
+            ImGui.PushStyleColor(ImGuiCol.ChildBg, new System.Numerics.Vector4(0,0,0,0));
+            ImGui.BeginChild("##VIEW_TOOLS", new System.Numerics.Vector2(200, 48), true, ImGuiWindowFlags.AlwaysUseWindowPadding);
+
+            if (DevoidGUI.Button("P", new Vector2(size, size), manipulateMode == 0 ? new Vector4(0.14f, 0.85f, 0.37f, 1) : null))
             {
-                editorCamera.projectionType = editorCamera.projectionType == 0 ? 1 : 0;
-                editorCamera.UpdateProjection();
+                manipulateMode = 0;
             }
 
-            ImGui.SetCursorPosX(size * 3);
-            ImGui.SetCursorPosY(size + 22);
+            ImGui.SameLine();
 
-            if (DevoidGUI.Button(FontAwesome.ForkAwesome.LightbulbO, new Vector2(size, size)))
+            if (DevoidGUI.Button("R", new Vector2(size, size), manipulateMode == 1 ? new Vector4(0.14f, 0.85f, 0.37f, 1) : null))
             {
-                RenderGraph.EnableLighting = !RenderGraph.EnableLighting;
+                manipulateMode = 1;
             }
 
-            ImGui.SetCursorPosX(size * 5);
-            ImGui.SetCursorPosY(size + 22);
+            ImGui.EndChild();
 
-            if (DevoidGUI.Button(FontAwesome.ForkAwesome.LightbulbO, new Vector2(size, size)))
-            {
-                EditorOutlinePass.CurrentOutlinedObjectUUID = 0;
-            }
+            ImGui.PopStyleVar(2);
+            ImGui.PopStyleColor();
 
             ImGui.SetCursorPosX((ImGui.GetWindowContentRegionMax().X * 0.5f) - (size * 0.5f));
             ImGui.SetCursorPosY(size + 22);
@@ -495,21 +490,49 @@ namespace Elemental.Editor.Panels
                         Guizmo3D.DrawGuizmo(CameraComponentTex, gameObjects[i].transform.position, 4f);
                     }
                 }
+
             }
 
-            //Guizmo3D.DrawSphere(Vector3.Zero, 2);
+            Vector4 viewportSize = new Vector4(viewport_x, viewport_y, prev_w, prev_h);
 
+            if (Editor.GameObjectPanel.CurrentSelectedGameObject != null)
+            {
+                if (manipulateMode == 0)
+                {
+                    Guizmo3D.DrawManipulatePosition(ref Editor.GameObjectPanel.CurrentSelectedGameObject.transform.position, viewportSize);
+                } else if (manipulateMode == 1)
+                {
+                    Guizmo3D.DrawManipulateRotation( Editor.GameObjectPanel.CurrentSelectedGameObject.transform.position, ref Editor.GameObjectPanel.CurrentSelectedGameObject.transform.rotation, viewportSize);
+                }
+            }
+
+            Vector3 pos = new Vector3((VoxelTracer.GridMax.X + VoxelTracer.GridMin.X) / 2, (VoxelTracer.GridMax.Y + VoxelTracer.GridMin.Y) / 2, (VoxelTracer.GridMax.Z + VoxelTracer.GridMin.Z) / 2);
+
+            if (VoxelTracer.Debug)
+            {
+                Guizmo3D.DrawCube(pos, Vector3.Zero, Vector3.One);
+                Guizmo3D.DrawCube(VoxelTracer.GridMax, Vector3.Zero, Vector3.One);
+                Guizmo3D.DrawCube(VoxelTracer.GridMin, Vector3.Zero, Vector3.One);
+                Guizmo3D.DrawCube(new Vector3(VoxelTracer.GridMin.X, VoxelTracer.GridMin.Y, VoxelTracer.GridMax.Z), Vector3.Zero, Vector3.One);
+                Guizmo3D.DrawCube(new Vector3(VoxelTracer.GridMax.X, VoxelTracer.GridMax.Y, VoxelTracer.GridMin.Z), Vector3.Zero, Vector3.One);
+                Guizmo3D.DrawCube(new Vector3(VoxelTracer.GridMax.X, VoxelTracer.GridMin.Y, VoxelTracer.GridMin.Z), Vector3.Zero, Vector3.One);
+                Guizmo3D.DrawCube(new Vector3(VoxelTracer.GridMax.X, VoxelTracer.GridMin.Y, VoxelTracer.GridMax.Z), Vector3.Zero, Vector3.One);
+
+                Guizmo3D.DrawCube(new Vector3(VoxelTracer.GridMin.X, VoxelTracer.GridMax.Y, VoxelTracer.GridMin.Z), Vector3.Zero, Vector3.One);
+                Guizmo3D.DrawCube(new Vector3(VoxelTracer.GridMin.X, VoxelTracer.GridMax.Y, VoxelTracer.GridMax.Z), Vector3.Zero, Vector3.One);
+            }
+
+            Guizmo3D.DrawViewManipulate(viewportSize);
 
             Guizmo3D.End();
         }
 
         void HandleObjectSelect()
         {
-            if (ImGui.IsItemClicked())
+            if (ImGui.IsItemClicked() && !ImGuizmo.IsUsing())
             {
-                if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
+                if (ImGui.IsMouseClicked(ImGuiMouseButton.Left) && EditorRendererPass != null)
                 {
-                    EditorRendererPass.frameBuffer.Bind();
 
                     float rel_x = ((ImGui.GetContentRegionMax().X - (ImGui.GetMousePos().X - ImGui.GetWindowPos().X)) / ImGui.GetContentRegionMax().X);
                     float rel_y = ((ImGui.GetContentRegionMax().Y - (ImGui.GetMousePos().Y - (ImGui.GetWindowPos().Y))) / ImGui.GetContentRegionMax().Y);
@@ -518,22 +541,20 @@ namespace Elemental.Editor.Panels
                     float mouseY = (int)(rel_y * Editor.Application.GetWindowSize().Y);
 
                     int count = 0;
+                    //OpenTK.Graphics.OpenGL.GL.ReadPixels((int)mouseX, (int)mouseY,  1, 1, OpenTK.Graphics.OpenGL.PixelFormat.RedInteger, OpenTK.Graphics.OpenGL.PixelType.Int, pixels);
 
-                    int[] pixels = new int[1];
-                    OpenTK.Graphics.OpenGL.GL.ReadPixels((int)mouseX, (int)mouseY,  1, 1, OpenTK.Graphics.OpenGL.PixelFormat.RedInteger, OpenTK.Graphics.OpenGL.PixelType.Int, pixels);
+                    int SelectID = EditorRendererPass.GetClickUUID(new Vector2(mouseX, mouseY));
 
                     GameObject[] gameObjects = Editor.EditorScene.GetSceneRegistry().GetAllGameObjects();
 
                     for (int i = 0; i < gameObjects.Length; i++) 
                     { 
-                        if (gameObjects[i].ID == pixels[0])
+                        if (gameObjects[i].ID == SelectID)
                         {
-                            ((GameObjectPanel)Editor.EditorPanels[2]).CurrentSelectedGameObject = gameObjects[i];
+                            Editor.GameObjectPanel.CurrentSelectedGameObject = gameObjects[i];
                             EditorOutlinePass.CurrentOutlinedObjectUUID = gameObjects[i].ID;
                         }
                     }
-
-                    EditorRendererPass.frameBuffer.UnBind();
                 }
             }
         }

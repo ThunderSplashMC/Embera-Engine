@@ -5,7 +5,7 @@ using DevoidEngine.Engine.Utilities;
 using OpenTK.Mathematics;
 using DevoidEngine.Engine.Rendering;
 using OpenTK.Graphics.OpenGL;
-
+using ImGuizmoNET;
 
 namespace Elemental.Editor.EditorUtils
 {
@@ -23,6 +23,7 @@ namespace Elemental.Editor.EditorUtils
 
         static Shader GuizmoShader;
         static Shader GridShader;
+        static Shader GridShaderEx;
         static Shader DummyShader;
 
         static LineRenderer LineRenderer;
@@ -44,6 +45,7 @@ namespace Elemental.Editor.EditorUtils
 
             GuizmoShader = new Shader("Editor/Assets/Shaders/guizmo");
             GridShader = new Shader("Editor/Assets/Shaders/grid");
+            GridShaderEx = new Shader("Editor/Assets/Shaders/Experimental/grid");
             DummyShader = new Shader("Editor/Assets/Shaders/dummy/dummy");
 
             Vertex[] sphereVertices = VERTEX_DEFAULTS.GetSphereVertices();
@@ -54,7 +56,6 @@ namespace Elemental.Editor.EditorUtils
             SphereMesh = ModelImporter.LoadModel("Engine/EngineContent/model/sphere-lower.fbx")[0].mesh;
 
             LineRenderer = new LineRenderer();
-
         }
 
         public static void AddGuizmoIcon(string name, Texture texture)
@@ -72,9 +73,10 @@ namespace Elemental.Editor.EditorUtils
             GuizmoBuffer.Bind();
             GL.Disable(EnableCap.CullFace);
             GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Always);
         }
 
-        public static void DrawGrid()
+        public static void DrawGrid2()
         {
             GridShader.Use();
             GuizmoShader.SetMatrix4("W_MODEL_MATRIX", Matrix4.CreateRotationX(MathHelper.DegreesToRadians(90)) * Matrix4.CreateScale(1000));
@@ -83,6 +85,21 @@ namespace Elemental.Editor.EditorUtils
             GridShader.SetBool("depthBehind", true);
 
             GuizmoVAO.Render();
+        }
+
+        public static void DrawGrid()
+        {
+            GL.Disable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.CullFace);
+            GridShaderEx.Use();
+            GridShaderEx.SetMatrix4("W_PROJECTION_MATRIX", GuizmoView.GetProjectionMatrix());
+            GridShaderEx.SetMatrix4("W_VIEW_MATRIX", GuizmoView.GetViewMatrix());
+            //GridShaderEx.SetBool("depthBehind", true);
+
+            GuizmoVAO.Render();
+
+            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.CullFace);
         }
 
         // Draws a texture provided as a gizmo icon in the world with the specified position.
@@ -101,8 +118,7 @@ namespace Elemental.Editor.EditorUtils
             GuizmoShader.SetMatrix4("W_VIEW_MATRIX", GuizmoView.GetViewMatrix());
 
             GuizmoShader.SetInt("u_Texture", 0);
-            icon.SetActiveUnit(TextureActiveUnit.UNIT0);
-            icon.BindTexture();
+            icon.BindUnit(0);
 
             GuizmoVAO.Render();
 
@@ -161,9 +177,50 @@ namespace Elemental.Editor.EditorUtils
             LineRenderer.Render(GuizmoView, start, end, thickness);  
         }
 
-        public static void DrawManipulatePosition(ref Vector3 position)
+        public static void DrawManipulatePosition(ref Vector3 position, Vector4 viewportSize)
         {
+            ImGuizmo.SetRect(viewportSize.X, viewportSize.Y, viewportSize.Z, viewportSize.W);
 
+            Matrix4 view = RenderGraph.Camera.GetViewMatrix();
+            view.Column0 *= -1;
+
+            Matrix4 proj = RenderGraph.Camera.GetProjectionMatrix();
+
+            Matrix4 model = Matrix4.CreateTranslation(position);
+
+            //ImGuizmo.Manipulate(ref *View_Ptr, ref *Proj_Ptr, OPERATION.TRANSLATE_X | OPERATION.TRANSLATE_Y | OPERATION.TRANSLATE_Z, MODE.LOCAL, ref model.Row0.X);
+            ImGuizmo.Manipulate(ref view.Row0.X, ref proj.Row0.X, OPERATION.TRANSLATE_X | OPERATION.TRANSLATE_Y | OPERATION.TRANSLATE_Z, MODE.LOCAL, ref model.Row0.X);
+
+            //model.Transpose();
+            position = model.ExtractTranslation();
+        }
+
+        public static void DrawManipulateRotation(Vector3 position, ref Vector3 rotation, Vector4 viewportSize)
+        {
+            ImGuizmo.SetRect(viewportSize.X, viewportSize.Y, viewportSize.Z, viewportSize.W);
+
+            Matrix4 view = RenderGraph.Camera.GetViewMatrix();
+            view.Column0 *= -1;
+
+            Matrix4 proj = RenderGraph.Camera.GetProjectionMatrix();
+
+            Matrix4 model = Matrix4.CreateRotationX((float)MathHelper.DegreesToRadians(rotation.X)) * Matrix4.CreateRotationY((float)MathHelper.DegreesToRadians(rotation.Y)) * Matrix4.CreateRotationZ((float)MathHelper.DegreesToRadians(rotation.Z)) * Matrix4.CreateTranslation(position);
+            
+
+            //ImGuizmo.Manipulate(ref *View_Ptr, ref *Proj_Ptr, OPERATION.TRANSLATE_X | OPERATION.TRANSLATE_Y | OPERATION.TRANSLATE_Z, MODE.LOCAL, ref model.Row0.X);
+            ImGuizmo.Manipulate(ref view.Row0.X, ref proj.Row0.X, OPERATION.ROTATE, MODE.LOCAL, ref model.Row0.X);
+
+            //model.Transpose();
+            Vector3 rot = model.ExtractRotation().ToEulerAngles();
+            rotation = new Vector3((float)MathHelper.RadiansToDegrees(rot.X), (float)MathHelper.RadiansToDegrees(rot.Y), (float)MathHelper.RadiansToDegrees(rot.Z));
+        }
+
+        public static void DrawViewManipulate(Vector4 viewportSize)
+        {
+            Matrix4 view = RenderGraph.Camera.GetViewMatrix();
+            view.Column0 *= -1;
+
+            ImGuizmo.ViewManipulate(ref view.Row0.X, 2, new System.Numerics.Vector2(viewportSize.X + viewportSize.Z - 100, viewportSize.Y + 50), new System.Numerics.Vector2(64, 64), 0x10101010);
         }
 
         public static int End()

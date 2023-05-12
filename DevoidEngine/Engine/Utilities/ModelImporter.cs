@@ -112,7 +112,7 @@ namespace DevoidEngine.Engine.Utilities
 
             Vector3 Albedo = new Vector3(meshMat.ColorDiffuse.R, meshMat.ColorDiffuse.G, meshMat.ColorDiffuse.B);
 
-            Core.Material material = new Core.Material(new Core.Shader("Engine/EngineContent/shaders/pbr"));
+            Core.Material material = new Core.Material(ShaderLibrary.GetShader("pbr_shader_internal"));
             material.Set("material.albedo", Albedo);
             material.Set("material.metallic", meshMat.Shininess * 0.01f);
             material.Set("material.roughness", meshMat.Reflectivity);

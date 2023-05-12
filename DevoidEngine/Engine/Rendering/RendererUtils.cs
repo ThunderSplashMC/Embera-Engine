@@ -21,7 +21,9 @@ namespace DevoidEngine.Engine.Rendering
         public static Shader FrameBufferCombineShader;
         public static Shader ShadowShader;
         public static Shader GeometryShader;
+        public static Shader DepthPrePassShader;
         public static Shader BasicShader;
+        public static Shader PBRShader;
 
         public static string ErrorInfo = string.Empty;
 
@@ -50,14 +52,20 @@ namespace DevoidEngine.Engine.Rendering
             FrameBufferCombineShader = new Shader("Engine/EngineContent/shaders/Framebuffer/combine");
             ShaderLibrary.AddShader("fb_shader_internal", FrameBufferCombineShader);
 
-            ShadowShader = new Shader("Engine/EngineContent/shaders/shadow.vert", "Engine/EngineContent/shaders/shadow.frag", "Engine/EngineContent/shaders/shadow.geom");
+            ShadowShader = new Shader("Engine/EngineContent/shaders/Shadows/shadow.vert", "Engine/EngineContent/shaders/Shadows/shadow.frag", "Engine/EngineContent/shaders/Shadows/shadow.geom");
             ShaderLibrary.AddShader("shadow_shader_internal", ShadowShader);
 
             GeometryShader = new Shader("Engine/EngineContent/shaders/GBuffer/geometry");
             ShaderLibrary.AddShader("gbuffer_shader_internal", GeometryShader);
 
+            DepthPrePassShader = new Shader("Engine/EngineContent/shaders/DepthPrePass/depthprepass");
+            ShaderLibrary.AddShader("depth_prepass_shader_internal", DepthPrePassShader);
+
             BasicShader = new Shader("Engine/EngineContent/shaders/experimental/basic");
             ShaderLibrary.AddShader("basic_shader_internal", BasicShader);
+
+            PBRShader = new Shader("Engine/EngineContent/shaders/PBR/pbr");
+            ShaderLibrary.AddShader("pbr_shader_internal", PBRShader);
         }
 
         public static void BlitFBToScreen(FrameBuffer srcFB, FrameBuffer destFB, float opacity = 0.5f, bool additive = false, int unit = 0)
