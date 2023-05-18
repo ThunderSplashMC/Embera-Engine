@@ -107,44 +107,47 @@ namespace DevoidEngine.Engine.Core
             return Simulation.Shapes.Add(shape);
         }
 
-        public IShape GetCollider<TShape>(TypedIndex tIndex) where TShape: unmanaged, IShape
-        {
-            return Simulation.Shapes.GetShape<TShape>(tIndex.Index);
-        }
-
-
         public void RemoveCollider(TypedIndex index)
         {
             Simulation.Shapes.Remove(index);
         }
 
-        public BodyReference AddDynamicBody(OpenTK.Mathematics.Vector3 position, OpenTK.Mathematics.Vector3 rotation, BodyInertia bodyInertia, TypedIndex colliderIndex)
+        public IShape GetCollider<TShape>(TypedIndex tIndex) where TShape: unmanaged, IShape
         {
-            BodyDescription bDesc = BodyDescription.CreateDynamic(Vector3ToNumerics(position), bodyInertia, colliderIndex, 0.01f);
-
-            return Simulation.Bodies.GetBodyReference(Simulation.Bodies.Add(bDesc));
-        }
-        public Static AddStaticBody(OpenTK.Mathematics.Vector3 position, OpenTK.Mathematics.Vector3 rotation, TypedIndex colliderIndex)
-        {
-            StaticHandle sHandle = Simulation.Statics.Add(new StaticDescription(Vector3ToNumerics(position), colliderIndex));
-
-            return Simulation.Statics.GetDirectReference(sHandle);
+            return Simulation.Shapes.GetShape<TShape>(tIndex.Index);
         }
 
+        public void RemoveStatic(StaticReference staticReference)
+        {
+            Simulation.Statics.Remove(staticReference.Handle);
+        }
 
         public void RemoveBody(BodyReference bodyReference)
         {
             Simulation.Bodies.Remove(bodyReference.Handle);
         }
 
-        public void RemoveBody(BodyHandle bodyHandle)
+        public BodyReference AddDynamicBody(OpenTK.Mathematics.Vector3 position, OpenTK.Mathematics.Vector3 rotation, BodyInertia bodyInertia, TypedIndex colliderIndex)
         {
-            Simulation.Bodies.Remove(bodyHandle);
+            BodyDescription bDesc = BodyDescription.CreateDynamic(new RigidPose(Vector3ToNumerics(position), PhysicsHelper.ToQuaternion(Vector3ToNumerics(rotation))), bodyInertia, colliderIndex, 0.01f);
+
+            return Simulation.Bodies.GetBodyReference(Simulation.Bodies.Add(bDesc));
+        }
+        public StaticReference AddStaticBody(OpenTK.Mathematics.Vector3 position, OpenTK.Mathematics.Vector3 rotation, TypedIndex colliderIndex)
+        {
+            StaticHandle sHandle = Simulation.Statics.Add(new StaticDescription(Vector3ToNumerics(position), PhysicsHelper.ToQuaternion(Vector3ToNumerics(rotation)), colliderIndex));
+
+            return Simulation.Statics.GetStaticReference(sHandle);
         }
 
         public static System.Numerics.Vector3 Vector3ToNumerics(OpenTK.Mathematics.Vector3 vector)
         {
             return new System.Numerics.Vector3(vector.X, vector.Y, vector.Z);
+        }
+
+        public static OpenTK.Mathematics.Vector3 NumericsToVector3(System.Numerics.Vector3 vector)
+        {
+            return new OpenTK.Mathematics.Vector3(vector.X, vector.Y, vector.Z);
         }
     }
 

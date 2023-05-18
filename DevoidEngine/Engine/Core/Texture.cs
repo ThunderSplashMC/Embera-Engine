@@ -38,6 +38,8 @@ namespace DevoidEngine.Engine.Core
         private Image ImageRef;
         public string fileID;
 
+        bool isDisposed;
+
         public Texture()
         {
 
@@ -116,7 +118,8 @@ namespace DevoidEngine.Engine.Core
                 if (side == WrapSide.S)
                 {
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (float)wrapMode);
-                } else
+                }
+                else
                 {
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (float)wrapMode);
                 }
@@ -145,7 +148,7 @@ namespace DevoidEngine.Engine.Core
             return MathF.ILogB(Math.Max(width, Math.Max(height, depth))) + 1;
         }
 
-        public int GetTexture()
+        public int GetRendererID()
         {
             return TextureHandle;
         }
@@ -157,35 +160,8 @@ namespace DevoidEngine.Engine.Core
 
         ~Texture()
         {
-            //if (TextureHandle != 0)
-            //{
-            //    GL.DeleteTexture(TextureHandle);
-            //}
-        }
-    }
 
-    public enum TextureActiveUnit
-    {
-        UNIT0,
-        UNIT1,
-        UNIT2,
-        UNIT3,
-        UNIT4,
-        UNIT5,
-        UNIT6,
-        UNIT7,
-        UNIT8,
-        UNIT9,
-        UNIT10,
-        UNIT11,
-        UNIT12,
-        UNIT13,
-        UNIT14,
-        UNIT15,
-        UNIT16,
-        UNIT17,
-        UNIT18,
-        UNIT19
+        }
     }
 
     public enum FilterTypes

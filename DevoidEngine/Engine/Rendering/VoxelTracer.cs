@@ -57,20 +57,7 @@ namespace DevoidEngine.Engine.Rendering
         public override void Initialize(int width, int height)
         {
 
-            voxel_texture = GL.GenTexture();
-
-            GL.BindTexture(TextureTarget.Texture3D, voxel_texture);
-            GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureMinFilter, (float)TextureMinFilter.LinearMipmapLinear);
-            GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureMagFilter, (float)TextureMagFilter.Linear);
-
-            GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureWrapR, (float)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureWrapS, (float)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureWrapT, (float)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureMaxLevel, Texture.GetMaxMipmapLevel(textureRes, textureRes, textureRes));
-            GL.TexStorage3D(TextureTarget3d.Texture3D, Texture.GetMaxMipmapLevel(textureRes, textureRes, textureRes), SizedInternalFormat.Rgba8, textureRes, textureRes, textureRes);
-            GL.BindTexture(TextureTarget.Texture3D, 0);
-
-            Console.WriteLine(Texture.GetMaxMipmapLevel(textureRes, textureRes, textureRes));
+            GenerateVoxelTexture(textureRes, textureRes, textureRes);
 
             FrameBufferSpecification specs = new FrameBufferSpecification()
             {
@@ -88,9 +75,23 @@ namespace DevoidEngine.Engine.Rendering
             framebuffer = new FrameBuffer(specs);
             Finalframebuffer = new FrameBuffer(specs);
 
-            orthographicMatrix = Matrix4.CreateOrthographicOffCenter(
-                GridMin.X, GridMax.X, GridMin.Y, GridMax.Y, GridMax.Z, GridMin.Z
-            );
+            UpdateOrthographicProjection();
+        }
+
+        public void GenerateVoxelTexture(int h, int b, int d)
+        {
+            voxel_texture = GL.GenTexture();
+
+            GL.BindTexture(TextureTarget.Texture3D, voxel_texture);
+            GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureMinFilter, (float)TextureMinFilter.LinearMipmapLinear);
+            GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureMagFilter, (float)TextureMagFilter.Linear);
+
+            GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureWrapR, (float)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureWrapS, (float)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureWrapT, (float)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureMaxLevel, Texture.GetMaxMipmapLevel(h,b,d));
+            GL.TexStorage3D(TextureTarget3d.Texture3D, Texture.GetMaxMipmapLevel(h, b, d), SizedInternalFormat.Rgba8, h, b, d);
+            GL.BindTexture(TextureTarget.Texture3D, 0);
         }
 
         public override void DoRenderPass()
@@ -154,7 +155,7 @@ namespace DevoidEngine.Engine.Rendering
 
             Renderer3D.UploadLightingData(voxelize_shader);
 
-            List<DrawItem> drawList = Renderer3D.GetRenderDrawList();
+            List<DrawItem> drawList = RenderGraph.MeshSystem.GetRenderDrawList();
 
             Renderer3D.UploadCameraData(voxelize_shader);
 
@@ -164,7 +165,7 @@ namespace DevoidEngine.Engine.Rendering
             {
                 Renderer3D.UploadModelData(voxelize_shader, drawList[i].position, drawList[i].rotation, drawList[i].scale);
 
-                Material material = drawList[i].mesh.Material;
+                Material material = RenderGraph.MeshSystem.GetMaterial(drawList[i].mesh.MaterialIndex);
 
                 material.SetPropertyVector3(voxelize_shader, "material.albedo");
                 material.SetPropertyVector3(voxelize_shader, "material.emission");
@@ -317,8 +318,6 @@ namespace DevoidEngine.Engine.Rendering
             ConeTracerExp.SetMatrix4("W_PROJECTION_MATRIX", RenderGraph.Camera.GetProjectionMatrix());
             ConeTracerExp.SetMatrix4("W_VIEW_MATRIX", RenderGraph.Camera.GetViewMatrix());
             ConeTracerExp.SetVector3("C_VIEWPOS", RenderGraph.Camera.position);
-
-            //ConeTracer.SetMatrix4("W_ORTHOGRAPHIC_MATRIX", orthographicMatrix);
 
             ConeTracerExp.SetVector3("GridMin", GridMin);
             ConeTracerExp.SetVector3("GridMax", GridMax);

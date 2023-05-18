@@ -607,9 +607,11 @@ namespace Elemental.Editor.Panels
             Mesh[] meshes = (Mesh[])Resources.Load(filename);
             if (meshes == null || meshes.Length == 0) { return; }
             GameObject DropObject = Editor.EditorScene.NewGameObject(meshes[0].name);
-            MeshHolder MeshHolder = DropObject.AddComponent<MeshHolder>();
-            MeshHolder.AddMeshes(meshes);
-            DropObject.AddComponent<MeshRenderer>();
+            MeshRenderer MeshRenderer = DropObject.AddComponent<MeshRenderer>();
+            for (int i = 0; i < meshes.Length; i++)
+            {
+                MeshRenderer.AddMesh(meshes[i]);
+            }
         }
 
         void HandleDropTextureFile(string filename)

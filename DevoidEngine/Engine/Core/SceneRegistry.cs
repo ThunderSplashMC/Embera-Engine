@@ -15,9 +15,6 @@ namespace DevoidEngine.Engine.Core
         public List<LightComponent> Lights = new List<LightComponent>();
 
         public List<Component> EditorRunnableComponents = new List<Component>();
-        public List<Rigidbody> RigidBodies = new List<Rigidbody>();
-
-        public List<Material> Materials = new List<Material>();
 
         public void AddGameObject(GameObject gameObject)
         {
@@ -58,17 +55,6 @@ namespace DevoidEngine.Engine.Core
             GameObjects.Remove(gameObject);
         }
 
-        public int AddMaterial(Material material)
-        {
-            Materials.Add(material);
-            return Materials.Count - 1;
-        }
-
-        public List<Material> GetAllMaterials()
-        {
-            return Materials;
-        }
-
         public GameObject[] GetAllGameObjects() {
             return GameObjects.ToArray();
         }
@@ -78,15 +64,15 @@ namespace DevoidEngine.Engine.Core
             return GameObjects.Count;
         }
 
-        public List<Rigidbody> GetRigidBodies()
-        {
-            return RigidBodies;
-        }
+        //public List<Rigidbody> GetRigidBodies()
+        //{
+        //    return RigidBodies;
+        //}
 
-        public void AddRigidBody(Rigidbody rigidbody)
-        {
+        //public void AddRigidBody(Rigidbody rigidbody)
+        //{
 
-        }
+        //}
 
         public void AddLight(LightComponent light)
         {

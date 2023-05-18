@@ -8,6 +8,9 @@ using System.Linq;
 using SharpFont;
 using System.Text;
 using DevoidEngine.Engine.Core;
+using DevoidEngine.Engine.Components;
+using DevoidEngine.Engine.Rendering;
+using BepuPhysics.Collidables;
 
 namespace DevoidEngine.Engine.Utilities
 {
@@ -21,7 +24,7 @@ namespace DevoidEngine.Engine.Utilities
 
         static Dictionary<string, Core.Texture> Textures = new Dictionary<string, Core.Texture>();
 
-        public static ModelData[] LoadModel(string path)
+        public static Mesh[] LoadModel(string path)
         {
 
             AssimpContext ImporterObject = new AssimpContext();
@@ -37,7 +40,7 @@ namespace DevoidEngine.Engine.Utilities
                 return null;
             }
             if (scene == null || scene.RootNode == null) return null;
-            List<ModelData> ModelTotalMeshes = new List<ModelData>();
+            List<Mesh> ModelTotalMeshes = new List<Mesh>();
 
             string[] splitPath = Path.GetFullPath(path).Split("\\");
             string completepath = string.Join("/", splitPath[0..(splitPath.Length - 1)]);
@@ -60,8 +63,8 @@ namespace DevoidEngine.Engine.Utilities
 
             for (int i = 0; i < ModelTotalMeshes.Count; i++)
             {
-                ModelTotalMeshes[i].mesh.SetPath(path);
-                ModelTotalMeshes[i].mesh.fileID = Path.GetFileName(path);
+                ModelTotalMeshes[i].SetPath(path);
+                ModelTotalMeshes[i].fileID = Path.GetFileName(path);
             }
 
             return ModelTotalMeshes.ToArray();
@@ -72,7 +75,7 @@ namespace DevoidEngine.Engine.Utilities
 
         }
 
-        public static ModelData ProcessMesh(Assimp.Mesh mesh, Assimp.Scene scene, Matrix4x4 transform, string path = "")
+        public static Mesh ProcessMesh(Assimp.Mesh mesh, Assimp.Scene scene, Matrix4x4 transform, string path = "")
         {
             List<Vertex> vertices = new List<Vertex>();
             int[] indices = mesh.GetIndices();
@@ -108,7 +111,17 @@ namespace DevoidEngine.Engine.Utilities
             {
                 mesh1.SetIndices(indices);
             }
-            Assimp.Material meshMat = scene.Materials[mesh.MaterialIndex];
+
+            int MaterialID = SetupMaterial(mesh.MaterialIndex, scene, path);
+
+            mesh1.MaterialIndex = MaterialID;
+
+            return mesh1;
+        }
+
+        static int SetupMaterial(int MaterialIndex, Assimp.Scene scene, string path = "")
+        {
+            Assimp.Material meshMat = scene.Materials[MaterialIndex];
 
             Vector3 Albedo = new Vector3(meshMat.ColorDiffuse.R, meshMat.ColorDiffuse.G, meshMat.ColorDiffuse.B);
 
@@ -136,7 +149,7 @@ namespace DevoidEngine.Engine.Utilities
                 {
                     AlbedoTex = new Core.Texture(CorrectFilePath(meshMat.TextureDiffuse.FilePath, path));
                     AddToTextureDict(CorrectFilePath(meshMat.TextureDiffuse.FilePath, path), AlbedoTex);
-                    
+
                 }
                 SetWrapping(meshMat.TextureDiffuse.WrapModeU, meshMat.TextureDiffuse.WrapModeV, AlbedoTex);
                 material.SetTexture("material.ALBEDO_TEX", AlbedoTex);
@@ -184,12 +197,7 @@ namespace DevoidEngine.Engine.Utilities
                 }
             }
 
-            mesh1.SetMaterial(material);
-            return new ModelData()
-            {
-                mesh = mesh1,
-                material = mesh1.Material
-            };
+            return RenderGraph.MeshSystem.Submit(material);
         }
 
         static Core.Texture CheckTextureExists(string path)
@@ -307,31 +315,6 @@ namespace DevoidEngine.Engine.Utilities
 
             FileStream fs = File.Create("D:\\BlenderProjects\\MeshFile.dmesh");
             fs.Write(ASCIIEncoding.ASCII.GetBytes(output));
-        }
-
-        public static Mesh AddMaterialToScene(Core.Scene scene, ModelData modelData)
-        {
-            int index = scene.GetSceneRegistry().AddMaterial(modelData.material);
-
-            modelData.mesh.MaterialIndex = index;
-            return modelData.mesh;
-
-        }
-
-        public static Mesh[] AddMaterialsToScene(Core.Scene scene, ModelData[] modelData)
-        {
-
-            List<Mesh> meshes = new List<Mesh>();
-
-            for (int i = 0; i < modelData.Length; i++)
-            {
-                int index = scene.GetSceneRegistry().AddMaterial(modelData[i].material);
-
-                modelData[i].mesh.MaterialIndex = index;
-                meshes.Add(modelData[i].mesh);
-            }
-            return meshes.ToArray();
-
         }
 
     }

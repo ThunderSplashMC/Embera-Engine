@@ -70,9 +70,6 @@ namespace DevoidEngine.Engine.Rendering
 
         public static void BlitFBToScreen(FrameBuffer srcFB, FrameBuffer destFB, float opacity = 0.5f, bool additive = false, int unit = 0)
         {
-
-            //GL.BlitNamedFramebuffer(srcFB.GetRendererID(), destFB.GetRendererID(), 0, 0, RenderGraph.ViewportWidth, RenderGraph.ViewportHeight, 0, 0, RenderGraph.ViewportWidth, RenderGraph.ViewportHeight, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Linear);
-
             destFB.Bind();
 
             if (opacity == 1.0f)
@@ -182,6 +179,14 @@ namespace DevoidEngine.Engine.Rendering
             else if (type == DebugType.DebugTypeDeprecatedBehavior)
             {
                 ErrorInfo = "DEPRECATED: " + message;
+            }
+            else if (type == DebugType.DebugTypePerformance)
+            {
+                ErrorInfo = "PERFORMANCE ERR: " + message;
+            }
+            else if (type == DebugType.DebugTypeOther)
+            {
+                ErrorInfo = "OTHER ERR: " + message;
             }
             else if (type == DebugType.DontCare)
             {

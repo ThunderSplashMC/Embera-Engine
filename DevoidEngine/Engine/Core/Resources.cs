@@ -45,21 +45,11 @@ namespace DevoidEngine.Engine.Core
                 path = path.Split(".")[0] + x.Ext;
             }
 
-            Console.WriteLine("NEWPATH");
-            Console.WriteLine(path);
-
-            ModelImporter.ModelData[] Data = ModelImporter.LoadModel(path);
+            Mesh[] Data = ModelImporter.LoadModel(path);
 
             if (Data == null) return null;
 
-            List<Mesh> meshes = new List<Mesh>();
-
-            for (int i = 0; i < Data.Length; i++)
-            {
-                meshes.Add(Data[i].mesh);
-            }
-
-            return meshes.ToArray();
+            return Data;
         }
 
 

@@ -14,6 +14,6 @@ out vec2 v_TexCoord;
 
 void main() {
 
-	gl_Position = vec4(aPosition.x, aPosition.y, -0.1, 1.0) * W_MODEL_MATRIX *  W_PROJECTION_MATRIX;
+	gl_Position = vec4(aPosition.x, aPosition.y, 1, 1.0) * W_MODEL_MATRIX *  W_PROJECTION_MATRIX;
 	v_TexCoord = aTexCoord;
 }

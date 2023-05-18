@@ -28,7 +28,7 @@ namespace Elemental.Editor.Panels
 
         public override void OnInit()
         {
-            matCount = Editor.EditorScene.GetSceneRegistry().GetAllMaterials().Count;
+            matCount = RenderGraph.MeshSystem.GetAllMaterials().Count;
 
             Renderer3D.AddRenderPass(thumbnailRenderer);
 
@@ -40,7 +40,7 @@ namespace Elemental.Editor.Panels
         public override void OnGUIRender()
         {
             return;
-            List<Material> materials = Editor.EditorScene.GetSceneRegistry().GetAllMaterials();
+            List<Material> materials = RenderGraph.MeshSystem.GetAllMaterials();
 
             if (matCount != materials.Count)
             {

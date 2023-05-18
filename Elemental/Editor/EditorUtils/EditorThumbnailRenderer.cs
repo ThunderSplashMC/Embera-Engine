@@ -23,7 +23,7 @@ namespace Elemental.Editor.EditorUtils
 
         FrameBuffer fb;
 
-        Mesh mesh = ModelImporter.LoadModel("Engine/EngineContent/model/sphere.fbx")[0].mesh;
+        Mesh mesh = ModelImporter.LoadModel("Engine/EngineContent/model/sphere.fbx")[0];
 
         Bloom bloomRenderer = new Bloom();
 

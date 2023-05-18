@@ -17,7 +17,7 @@ namespace Elemental.Editor.Panels
 
         public ContentBrowserPanel()
         {
-            FolderTexture = (IntPtr)(new Texture("Editor/Assets/folder-icn.png").GetTexture());
+            FolderTexture = (IntPtr)(new Texture("Editor/Assets/folder-icn.png").GetRendererID());
             FileTypes.AddGenericFileTypes();
         }
 

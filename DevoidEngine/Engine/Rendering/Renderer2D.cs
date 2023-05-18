@@ -133,7 +133,7 @@ namespace DevoidEngine.Engine.Rendering
                     QuadShader.SetMatrix4("W_PROJECTION_MATRIX", OrthoProjection);
 
                     QuadShader.SetInt("u_Texture", 0);
-                    if (drawItem.Texture != null) GL.BindTextureUnit(0, drawItem.Texture.GetTexture());
+                    if (drawItem.Texture != null) GL.BindTextureUnit(0, drawItem.Texture.GetRendererID());
                 }
                 else
                 {

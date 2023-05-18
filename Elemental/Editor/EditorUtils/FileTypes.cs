@@ -32,7 +32,7 @@ namespace Elemental.Editor.EditorUtils
 
         static void AddFileIcon(string fileExtension, string pathToIcon)
         {
-            IntPtr texture = (IntPtr)(new Texture(pathToIcon).GetTexture());
+            IntPtr texture = (IntPtr)(new Texture(pathToIcon).GetRendererID());
             fileTypes.Add(new FileType() { IconTexture = texture, typeName = fileExtension });
         }
 
@@ -40,7 +40,7 @@ namespace Elemental.Editor.EditorUtils
         {
             if (begun) { return; } else { begun = true; }
 
-            defaultIcon = (IntPtr)(new Texture("Editor/Assets/file-icn.png").GetTexture());
+            defaultIcon = (IntPtr)(new Texture("Editor/Assets/file-icn.png").GetRendererID());
             AddFileIcon("ttf", "Editor/Assets/font-file-icn.png");
             AddFileIcon("fbx", "Editor/Assets/fbx-file-icn.png");
             AddFileIcon("cs", "Editor/Assets/script-icn.png");

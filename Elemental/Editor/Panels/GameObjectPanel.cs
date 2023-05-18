@@ -33,7 +33,7 @@ namespace Elemental.Editor.Panels
 
         public override void OnInit()
         {
-            EmptyTextureIcon = (new Texture("Editor/Assets/texture-empty-icn.png").GetTexture());
+            EmptyTextureIcon = (new Texture("Editor/Assets/texture-empty-icn.png").GetRendererID());
             GetCustomEditorComponentScript();
             
 
@@ -182,7 +182,6 @@ namespace Elemental.Editor.Panels
                                 {
                                     UI.BeginPropertyGrid("##" + i);
                                     UI.DrawComponentField(component.GetType().GetFields(), (object)component);
-                                    DrawMaterialFields();
                                     UI.EndPropertyGrid();
                                 };
                             }
@@ -214,8 +213,6 @@ namespace Elemental.Editor.Panels
                     }
                     ImGui.PopID();
                 }
-
-                DrawMaterialFields();
             } else
             {
                 ImGui.Text("No GameObject Selected");
@@ -302,101 +299,6 @@ namespace Elemental.Editor.Panels
                 }
             }
             return objects;
-        }
-
-        void DrawMaterialFields()
-        {
-            MeshHolder meshHolder = CurrentSelectedGameObject.GetComponent<MeshHolder>();
-            if (meshHolder == null) { return; }
-
-            for (int i = 0; i < meshHolder.Meshes.Count; i++)
-            {
-                if (ImGui.CollapsingHeader("Material " + i))
-                {
-                    ImGui.TreePush();
-                    UI.BeginPropertyGrid("MAT_MSH" + i);
-
-                    Vector3 albedo = meshHolder.Meshes[i].Material.GetVec3("material.albedo");
-                    float metallic = meshHolder.Meshes[i].Material.GetFloat("material.metallic");
-                    float roughness = meshHolder.Meshes[i].Material.GetFloat("material.roughness");
-                    float emissionStr = meshHolder.Meshes[i].Material.GetFloat("material.emissionStr");
-                    Vector3 emission = meshHolder.Meshes[i].Material.GetVec3("material.emission");
-                    TextureAttribute[] TexAttributes = meshHolder.Meshes[i].Material.GetAllTexAttributes();
-
-                    UI.BeginProperty("Albedo");
-                    if (GetTextureAttribute(TexAttributes, "material.ALBEDO_TEX"))
-                    {
-                        Color4 color = new Color4(albedo.X, albedo.Y, albedo.Z, 1);
-                        UI.PropertyColor4(ref color, true);
-                        albedo = new Vector3(color.R, color.G, color.B);
-                    }
-                    UI.EndProperty();
-
-                    UI.BeginProperty("Metallic");
-                    UI.PropertyFloat(ref metallic, 0, 1, 0.02f);
-                    UI.EndProperty();
-
-                    UI.BeginProperty("Roughness");
-                    if (GetTextureAttribute(TexAttributes, "material.ROUGHNESS_TEX"))
-                    {
-                        UI.PropertyFloat(ref roughness, 0, 1, 0.02f);
-                    }
-                    UI.EndProperty();
-
-                    UI.BeginProperty("Emission");
-                    if (GetTextureAttribute(TexAttributes, "material.EMISSION_TEX"))
-                    {
-                        Color4 color = new Color4(emission.X, emission.Y, emission.Z, 1);
-                        UI.PropertyColor4(ref color);
-                        emission = new Vector3(color.R, color.G, color.B);
-                    }
-                    UI.EndProperty();
-
-                    UI.BeginProperty("Emission Strength");
-
-                    UI.PropertyFloat(ref emissionStr, 0);
-
-                    UI.EndProperty();
-
-                    meshHolder.Meshes[i].Material.Set("material.albedo", albedo);
-                    meshHolder.Meshes[i].Material.Set("material.metallic", metallic);
-                    meshHolder.Meshes[i].Material.Set("material.roughness", roughness);
-                    meshHolder.Meshes[i].Material.Set("material.emission", emission);
-                    meshHolder.Meshes[i].Material.Set("material.emissionStr", emissionStr);
-
-                    UI.EndPropertyGrid();
-                    ImGui.TreePop();
-                }
-            }
-        }
-
-        bool GetTextureAttribute(TextureAttribute[] textureAttributes, string name)
-        {
-            for (int x = 0; x < textureAttributes.Length; x++)
-            {
-                if (textureAttributes[x].AttrName == name)
-                {
-                    UI.PropertyTexture((IntPtr)(textureAttributes[x].Tex.GetTexture()));
-                    UI.BeginProperty("Filter Type");
-
-                    FieldInfo field = textureAttributes[x].Tex.GetType().GetField("FilterType");
-
-                    int prev = (int)field.GetValue(textureAttributes[x].Tex);
-
-                    UI.DrawEnumField(field, textureAttributes[x].Tex);
-
-                    int newv = (int)field.GetValue(textureAttributes[x].Tex);
-
-                    if (newv != prev) 
-                    {
-                        textureAttributes[x].Tex.ChangeFilterType((FilterTypes)newv);
-                    }
-
-                    UI.EndProperty();
-                    return false;
-                }
-            }
-            return true;
         }
 
         void PresetObjectMenu()

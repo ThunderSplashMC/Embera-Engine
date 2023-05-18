@@ -42,6 +42,11 @@ namespace DevoidEngine.Engine.Components
             }
         }
 
+        public Vector3 Front
+        {
+            get => _front;
+        }
+
 
 
         public CameraComponent()

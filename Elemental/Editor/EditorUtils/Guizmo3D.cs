@@ -53,7 +53,7 @@ namespace Elemental.Editor.EditorUtils
             sphere.SetData(sphereVertices, sphereVertices.Length);
             SphereGuizmo = new VertexArray(sphere);
 
-            SphereMesh = ModelImporter.LoadModel("Engine/EngineContent/model/sphere-lower.fbx")[0].mesh;
+            SphereMesh = ModelImporter.LoadModel("Engine/EngineContent/model/sphere-lower.fbx")[0];
 
             LineRenderer = new LineRenderer();
         }

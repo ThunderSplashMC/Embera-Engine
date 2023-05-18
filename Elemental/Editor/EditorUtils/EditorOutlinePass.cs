@@ -3,6 +3,7 @@ using DevoidEngine.Engine.Rendering;
 using System;
 using System.Collections.Generic;
 using OpenTK.Graphics.OpenGL;
+using ImGuiNET;
 
 namespace Elemental.Editor.EditorUtils
 {
@@ -72,7 +73,7 @@ namespace Elemental.Editor.EditorUtils
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
-            List<DrawItem> drawlist = Renderer3D.GetRenderDrawList();
+            List<DrawItem> drawlist = RenderGraph.MeshSystem.GetRenderDrawList();
 
             for (int i = 0; i < drawlist.Count; i++)
             {

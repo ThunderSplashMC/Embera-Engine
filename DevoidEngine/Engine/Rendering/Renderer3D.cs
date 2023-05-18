@@ -8,19 +8,9 @@ using OpenTK.Graphics.OpenGL;
 
 namespace DevoidEngine.Engine.Rendering
 {
-    public struct DrawItem
-    {
-        public Vector3 position;
-        public Vector3 rotation;
-        public Vector3 scale;
-        public Mesh mesh;
-        public float distFromCam;
-        public object associateObject;
-    }
 
     public class Renderer3D
     {
-        static List<DrawItem> DrawList = new List<DrawItem>();
         static List<LightComponent> PointLights = new List<LightComponent>();
         static List<LightComponent> SpotLights = new List<LightComponent>();
         static List<LightComponent> DirectionalLights = new List<LightComponent>();
@@ -131,21 +121,6 @@ namespace DevoidEngine.Engine.Rendering
             }
         }
 
-
-        public static void Submit(Vector3 position, Vector3 rotation, Vector3 scale, Mesh mesh, object associateObject = null)
-        {
-            if (mesh == null) { Console.WriteLine("MESH WAS NULL"); }
-            DrawList.Add(new DrawItem()
-            {
-                position = position,
-                rotation = rotation,
-                scale = scale,
-                mesh = mesh,
-                distFromCam = Vector3.Distance(RenderGraph.Camera.position, position),
-                associateObject = associateObject
-            });
-        }
-
         public static void BeginScene(List<LightComponent> Lights)//, ref List<LightComponent> directionalLights = null)
         {
             for (int i = 0; i < Lights.Count; i++)
@@ -182,15 +157,6 @@ namespace DevoidEngine.Engine.Rendering
 
             RenderStart();
 
-            if (RenderGraph.PathTrace)
-            {
-                PathTracedRenderer.Render(DrawList);
-                RenderEnd();
-                return;
-            }
-
-            SortDrawListByDistance();
-
             ShadowPass();
             GeometryPass();
             DepthPrePass();
@@ -217,7 +183,6 @@ namespace DevoidEngine.Engine.Rendering
             ResetViewport();
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Clear(ClearBufferMask.DepthBufferBit);
-            DrawList.Clear();
         }
 
         static void SkyboxPass()
@@ -280,24 +245,27 @@ namespace DevoidEngine.Engine.Rendering
 
             SkyboxPass();
 
+            List<DrawItem> DrawList = RenderGraph.MeshSystem.GetRenderDrawList();
+
             for (int i = 0; i < DrawList.Count; i++)
             {
-                DrawList[i].mesh.Material.GetShader().Use();
-                ResetLighting(DrawList[i].mesh.Material.GetShader());
-                UploadLightingData(DrawList[i].mesh.Material.GetShader());
+                Material material = RenderGraph.MeshSystem.GetMaterial(DrawList[i].mesh.MaterialIndex);
+                material.GetShader().Use();
+                ResetLighting(material.GetShader());
+                UploadLightingData(material.GetShader());
 
-                UploadCameraData(DrawList[i].mesh.Material.GetShader());
-                UploadModelData(DrawList[i].mesh.Material.GetShader(), DrawList[i].position, DrawList[i].rotation, DrawList[i].scale);
+                UploadCameraData(material.GetShader());
+                UploadModelData(material.GetShader(), DrawList[i].position, DrawList[i].rotation, DrawList[i].scale);
 
-                DrawList[i].mesh.Material.Apply();
+                material.Apply();
 
                 for (int x = 0; x < RenderGraph.MAX_POINT_SHADOW_BUFFERS; x++)
                 {
-                    DrawList[i].mesh.Material.GetShader().SetInt("W_SHADOW_BUFFERS[" + x + "]", x + RenderGraph.MAX_PBR_TEXTURE_PROPS);
+                    material.GetShader().SetInt("W_SHADOW_BUFFERS[" + x + "]", x + RenderGraph.MAX_PBR_TEXTURE_PROPS);
 
                     if (x < ShadowDepthAttachments.Count)
                     {
-                        GL.BindTextureUnit(x + RenderGraph.MAX_PBR_TEXTURE_PROPS, ShadowDepthAttachments[x].GetTexture());
+                        GL.BindTextureUnit(x + RenderGraph.MAX_PBR_TEXTURE_PROPS, ShadowDepthAttachments[x].GetRendererID());
                     }
                 }
 
@@ -380,17 +348,9 @@ namespace DevoidEngine.Engine.Rendering
                 RendererUtils.ShadowShader.Use();
                 for (int x = 0; x < 6; ++x)
                     RendererUtils.ShadowShader.SetMatrix4("shadowMatrices[" + x + "]", shadowTransforms[x]);
-
-                RendererUtils.ShadowShader.SetFloat("far_plane", 300f);
                 RendererUtils.ShadowShader.SetVector3("lightPos", light.gameObject.transform.position);
 
-                for (int y = 0; y < DrawList.Count; y++)
-                {
-                    UploadModelData(RendererUtils.ShadowShader, DrawList[y].position, DrawList[y].rotation, DrawList[y].scale);
-                    DrawList[y].mesh.Draw();
-
-                    RenderGraph.Renderer_3D_DrawCalls += 1;
-                }
+                RenderGraph.MeshSystem.Render();
 
                 light.shadowBufferPointLight.UnBind();
                 ResetViewport();
@@ -412,23 +372,26 @@ namespace DevoidEngine.Engine.Rendering
 
             UploadCameraData(RendererUtils.GeometryShader);
 
+            List<DrawItem> DrawList = RenderGraph.MeshSystem.GetRenderDrawList();
 
             for (int i = 0; i < DrawList.Count; i++) 
             {
                 UploadModelData(RendererUtils.GeometryShader, DrawList[i].position, DrawList[i].rotation, DrawList[i].scale);
 
-                DrawList[i].mesh.Material.SetPropertyVector3(RendererUtils.GeometryShader, "material.albedo");
-                DrawList[i].mesh.Material.SetPropertyFloat(RendererUtils.GeometryShader, "material.roughness");
-                DrawList[i].mesh.Material.SetPropertyFloat(RendererUtils.GeometryShader, "material.metallic");
-                DrawList[i].mesh.Material.SetPropertyInt(RendererUtils.GeometryShader, "USE_TEX_0");
-                DrawList[i].mesh.Material.SetPropertyInt(RendererUtils.GeometryShader, "USE_TEX_1");
-                DrawList[i].mesh.Material.SetPropertyInt(RendererUtils.GeometryShader, "USE_TEX_2");
-                DrawList[i].mesh.Material.SetPropertyInt(RendererUtils.GeometryShader, "USE_TEX_3");
-                DrawList[i].mesh.Material.SetPropertyInt(RendererUtils.GeometryShader, "USE_TEX_4");
-                DrawList[i].mesh.Material.SetPropertyTexture(RendererUtils.GeometryShader, "material.ROUGHNESS_TEX", 0);
-                DrawList[i].mesh.Material.SetPropertyTexture(RendererUtils.GeometryShader, "material.ALBEDO_TEX", 1);
+                Material material = RenderGraph.MeshSystem.GetMaterial(DrawList[i].mesh.MaterialIndex);
 
-                RendererUtils.GeometryShader.SetInt("OBJECT_UUID", (int)DrawList[i].associateObject);
+                material.SetPropertyVector3(RendererUtils.GeometryShader, "material.albedo");
+                material.SetPropertyFloat(RendererUtils.GeometryShader, "material.roughness");
+                material.SetPropertyFloat(RendererUtils.GeometryShader, "material.metallic");
+                material.SetPropertyInt(RendererUtils.GeometryShader, "USE_TEX_0");
+                material.SetPropertyInt(RendererUtils.GeometryShader, "USE_TEX_1");
+                material.SetPropertyInt(RendererUtils.GeometryShader, "USE_TEX_2");
+                material.SetPropertyInt(RendererUtils.GeometryShader, "USE_TEX_3");
+                material.SetPropertyInt(RendererUtils.GeometryShader, "USE_TEX_4");
+                material.SetPropertyTexture(RendererUtils.GeometryShader, "material.ROUGHNESS_TEX", 0);
+                material.SetPropertyTexture(RendererUtils.GeometryShader, "material.ALBEDO_TEX", 1);
+
+                if (DrawList[i].associateObject != null) RendererUtils.GeometryShader.SetInt("OBJECT_UUID", (int)DrawList[i].associateObject);
 
                 DrawList[i].mesh.Draw();
 
@@ -498,11 +461,6 @@ namespace DevoidEngine.Engine.Rendering
             }
         }
 
-        static void SortDrawListByDistance()
-        {
-            DrawList.Sort((x, y) => x.distFromCam.CompareTo(y.distFromCam));
-        }
-
         public static void ResetViewport()
         {
             GL.Viewport(0, 0, RenderGraph.ViewportWidth, RenderGraph.ViewportHeight);
@@ -536,11 +494,6 @@ namespace DevoidEngine.Engine.Rendering
         public static List<LightComponent> GetSpotLights()
         {
             return SpotLights;
-        }
-
-        public static List<DrawItem> GetRenderDrawList()
-        {
-            return DrawList;
         }
     }
 }

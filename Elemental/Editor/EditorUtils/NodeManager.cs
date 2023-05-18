@@ -232,6 +232,8 @@ namespace Elemental.Editor.EditorUtils
 
             ImGui.GetWindowDrawList().AddCircleFilled(pos, 5, UI.ToUint(new Vector4i(255,255,255, 255)));
 
+            ImGui.GetWindowDrawList().AddCircleFilled(pos, 3, UI.ToUint(new Vector4i(50, 50, 50, 255)));
+
             HandleLinkCreation(pos, node, property, true);
         }
 
@@ -261,6 +263,9 @@ namespace Elemental.Editor.EditorUtils
                         nodeIn = node
                     }
                     );
+
+                    Console.WriteLine("LINK CREATED BETWEEN " + node1.name + " and " + node.name);
+                    
                     sPos = System.Numerics.Vector2.Zero;
                     drawBez = false;
                 }
@@ -283,6 +288,8 @@ namespace Elemental.Editor.EditorUtils
             System.Numerics.Vector2 pos = new System.Numerics.Vector2(windowPos.X + node.x + node.w, windowPos.Y + node.y + node.nodetitleHeight + node.nodetitlePadding + property.propertyPositionY + property.propertyPadding.Y);
 
             ImGui.GetWindowDrawList().AddCircleFilled(pos, 5, UI.ToUint(new Vector4i(255, 255, 255, 255)));
+
+            ImGui.GetWindowDrawList().AddCircleFilled(pos, 3, UI.ToUint(new Vector4i(50,50,50, 255)));
 
             HandleLinkCreation(pos, node, property);
         }

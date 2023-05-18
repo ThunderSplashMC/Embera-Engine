@@ -39,11 +39,6 @@ namespace DevoidEngine.Engine.Core
             sceneRegistry.StartAllGameObjects();
         }
 
-        void UpdateRigidBodies()
-        {
-            List<Rigidbody> rigidbodies = sceneRegistry.GetRigidBodies();
-        }
-
         public void OnRenderEditor()
         {
 
@@ -61,7 +56,6 @@ namespace DevoidEngine.Engine.Core
             {
                 sceneRegistry.UpdateAllGameObjects(deltaTime);
                 PhysicsSystem.Update(deltaTime);
-                UpdateRigidBodies();
             }
 
                 
@@ -145,10 +139,6 @@ namespace DevoidEngine.Engine.Core
                 ((LightComponent)component).OnStart();
                 sceneRegistry.AddLight((LightComponent)component);
             }
-            if (component.GetType() == typeof(Rigidbody))
-            {
-                ((Rigidbody)component).OnStart();
-            }
             if (component.GetType() == typeof(Skylight))
             {
                 component.OnStart();
@@ -170,10 +160,6 @@ namespace DevoidEngine.Engine.Core
             {
                 System.Console.WriteLine("LIGHT REMOVED");
                 sceneRegistry.RemoveLight((LightComponent)component);
-            }
-            if (component.GetType() == typeof(Rigidbody))
-            {
-
             }
         }
     }

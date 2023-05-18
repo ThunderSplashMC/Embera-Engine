@@ -212,7 +212,7 @@ vec3 sampleOffsetDirections[20] = vec3[]
 
 float ShadowCalculation(vec3 fragPos,vec3 lightPos, int index)
 {
-    float samples = 25;
+    float samples = 6;
     float offset  = 0.1;
     float shadow = 0;
     float diskRadius = 0.05;
@@ -247,11 +247,8 @@ void main() {
     vec3 Lo = vec3(0);
 
     for (int i = 0; i < NR_POINT_LIGHTS; i++) {
-        float shadow = ShadowCalculation(FragPos, L_POINTLIGHTS[i].position, i);
-
-        if (max(0, 1 - (shadow)) == 1) {
-            Lo += (max(0, 1 - (shadow)) * (L_POINTLIGHTS[i].shadows)) * CalcPointLight(L_POINTLIGHTS[i], GetNormal(N), F0, V);
-        }
+        //float shadow = ShadowCalculation(FragPos, L_POINTLIGHTS[i].position, i);
+        Lo += CalcPointLight(L_POINTLIGHTS[i], GetNormal(N), F0, V);
     }
 
     for (int i = 0; i < NR_SPOT_LIGHTS; i++) {

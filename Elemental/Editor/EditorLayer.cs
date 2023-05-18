@@ -81,6 +81,7 @@ namespace Elemental
             EditorPanels.Add(new BuildPanel());
             EditorPanels.Add(ConsoleService);
             EditorPanels.Add(new StatisticsPanel());
+            EditorPanels.Add(new DebugPanel());
 
             // On Init
             OnInitPanels();
@@ -101,27 +102,7 @@ namespace Elemental
 
         public void SandBoxSetup()
         {
-            Random rand = new Random();
 
-            for (int i = 0; i < 200; i++)
-            {
-                GameObject gObject = EditorScene.NewGameObject("BG");
-
-                gObject.transform.position = new Vector3(rand.NextInt64(0, 100), rand.NextInt64(0, 100), rand.NextInt64(0, 100));
-
-                MeshHolder mh = gObject.AddComponent<MeshHolder>();
-
-                Mesh mesh = new Mesh();
-                mesh.Material = new Material(new Shader("Engine/EngineContent/shaders/pbr"));
-                mesh.Material.Set("material.albedo", new Vector3(1, 1, 1));
-                mesh.Material.Set("material.emissionStr", 1f);
-                mesh.Material.Set("material.emission", new Vector3((float)rand.NextDouble(), (float)rand.NextDouble(), (float)rand.NextDouble()));
-                mesh.SetVertexArrayObject(RendererUtils.CubeVAO);
-
-                mh.AddMesh(mesh);
-
-                gObject.AddComponent<MeshRenderer>();
-            }
         }
 
         public void ChangeScenes(Scene scene)
@@ -256,7 +237,7 @@ namespace Elemental
 
                     ImGui.Text("Devoid Engine V1.0");
                     ImGui.SameLine();
-                    ImGui.Image((IntPtr)(EditorLogo.GetTexture()), new System.Numerics.Vector2(64, 64));
+                    ImGui.Image((IntPtr)(EditorLogo.GetRendererID()), new System.Numerics.Vector2(64, 64));
                     ImGui.Text("Release Type: Closed Beta");
                     ImGui.Text("Game Engine in C#");
                     ImGui.EndMenu();

@@ -83,17 +83,17 @@ namespace DevoidEngine.Engine.Components
                 charSpacing = CharSpacingOffset;
                 ReconstructMesh();
             }
-            mesh.Material.Set("v_Color", new Vector4(OverlayColor.R, OverlayColor.G, OverlayColor.B, 0.5f));
+            //mesh.Material.Set("v_Color", new Vector4(OverlayColor.R, OverlayColor.G, OverlayColor.B, 0.5f));
             if (Content != "")
             {
                 if (renderType == TextRenderType._2D)
                 {
-                    mesh.Material.Set("Do_3D", 0);
-                    Renderer2D.Submit(gameObject.transform.position.Xy, gameObject.transform.rotation.Xy, gameObject.transform.scale.Xy, mesh, null, mesh.Material);
+                    //mesh.Material.Set("Do_3D", 0);
+                    //Renderer2D.Submit(gameObject.transform.position.Xy, gameObject.transform.rotation.Xy, gameObject.transform.scale.Xy, mesh, null, mesh.Material);
                 } else
                 {
-                    mesh.Material.Set("Do_3D", 1);
-                    Renderer3D.Submit(gameObject.transform.position, gameObject.transform.rotation, gameObject.transform.scale, mesh);
+                    //mesh.Material.Set("Do_3D", 1);
+                    //Renderer3D.Submit(gameObject.transform.position, gameObject.transform.rotation, gameObject.transform.scale, mesh);
                 }
             }
         }
@@ -171,7 +171,7 @@ namespace DevoidEngine.Engine.Components
 
             mesh.SetVertices(vertices.ToArray());
 
-            mesh.SetMaterial(fontMaterial);
+            //mesh.SetMaterial(fontMaterial);
 
         }
 

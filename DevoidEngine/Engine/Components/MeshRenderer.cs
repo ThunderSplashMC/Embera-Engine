@@ -12,24 +12,40 @@ namespace DevoidEngine.Engine.Components
     {
         public override string Type { get; } = nameof(MeshRenderer);
 
-        [RunInEditMode]
+        public bool isInitialized = false;
 
-        MeshHolder MeshHolder;
+        public List<Mesh> Meshes = new List<Mesh>();
+        List<int> MeshIDs = new List<int>();
+
+        public void AddMesh(Mesh mesh)
+        {
+            Meshes.Add(mesh);
+            MeshIDs.Add(RenderGraph.MeshSystem.Submit(mesh));
+        }
 
         public override void OnStart()
         {
-            MeshHolder = gameObject.GetComponent<MeshHolder>();
+            if (isInitialized)
+            {
+                for (int i = 0; i < MeshIDs.Count; i++)
+                {
+                    RenderGraph.MeshSystem.RemoveMesh(MeshIDs[i]);
+                }
+            }
+
+            MeshIDs.Clear();
+
+            for (int i = 0; i < Meshes.Count; i++)
+            {
+                MeshIDs.Add(RenderGraph.MeshSystem.Submit(Meshes[i]));
+            }
         }
 
         public override void OnRender()
         {
-            if (MeshHolder == null) {
-                MeshHolder = gameObject.GetComponent<MeshHolder>();
-                return;
-            }
-            for (int i = 0; i < MeshHolder.Meshes.Count; i++)
+            for (int i = 0; i < MeshIDs.Count; i++)
             {
-                Renderer3D.Submit(gameObject.transform.position, gameObject.transform.rotation, gameObject.transform.scale, MeshHolder.Meshes[i], (object)gameObject.ID);
+                RenderGraph.MeshSystem.SetTransform(MeshIDs[i], gameObject.transform.position, gameObject.transform.rotation, gameObject.transform.scale);
             }
         }
     }

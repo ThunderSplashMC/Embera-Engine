@@ -19,7 +19,6 @@ namespace DevoidEngine.Engine.Utilities
 
         public int MaterialIndex;
 
-        public Material Material;
         public int MeshID;
         public int VertexCount;
         public string path;
@@ -74,11 +73,6 @@ namespace DevoidEngine.Engine.Utilities
         public string GetPath()
         {
             return path;
-        }
-
-        public void SetMaterial(Material material)
-        {
-            Material = material;
         }
 
         public void SetStatic(bool value)

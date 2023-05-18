@@ -278,7 +278,7 @@ namespace Elemental.Editor.EditorUtils
         public static void DrawTextureField(FieldInfo field, object component)
         {
             Texture val = (Texture)field.GetValue(component);
-            PropertyTexture((IntPtr)(val == null ? 0 : val.GetTexture()));
+            PropertyTexture((IntPtr)(val == null ? 0 : val.GetRendererID()));
             Texture newVal = HandleDropTexture();
             val = newVal == null ? val : newVal;
             field.SetValue(component, val);

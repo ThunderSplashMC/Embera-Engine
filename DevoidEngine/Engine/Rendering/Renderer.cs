@@ -18,6 +18,7 @@ namespace DevoidEngine.Engine.Rendering
 
             RenderGraph.ViewportHeight = height;
             RenderGraph.ViewportWidth = width;
+            RenderGraph.MeshSystem = new MeshSystem();
             RendererUtils.Init();
             Renderer2D.Init(width, height);
             Renderer3D.Init(width, height);
