@@ -1,6 +1,6 @@
 You need the .NET 7 to run this project
 
-# DevoidEngine
+# DevoidEngine (Now Embera Engine)
 
 Lets make a game engine, what could possibly go wrong :)
 
