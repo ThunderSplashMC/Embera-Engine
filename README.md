@@ -1,4 +1,4 @@
-You need the .NET 6 to run this project
+You need the .NET 7 to run this project
 
 # DevoidEngine
 
